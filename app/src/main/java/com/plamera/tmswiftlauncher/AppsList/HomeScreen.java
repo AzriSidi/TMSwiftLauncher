@@ -311,13 +311,13 @@ public class HomeScreen extends FragmentActivity {
             appDetail.setText("SWIFT - "+versionName + "  |  " );
             swiftVer.setText("LAUNCHER - "+Global.launcherVer + "  |  ");
             agentVer.setText("EMM - "+Global.agentVer+ "  |  ");
+            serverName.setText(Global.loginServer+ "  |  ");
             if(Global.ldapStatus.contains("true")){
                 loginState = "LDAP";
             }else {
                 loginState = "LOCAL";
             }
             ldapStatus.setText(loginState);
-            serverName.setText(Global.loginServer);
         }catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
