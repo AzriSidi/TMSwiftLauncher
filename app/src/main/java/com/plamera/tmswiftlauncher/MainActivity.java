@@ -777,7 +777,7 @@ public class MainActivity extends Activity {
 
             // start pian tambah 8/7/2013
             if(Global.loginServer.equals("REG-IGRID")) {
-                Global.UrlLogin = "http://10.54.97.228:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
                 //Global.URLAuthenticate = "http://10.44.11.64:8008/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT-IGRID")) {
@@ -968,7 +968,7 @@ public class MainActivity extends Activity {
             if (Global.loginResult) {
                 try {
                     objLogin = new JSONObject(Result);
-                    Global.ldapStatus = objLogin.getString("LdapStatus");
+                    //Global.ldapStatus = objLogin.getString("LdapStatus");
                     Global.staffIcNo = objLogin.getString("IcNo");
                     Global.staffName = objLogin.getString("StaffName");
                     Global.AppVersion = objLogin.getString("AppName");
@@ -1178,7 +1178,7 @@ public class MainActivity extends Activity {
 
         private String getData() {
             sh = new HttpHandler();
-            ApiUrl = "http://10.54.97.99:9763/EMMWebService/device_config";
+            ApiUrl = "http://10.54.97.227:9763/EMMWebService/device_config";
             jsonStr = sh.makeServiceCall(ApiUrl);
             Log.d(TAG, "Response from url: " + jsonStr);
             try {

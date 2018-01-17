@@ -1,4 +1,4 @@
-#Wed Jan 17 15:16:18 IRKT 2018
+#Wed Jan 17 16:01:25 IRKT 2018
 base.0=C\:\\Users\\indie\\AndroidStudioProjects\\TMSwiftLauncher\\app\\build\\intermediates\\transforms\\dex\\release\\0
 path.0=classes.dex
 renamed.0=classes.dex
