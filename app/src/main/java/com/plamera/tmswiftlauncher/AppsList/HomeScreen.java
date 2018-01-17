@@ -312,9 +312,9 @@ public class HomeScreen extends FragmentActivity {
             swiftVer.setText("LAUNCHER - "+Global.launcherVer + "  |  ");
             agentVer.setText("EMM - "+Global.agentVer+ "  |  ");
             if(Global.ldapStatus.contains("true")){
-                loginState = "Ldap";
+                loginState = "LDAP";
             }else {
-                loginState = "Local";
+                loginState = "LOCAL";
             }
             ldapStatus.setText(loginState);
             serverName.setText(Global.loginServer);
