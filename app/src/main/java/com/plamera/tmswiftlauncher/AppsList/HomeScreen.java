@@ -307,10 +307,16 @@ public class HomeScreen extends FragmentActivity {
         try {
             PackageInfo app = packageManager.getPackageInfo("my.com.tm.swift",0);
             String versionName = app.versionName;
+            String loginState = "";
             appDetail.setText("SWIFT - "+versionName + "  |  " );
             swiftVer.setText("LAUNCHER - "+Global.launcherVer + "  |  ");
-            agentVer.setText("EMM AGENT - "+Global.agentVer+ "  |  ");
-            ldapStatus.setText("Ldap: "+Global.ldapStatus);
+            agentVer.setText("EMM - "+Global.agentVer+ "  |  ");
+            if(Global.ldapStatus.contains("true")){
+                loginState = "Ldap";
+            }else {
+                loginState = "Local";
+            }
+            ldapStatus.setText(loginState);
             serverName.setText(Global.loginServer);
         }catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

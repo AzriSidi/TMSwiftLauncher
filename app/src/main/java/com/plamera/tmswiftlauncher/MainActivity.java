@@ -407,7 +407,7 @@ public class MainActivity extends Activity {
         launchVer.setTypeface(tf);
         agentVer.setTypeface(tf);
         launchVer.setText("LAUNCHER - "+Global.launcherVer + "  |  ");
-        agentVer.setText("EMM AGENT - "+ Global.agentVer);
+        agentVer.setText("EMM - "+ Global.agentVer);
     }
 
     // ***** To enable GPS at main *********************
@@ -777,29 +777,29 @@ public class MainActivity extends Activity {
 
             // start pian tambah 8/7/2013
             if(Global.loginServer.equals("REG-IGRID")) {
-                Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
                 //Global.URLAuthenticate = "http://10.44.11.64:8008/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT-IGRID")) {
-                Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
                 //Global.URLAuthenticate = "http://10.44.11.6:8008/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("REG")) {
-                Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
                 //Global.URLAuthenticate = "http://10.41.102.81:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT")) {
                 if (Global.connectedToWiFi) {
-                    Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
+                    Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
                     //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                     LoginTask.execute();
                 } else {
-                    Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
+                    Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
                     //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                     LoginTask.execute();
                 }
             } else if (Global.loginServer.equals("PRO")) {
-                Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";//prod
+                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi";//prod
                 //Global.URLAuthenticate = "http://10.41.102.70:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else {
@@ -968,7 +968,7 @@ public class MainActivity extends Activity {
             if (Global.loginResult) {
                 try {
                     objLogin = new JSONObject(Result);
-                    //Global.ldapStatus = objLogin.getString("LdapStatus");
+                    Global.ldapStatus = objLogin.getString("LdapStatus");
                     Global.staffIcNo = objLogin.getString("IcNo");
                     Global.staffName = objLogin.getString("StaffName");
                     Global.AppVersion = objLogin.getString("AppName");
@@ -1178,7 +1178,7 @@ public class MainActivity extends Activity {
 
         private String getData() {
             sh = new HttpHandler();
-            ApiUrl = "http://10.54.97.227:9763/EMMWebService/device_config";
+            ApiUrl = "http://10.54.97.99:9763/EMMWebService/device_config";
             jsonStr = sh.makeServiceCall(ApiUrl);
             Log.d(TAG, "Response from url: " + jsonStr);
             try {
@@ -1702,7 +1702,7 @@ public class MainActivity extends Activity {
                         Global.URLSwift = "http://10.54.7.214/";
                         //Global.URLSwift = "http://10.41.102.81/";
                     } else {
-                        Global.URLSwift = "http://10.54.97.227:8888/";
+                        Global.URLSwift = "http://10.54.97.99:8888/";
                         //Global.URLSwift = "http://10.54.7.214/";
                         //Global.URLSwift = "http://10.41.102.70/";
                     }
