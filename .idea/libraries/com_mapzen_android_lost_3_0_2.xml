@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.mapzen.android:lost-3.0.2">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/lost-3.0.2.aar/8b1dc53f4e27ab6326a8ddb04331fdb1/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/lost-3.0.2.aar/8b1dc53f4e27ab6326a8ddb04331fdb1/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mapzen.android/lost/3.0.2/f1f62f644ac4ad0b4fa58c451f317ae64da5d1cf/lost-3.0.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

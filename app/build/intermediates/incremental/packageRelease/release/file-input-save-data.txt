@@ -1,0 +1,11 @@
+#Internal package file, do not edit.
+#Wed Jan 17 12:14:09 IRKT 2018
+1.base=C\:\\Users\\indie\\AndroidStudioProjects\\TMSwiftLauncher\\app\\build\\intermediates\\transforms\\dex\\release\\0
+0.baseType=DIRECTORY
+1.baseType=DIRECTORY
+count=2
+1.set=DEX
+0.path=fonts/Prototype.ttf
+0.set=ASSET
+0.base=C\:\\Users\\indie\\AndroidStudioProjects\\TMSwiftLauncher\\app\\build\\intermediates\\assets\\release
+1.path=classes.dex
