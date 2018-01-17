@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Wed Jan 17 12:14:09 IRKT 2018
+#Wed Jan 17 15:16:18 IRKT 2018
 1.base=C\:\\Users\\indie\\AndroidStudioProjects\\TMSwiftLauncher\\app\\build\\intermediates\\transforms\\dex\\release\\0
 0.baseType=DIRECTORY
 1.baseType=DIRECTORY

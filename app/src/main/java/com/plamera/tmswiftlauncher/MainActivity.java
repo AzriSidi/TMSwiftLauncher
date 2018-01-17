@@ -777,24 +777,24 @@ public class MainActivity extends Activity {
 
             // start pian tambah 8/7/2013
             if(Global.loginServer.equals("REG-IGRID")) {
-                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = "http://10.54.97.228:9763/EMMWebService/loginApi"; //sit
                 //Global.URLAuthenticate = "http://10.44.11.64:8008/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT-IGRID")) {
-                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
                 //Global.URLAuthenticate = "http://10.44.11.6:8008/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("REG")) {
-                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
                 //Global.URLAuthenticate = "http://10.41.102.81:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT")) {
                 if (Global.connectedToWiFi) {
-                    Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                    Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
                     //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                     LoginTask.execute();
                 } else {
-                    Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                    Global.UrlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi"; //sit
                     //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                     LoginTask.execute();
                 }
@@ -805,7 +805,7 @@ public class MainActivity extends Activity {
             } else {
                 Global.URLAuthenticate = "";
             }// end pian tambah 8/7/2013
-            Log.d(TAG,"Check URLAuthenticate: "+Global.URLAuthenticate);
+            Log.d(TAG,"Check UrlLogin: "+Global.UrlLogin);
             if (password.regionMatches(0, "+", 0, 1))
                 password = password.substring(1,password.length());
             else if (password.regionMatches(0, "*", 0, 1))
