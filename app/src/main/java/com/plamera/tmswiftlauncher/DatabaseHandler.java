@@ -86,13 +86,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.delete(UserDb.TABLE_LOGIN, null, null);
     }
 
-    public int getContactsCount() {
-        String countQuery = "SELECT  * FROM " + UserDb.TABLE_LOGIN;
-        db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-        return cursor.getCount();
-    }
-
     public boolean isLoginExists(String ActualUsername) {
         boolean hasTables = false;
         db = this.getWritableDatabase();
@@ -139,36 +132,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String query = "UPDATE "+UserDb.TABLE_BLACKLIST+" SET  blacklist_number = '"
                 +blackListNo+"' Where id = "+"'"+id+"'";
         db.execSQL(query);
-    }
-
-    public int getBlackListCount() {
-        String countQuery = "SELECT  * FROM " + UserDb.TABLE_BLACKLIST;
-        db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                BlackList blackList = new BlackList();
-                blackList.setId(cursor.getString(0));
-                blackList.setBlackListNumber(cursor.getString(1));
-            } while (cursor.moveToNext());
-        }
-        return cursor.getCount();
-    }
-
-    public boolean getBlackListTable(String id) {
-        String countQuery = "SELECT * FROM " + UserDb.TABLE_BLACKLIST + " Where "
-                +UserDb.KEY_ID+"="+"'"+id+"'";
-        db = this.getReadableDatabase();
-        Log.d("BlackListDB","Query: "+countQuery);
-        Cursor cursor = db.rawQuery(countQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                BlackList blackList = new BlackList();
-                blackList.setId(cursor.getString(0));
-                blackList.setBlackListNumber(cursor.getString(1));
-            } while (cursor.moveToNext());
-        }
-        return true;
     }
 
     public boolean isBlackListExist(String id) {

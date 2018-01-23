@@ -30,7 +30,7 @@ public class UserDb {
             KEY_PACKAGE +" TEXT "+")";
 
     public static final String CREATE_TABLE_DEPLOY_FLAG = "CREATE TABLE "+TABLE_DEPLOY_FLAG+"(" +
-            KEY_ID + " INTEGER PRIMARY KEY," + KEY_FLAG + " TEXT not null unique" + ")";
+            KEY_ID + " INTEGER PRIMARY KEY," + KEY_FLAG + " TEXT" + ")";
 
     public static final String CREATE_TABLE_DEVICE_CONFIG = "CREATE TABLE "
             + TABLE_DEVICE_CONFIG + "(" +  KEY_WL + " TEXT not null unique," + KEY_BL + " TEXT not null unique" +" )";

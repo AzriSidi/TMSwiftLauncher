@@ -23,6 +23,30 @@
                     }
                 }
             ]
+        },
+        {
+            "outputFile": "C:\\Users\\Plamera\\AndroidStudioProjects\\TMSwiftLauncher\\app\\build\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values-v19\\values-v19.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Plamera\\AndroidStudioProjects\\TMSwiftLauncher\\app\\src\\main\\res\\values-v19\\styles.xml",
+                    "from": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "59",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "206"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "4",
+                        "endColumns": "12",
+                        "endOffsets": "200"
+                    }
+                }
+            ]
         }
     ]
 }
