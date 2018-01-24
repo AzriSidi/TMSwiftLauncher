@@ -8,7 +8,7 @@ android {
         applicationId "com.plamera.tmswiftlauncher"
         minSdkVersion 17
         targetSdkVersion 26
-        versionCode 11
+        versionCode 12
         versionName "v3.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -24,7 +24,7 @@ android {
 
     signingConfigs{
         release {
-            storeFile file("C:\\key\\platform.jks")
+            storeFile file("../keystore/platform.jks")
             keyAlias "android"
             keyPassword "android"
             storePassword "android"
