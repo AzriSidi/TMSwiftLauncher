@@ -1,0 +1,62 @@
+image: jangrewe/gitlab-ci-android
+
+variables:
+  # Application info (optional, will be taken from manifest if not defined here)
+  PACKAGE: ''
+  ARTIFACT_ID: ''
+  VERSION: ''
+  # 'true' to append date '-YYYYMMDD' to version, 'false' to disable
+  VERSION_APPEND_DATE: 'true'
+  # For APK signing
+  KEYSTORE_FILE: ''
+  KEYSTORE_KEYALIAS: ''
+  # Android SDK target version needed by gitlab-ci-android docker image
+  VERSION_TARGET_SDK: '25'
+  # either actual or wildcard path (will be automatically resolved to actual name after build)
+  ARTIFACT_PATH: app/build/outputs/apk/TMSwiftLauncher.apk 
+  ARTIFACT_EXT: apk
+  # Gradle settings
+  GRADLE_CMD: ./gradlew --project-cache-dir /cache/.gradle
+  GRADLE_USER_HOME: /cache/.gradle
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  before_script:
+    - if [ ! -d "/cache$ANDROID_HOME" ]; then mv $ANDROID_HOME /cache$ANDROID_HOME; fi
+    - export ANDROID_HOME=/cache$ANDROID_HOME
+  script:
+    - chmod +x ./gradlew
+    - $GRADLE_CMD build assembleRelease
+  artifacts:
+    expire_in: 3 days
+    paths:
+      - $ARTIFACT_PATH
+
+.deploy_template: &deploy_template
+  stage: deploy
+  script:
+    - export ARTIFACT_PATH=$(ls -1t $ARTIFACT_PATH | head -1)
+    - chmod +x ./gradlew
+    - $GRADLE_CMD -b deploy.gradle publish
+
+deploy_releases:
+  <<: *deploy_template
+  only:
+    - master
+  before_script:
+    - export REPO_URL=$REPO_RELEASES_URL
+    - export REPO_USR=$REPO_RELEASES_USR
+    - export REPO_PWD=$REPO_RELEASES_PWD
+
+deploy_staging:
+  <<: *deploy_template
+  except:
+    - master
+  before_script:
+    - export REPO_URL=$REPO_STAGING_URL
+    - export REPO_USR=$REPO_STAGING_USR
+    - export REPO_PWD=$REPO_STAGING_PWD

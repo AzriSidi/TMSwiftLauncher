@@ -1,0 +1,37 @@
+import com.android.builder.core.DefaultManifestParser
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+apply plugin: 'maven-publish'
+
+def manifestParser = new DefaultManifestParser(new File('AndroidManifest.xml'))
+def packageName = System.getenv('PACKAGE') ?: manifestParser.getPackage()
+def packageVersion = System.getenv('VERSION') ?: manifestParser.getVersionName().replaceAll("\\s","-")
+
+if (System.getenv('VERSION_APPEND_DATE').equals('true')) {
+    packageVersion = packageVersion + "-" + new Date().format('yyyyMMdd')
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId packageName
+            artifactId System.getenv('ARTIFACT_ID') ?: packageName.tokenize('.')[-1]
+            version packageVersion
+            artifact source: System.getenv('ARTIFACT_PATH'), extension: System.getenv('ARTIFACT_EXT')
+        }
+    }
+    repositories.maven {
+        url System.getenv('REPO_URL')
+        credentials {
+            username System.getenv('REPO_USR')
+            password System.getenv('REPO_PWD')
+        }
+    }
+}
