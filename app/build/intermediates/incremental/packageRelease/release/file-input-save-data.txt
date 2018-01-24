@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Wed Jan 24 15:57:05 SGT 2018
+#Wed Jan 24 18:08:13 SGT 2018
 1.base=C\:\\Users\\Plamera\\AndroidStudioProjects\\TMSwiftLauncher\\app\\build\\intermediates\\assets\\release
 0.baseType=DIRECTORY
 1.baseType=DIRECTORY
