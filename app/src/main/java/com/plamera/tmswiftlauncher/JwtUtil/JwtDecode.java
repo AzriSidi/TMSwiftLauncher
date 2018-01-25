@@ -21,6 +21,7 @@ public class JwtDecode {
     private String environment;
     private String userType;
     private String exp;
+    private String firmVer;
 
     public void decoded() throws Exception {
         String TAG = "JWT_DECODED";
@@ -51,6 +52,7 @@ public class JwtDecode {
             environment = obj.getString("environment");
             userType = obj.getString("loginStatus");
             exp = obj.getString("exp");
+            firmVer = obj.getString("firmVer");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -90,5 +92,9 @@ public class JwtDecode {
 
     public String getExp() {
         return exp;
+    }
+
+    public String getFirmVer() {
+        return firmVer;
     }
 }

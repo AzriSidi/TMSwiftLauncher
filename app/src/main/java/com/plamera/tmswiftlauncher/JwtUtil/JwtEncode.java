@@ -23,6 +23,7 @@ public class JwtEncode {
                 .claim("name",Global.staffName)
                 .claim("environment",Global.loginServer)
                 .claim("loginStatus", Global.UserType)
+                .claim("firmVer", Global.frmVersion)
                 .claim("exp",exp)
                 .signWith(SignatureAlgorithm.HS256, "secret".getBytes("UTF-8"))
                 .setHeaderParam("typ", "JWT")
