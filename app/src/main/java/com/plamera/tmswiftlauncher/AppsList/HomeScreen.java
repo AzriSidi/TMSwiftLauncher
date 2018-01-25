@@ -90,6 +90,7 @@ public class HomeScreen extends FragmentActivity {
     static HomeScreen instance;
     DeviceOperate device;
     int timeout = 300000;
+    IntentFilter iFilter,networkIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,8 @@ public class HomeScreen extends FragmentActivity {
 
         DisplayUsername = username;
         device = new DeviceOperate(this);
+
+        registerReceiver();
         getSwiftApp();
         IntentData();
         deviceService();
@@ -143,15 +146,19 @@ public class HomeScreen extends FragmentActivity {
                     deviceState();
                 }
             };
-            IntentFilter networkIntentFilter = new IntentFilter(
+            networkIntentFilter = new IntentFilter(
                     ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(networkStateReceiver, networkIntentFilter);
+
             CheckNetworkTimer = new Timer();
             CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 5000);
+
+            registerReceiver();
+            displayReceiver();
+            Log.d(TAG,"getMessage: "+Global.getMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         // check APN
         String numeric = getAPN();
         if (numeric.contains("50219") || numeric.contains("50213")) {
@@ -164,12 +171,6 @@ public class HomeScreen extends FragmentActivity {
             Global.currentAPN = "Unknown";
             Log.d("getAPN", "Unknown");
         }
-
-        /*if(clicked){
-            notifyTask.setVisibility(View.INVISIBLE);
-        }if(click) {
-            notifyQueue.setVisibility(View.INVISIBLE);
-        }*/
     }
 
     private String getAPN() {
@@ -248,6 +249,7 @@ public class HomeScreen extends FragmentActivity {
     @Override
     public void onDestroy(){
         device.unregisterReceiver(this);
+        unregisterReceiver(MyReceiver);
         super.onDestroy();
     }
 
@@ -348,44 +350,55 @@ public class HomeScreen extends FragmentActivity {
         }
     }
 
-    public static class MyReceiver extends BroadcastReceiver {
+    public BroadcastReceiver MyReceiver = new BroadcastReceiver() {
         String TAG = "MyReceiver";
 
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                String getMessage = intent.getStringExtra("dataMessage");
-                String getTask = intent.getStringExtra("dataTask");
-                String getQueue = intent.getStringExtra("dataQueue");
+                Global.getMessage = intent.getStringExtra("dataMessage");
+                Global.getTask = intent.getStringExtra("dataTask");
+                Global.getQueue = intent.getStringExtra("dataQueue");
                 Global.getLoginStatus = intent.getStringExtra("loginStatus");
-                Log.d(TAG,"getTask: "+getTask);
-                Log.d(TAG,"getMessage: "+getMessage);
-                Log.d(TAG,"getLoginStatus: "+Global.getLoginStatus);
-                if(Global.getLoginStatus.equals("LOGOUT")){
-                    instance.pushLogout();
-                }
-                if (getTask.equals("0")){
-                    notifyTask.setVisibility(View.INVISIBLE);
-                }else{
-                    notifyTask.setVisibility(View.VISIBLE);
-                    notifyTask.setText(getTask);
-                }
-                if(getQueue.equals("0")){
-                    notifyQueue.setVisibility(View.INVISIBLE);
-                }else {
-                    notifyQueue.setVisibility(View.VISIBLE);
-                    notifyQueue.setText(getQueue);
-                }
-                if(getMessage.equals("")){
-                    broadcastInfo.setVisibility(View.INVISIBLE);
-                }else {
-                    broadcastInfo.setVisibility(View.VISIBLE);
-                    broadcastInfo.setText(getMessage);
-                }
+                Log.d(TAG,"getMessage: "+Global.getMessage);
+                displayReceiver();
             }catch (NullPointerException ex){
                 Log.d(TAG,"Exception: "+ex);
             }
         }
+    };
+
+    public void displayReceiver(){
+        try{
+            if(Global.getLoginStatus.contains("LOGOUT")){
+                instance.pushLogout();
+            }
+            if (Global.getTask.contains("0")){
+                notifyTask.setVisibility(View.INVISIBLE);
+            }else{
+                notifyTask.setVisibility(View.VISIBLE);
+                notifyTask.setText(Global.getTask);
+            }
+            if(Global.getQueue.contains("0")){
+                notifyQueue.setVisibility(View.INVISIBLE);
+            }else {
+                notifyQueue.setVisibility(View.VISIBLE);
+                notifyQueue.setText(Global.getQueue);
+            }
+            if(Global.getMessage.equals("")){
+                broadcastInfo.setVisibility(View.INVISIBLE);
+            }else {
+                broadcastInfo.setVisibility(View.VISIBLE);
+                broadcastInfo.setText(Global.getMessage);
+            }
+        }catch (NullPointerException np){
+            Log.e(TAG,"NullPointer"+np);
+        }
+    }
+
+    public void registerReceiver(){
+        iFilter = new IntentFilter("com.plamera.CUSTOM_INTENT");
+        registerReceiver(MyReceiver, iFilter);
     }
 
     public void pushLogout() {

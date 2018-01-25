@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:2:1-135:12
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:2:1-128:12
 	package
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:4:5-42
 		INJECTED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml
@@ -187,7 +187,7 @@ ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\A
 	android:name
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:64:22-78
 application
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:66:5-134:19
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:66:5-127:19
 MERGED from [com.mapzen.android:lost:3.0.2] C:\Users\Plamera\.android\build-cache\5730128c4943753994c74ecb9035a84e474ed136\output\AndroidManifest.xml:21:5-32:19
 MERGED from [com.android.support:appcompat-v7:26.1.0] C:\Users\Plamera\.android\build-cache\1935d9bc9f0c57849a743f170edcacd621d71133\output\AndroidManifest.xml:25:5-29:19
 MERGED from [com.android.support:support-v4:26.1.0] C:\Users\Plamera\.android\build-cache\0df7166b244178cdafd3696df5d8e128cc8bba24\output\AndroidManifest.xml:25:5-29:19
@@ -281,44 +281,38 @@ action#com.plamera.CUSTOM_INTENT
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:106:17-67
 	android:name
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:106:25-65
-receiver#com.plamera.tmswiftlauncher.AppsList.HomeScreen$MyReceiver
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:109:9-115:20
-	tools:ignore
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:111:13-44
-	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:110:13-86
 receiver#com.plamera.tmswiftlauncher.BlockOutgoing
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:116:9-121:20
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:109:9-114:20
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:117:13-69
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:110:13-69
 intent-filter#android.intent.action.NEW_OUTGOING_CALL
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:118:13-120:29
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:111:13-113:29
 	android:priority
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:118:28-48
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:111:28-48
 action#android.intent.action.NEW_OUTGOING_CALL
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:119:17-82
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:112:17-82
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:119:25-79
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:112:25-79
 provider#com.plamera.tmswiftlauncher.Provider.FlagProvider
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:122:9-127:20
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:115:9-120:20
 	android:authorities
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:124:13-84
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:117:13-84
 	android:exported
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:125:13-36
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:118:13-36
 	tools:ignore
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:126:13-51
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:119:13-51
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:123:13-50
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:116:13-50
 provider#com.plamera.tmswiftlauncher.Provider.BlackListProvider
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:128:9-133:20
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:121:9-126:20
 	android:authorities
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:130:13-89
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:123:13-89
 	android:exported
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:131:13-36
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:124:13-36
 	tools:ignore
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:132:13-51
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:125:13-51
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:129:13-55
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:122:13-55
 uses-sdk
 INJECTED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 MERGED from [com.mapzen.android:lost:3.0.2] C:\Users\Plamera\.android\build-cache\5730128c4943753994c74ecb9035a84e474ed136\output\AndroidManifest.xml:5:5-7:41

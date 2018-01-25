@@ -107,13 +107,6 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.plamera.tmswiftlauncher.AppsList.HomeScreen$MyReceiver"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="com.plamera.CUSTOM_INTENT"/>
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name="com.plamera.tmswiftlauncher.BlockOutgoing">
             <intent-filter android:priority="1">
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />

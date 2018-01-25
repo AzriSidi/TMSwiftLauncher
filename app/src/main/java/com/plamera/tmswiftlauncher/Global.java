@@ -78,4 +78,7 @@ public class Global {
     public static String launcherVer = "";
     public static String agentVer = "";
     public static String ldapStatus = "";
+    public static String getMessage = "";
+    public static String getTask = "";
+    public static String getQueue = "";
 }
