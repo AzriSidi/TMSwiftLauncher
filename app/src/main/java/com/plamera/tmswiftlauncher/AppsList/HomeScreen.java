@@ -118,7 +118,6 @@ public class HomeScreen extends FragmentActivity {
         tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
         DisplayUsername = username;
-        Log.d(TAG, "DisplayUsername: " + DisplayUsername);
         device = new DeviceOperate(this);
         getSwiftApp();
         IntentData();

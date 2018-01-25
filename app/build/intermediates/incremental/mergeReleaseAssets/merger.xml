@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\assets"><file name="fonts/Prototype.ttf" path="C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\assets\fonts\Prototype.ttf"/></source><source path="C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\build\generated\assets\shaders\release"/></dataSet><dataSet config="release"><source path="C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\release\assets"/></dataSet></merger>

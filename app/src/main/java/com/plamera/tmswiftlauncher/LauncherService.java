@@ -34,8 +34,8 @@ public class LauncherService extends Service {
     Handler handler;
     JSONObject objLogin,jsonMain;
     String result,json,batteryParam;
-    int TIMEOUT = 60*1000*5;
-    String url = "http://10.54.97.97:9763/EMMTestApi/device_operate";
+    int TIMEOUT = 300000;
+    String url = "http://10.54.97.99:9763/EMMWebService/device_operate";
 
     @Override
     public void onCreate() {

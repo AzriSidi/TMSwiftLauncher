@@ -1056,6 +1056,7 @@ public class MainActivity extends Activity {
             Global.UserType = jwtDecode.getUserType();
             Global.IMEIPhone = jwtDecode.getImei();
             Global.IMSIsimCardPhone = jwtDecode.getImsi();
+            Global.frmVersion = jwtDecode.getFirmVer();
             intentLogin();
         } catch (Exception e) {
             e.printStackTrace();
