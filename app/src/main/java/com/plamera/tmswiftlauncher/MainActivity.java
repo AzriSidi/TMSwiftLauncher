@@ -102,7 +102,7 @@ public class MainActivity extends Activity {
     Timer CheckNetworkTimer;
     String DisplayUsername;
     BroadcastReceiver networkStateReceiver;
-    String username, password, jsonStr, ApiUrl, signal;
+    String username, password, jsonStr, signal;
     HttpHandler sh;
     Handler handler;
     MyPhoneStateListener MyListener;
@@ -141,6 +141,12 @@ public class MainActivity extends Activity {
     int timeout = 300000;
     private Context context = MainActivity.this;
 
+    //url
+    String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
+    String urlSwift = "http://10.54.97.227:8888/";
+    String urlConfig = "http://10.54.97.227:9763/EMMWebService/device_config";
+    String UMupdateURL = "http://10.54.97.227:8888/MobileManual/umv650.pdf";
+
     @SuppressLint("PackageManagerGetSignatures")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +171,6 @@ public class MainActivity extends Activity {
         dateView = findViewById(R.id.textView10);
         CheckNetworkRunning = false;
         Global.loginContext = this;
-        Global.URLSwift = "http://10.41.102.70/";
         Global.LogIn = false;
         checkCurrentVersion();
         loadNdimSavedExchange();
@@ -777,29 +782,29 @@ public class MainActivity extends Activity {
 
             // start pian tambah 8/7/2013
             if(Global.loginServer.equals("REG-IGRID")) {
-                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = urlLogin; //sit
                 //Global.URLAuthenticate = "http://10.44.11.64:8008/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT-IGRID")) {
-                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = urlLogin; //sit
                 //Global.URLAuthenticate = "http://10.44.11.6:8008/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("REG")) {
-                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                Global.UrlLogin = urlLogin; //sit
                 //Global.URLAuthenticate = "http://10.41.102.81:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT")) {
                 if (Global.connectedToWiFi) {
-                    Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                    Global.UrlLogin = urlLogin; //sit
                     //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                     LoginTask.execute();
                 } else {
-                    Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi"; //sit
+                    Global.UrlLogin = urlLogin; //sit
                     //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                     LoginTask.execute();
                 }
             } else if (Global.loginServer.equals("PRO")) {
-                Global.UrlLogin = "http://10.54.97.99:9763/EMMWebService/loginApi";//prod
+                Global.UrlLogin = urlLogin;//prod
                 //Global.URLAuthenticate = "http://10.41.102.70:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else {
@@ -964,36 +969,10 @@ public class MainActivity extends Activity {
         protected void onPostExecute(String Result) {
             myTimer.cancel();
             Log.d(TAG,"ResponseApi: "+Result);
+            Global.responseResult = Result;
             Global.loginResult = Result.toString().contains("SUCCESS");
             if (Global.loginResult) {
-                try {
-                    objLogin = new JSONObject(Result);
-                    Global.ldapStatus = objLogin.getString("LdapStatus");
-                    Global.staffIcNo = objLogin.getString("IcNo");
-                    Global.staffName = objLogin.getString("StaffName");
-                    Global.AppVersion = objLogin.getString("AppName");
-                    Global.AppCode = objLogin.getString("AppVersion");
-                    Global.AppVersionLink = objLogin.getString("AppVersionLink");
-                    Global.AppSize = objLogin.getString("AppSize");
-                    Global.UserType = objLogin.getString("LoginStatus");
-                    Global.getToken = jwtEncode.creteToken();
-                    Log.d(TAG,"MyToken="+Global.getToken);
-                    if (Global.mySQLiteAdapter.isLoginExists(Global.usernameBB)) {
-                        Global.mySQLiteAdapter.updateContact(new UserDetail(Global.usernameBB,Global.getToken));
-                        Log.d("QueryLogin: ", "Update");
-                    } else {
-                        Global.mySQLiteAdapter.insertContact(new UserDetail(Global.usernameBB, Global.getToken));
-                        Log.d("QueryLogin: ", "Insert");
-                    }
-                    intentLogin();
-                    SuccessCallBack("Successfully Login");
-                }catch (JSONException e){
-                    Log.d("JSONException: ",e.toString());
-                }catch (NullPointerException e){
-                    Log.d(TAG, "JSONNull: "+String.valueOf(e));
-                }catch (Exception e){
-                    Log.d(TAG, "Exception: "+String.valueOf(e));
-                }
+                LoginParams();
             }else {
                 String mgs = ("Sorry, your Staff ID or Password does not exist in our record."
                         + " Please contact TSSSB Support Team");
@@ -1017,6 +996,50 @@ public class MainActivity extends Activity {
                 }
             }
             super.onPostExecute(Result);
+        }
+    }
+
+    public void LoginParams(){
+        try {
+            objLogin = new JSONObject(Global.responseResult);
+            if(Global.responseResult.contains("LdapStatus")){
+                Global.ldapStatus = objLogin.getString("LdapStatus");
+                Global.staffIcNo = objLogin.getString("IcNo");
+                Global.staffName = objLogin.getString("StaffName");
+                Global.AppVersion = objLogin.getString("AppName");
+                Global.AppCode = objLogin.getString("AppVersion");
+                Global.AppVersionLink = objLogin.getString("AppVersionLink");
+                Global.AppSize = objLogin.getString("AppSize");
+                Global.UserType = objLogin.getString("LoginStatus");
+                Global.getToken = jwtEncode.creteToken();
+                intentLogin();
+                SuccessCallBack("Successfully Login");
+            }else{
+                Global.staffIcNo = objLogin.getString("IcNo");
+                Global.staffName = objLogin.getString("StaffName");
+                Global.AppVersion = objLogin.getString("AppName");
+                Global.AppCode = objLogin.getString("AppVersion");
+                Global.AppVersionLink = objLogin.getString("AppVersionLink");
+                Global.AppSize = objLogin.getString("AppSize");
+                Global.UserType = objLogin.getString("LoginStatus");
+                Global.getToken = jwtEncode.creteToken();
+                intentLogin();
+                SuccessCallBack("Successfully Login");
+            }
+        }catch (JSONException e){
+            Log.e("JSONException: ",e.toString());
+        }catch (NullPointerException e){
+            Log.e(TAG, "JSONNull: "+String.valueOf(e));
+        }catch (Exception e){
+            Log.e(TAG, "Exception: "+String.valueOf(e));
+        }
+        Log.d(TAG,"MyToken="+Global.getToken);
+        if (Global.mySQLiteAdapter.isLoginExists(Global.usernameBB)) {
+            Global.mySQLiteAdapter.updateContact(new UserDetail(Global.usernameBB,Global.getToken));
+            Log.d("QueryLogin: ", "Update");
+        } else {
+            Global.mySQLiteAdapter.insertContact(new UserDetail(Global.usernameBB, Global.getToken));
+            Log.d("QueryLogin: ", "Insert");
         }
     }
 
@@ -1179,8 +1202,7 @@ public class MainActivity extends Activity {
 
         private String getData() {
             sh = new HttpHandler();
-            ApiUrl = "http://10.54.97.99:9763/EMMWebService/device_config";
-            jsonStr = sh.makeServiceCall(ApiUrl);
+            jsonStr = sh.makeServiceCall(urlConfig);
             Log.d(TAG, "Response from url: " + jsonStr);
             try {
                 objLogin = new JSONObject(jsonStr);
@@ -1343,7 +1365,6 @@ public class MainActivity extends Activity {
                             MainActivity.this,
                             "Please wait while downloading the user manual..",
                             Toast.LENGTH_SHORT).show();
-                    String UMupdateURL = "http://10.54.97.227:8888/MobileManual/umv650.pdf";
                     Log.d("Login", "Download manual="+ UMupdateURL);
                     final File UMtemp = new File(savePath + "umv650.pdf");
                     DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
@@ -1682,7 +1703,6 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            Log.d("CheckNetwork", "Mobile: "+String.valueOf(Global.connected3G) + " Wifi: "+Global.connectedToWiFi);
             try {
 
                 if (Global.connected3G || Global.connectedToWiFi
@@ -1703,7 +1723,7 @@ public class MainActivity extends Activity {
                         Global.URLSwift = "http://10.54.7.214/";
                         //Global.URLSwift = "http://10.41.102.81/";
                     } else {
-                        Global.URLSwift = "http://10.54.97.99:8888/";
+                        Global.URLSwift = urlSwift;
                         //Global.URLSwift = "http://10.54.7.214/";
                         //Global.URLSwift = "http://10.41.102.70/";
                     }
@@ -1713,7 +1733,6 @@ public class MainActivity extends Activity {
                     Serveradd = Global.URLSwift + "serverInfo.php";
 
                     HttpParams httpParameters = new BasicHttpParams();
-                    // set timeout to one minute = 15000
                     HttpConnectionParams.setConnectionTimeout(httpParameters,timeout);
                     HttpConnectionParams.setSoTimeout(httpParameters, timeout);
                     HttpClient client = new DefaultHttpClient(httpParameters);

@@ -81,4 +81,5 @@ public class Global {
     public static String getMessage = "";
     public static String getTask = "";
     public static String getQueue = "";
+    public static String responseResult = "";
 }

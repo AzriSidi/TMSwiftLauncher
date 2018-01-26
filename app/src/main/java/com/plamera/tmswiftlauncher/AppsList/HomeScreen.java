@@ -91,6 +91,7 @@ public class HomeScreen extends FragmentActivity {
     DeviceOperate device;
     int timeout = 300000;
     IntentFilter iFilter,networkIntentFilter;
+    String urlSwift = "http://10.54.97.227:8888/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +156,6 @@ public class HomeScreen extends FragmentActivity {
 
             registerReceiver();
             displayReceiver();
-            Log.d(TAG,"getMessage: "+Global.getMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -314,7 +314,7 @@ public class HomeScreen extends FragmentActivity {
             serverName.setText(Global.loginServer+ "  |  ");
             if(Global.ldapStatus.contains("true")){
                 loginState = "LDAP";
-            }else {
+            }else if(Global.ldapStatus.contains("false")){
                 loginState = "LOCAL";
             }
             ldapStatus.setText(loginState);
@@ -785,9 +785,7 @@ public class HomeScreen extends FragmentActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-
             try {
-
                 if (Global.connected3G || Global.connectedToWiFi
                         && Global.loginServer != "SIT") {
 
@@ -806,39 +804,10 @@ public class HomeScreen extends FragmentActivity {
                         Global.URLSwift = "http://10.54.7.214/";
                         //Global.URLSwift = "http://10.41.102.81/";
                     } else {
-                        Global.URLSwift = "http://10.54.97.227:8888/";
+                        Global.URLSwift = urlSwift;
                         //Global.URLSwift = "http://10.54.7.214/";
                         //Global.URLSwift = "http://10.41.102.70/";
                     }
-
-                /*
-                if (Global.connected3G || Global.connectedToWiFi
-                        && !DisplayUsername.contains("*")) {
-                    // if (Global.connected3G) {
-                    // Global.URLSwift = "http://10.41.102.70/";
-                    // } else {
-                    if (DisplayUsername.contentEquals("TM")) {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                    } else if (DisplayUsername.contains("*")) {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                        // Global.URLSwift = "http://58.26.233.1:8080/";
-                    } else if (DisplayUsername.contains("#")) {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.44.11.64:8090/";
-                    } else if (DisplayUsername.contains("$")) {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.106.132.7/";
-                        // Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                    } else if (DisplayUsername.contains("@")) {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.41.102.81/";
-                    } else {
-                        //Global.URLSwift = "http://10.54.7.214/";
-                        Global.URLSwift = "http://10.54.97.227:8888/";
-                        //Global.URLSwift = "http://10.41.102.70/";
-                    }*/
 
                     Serveradd = Global.URLSwift + "serverInfo.php";
 
