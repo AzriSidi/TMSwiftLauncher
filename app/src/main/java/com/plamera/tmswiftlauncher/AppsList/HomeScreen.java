@@ -36,6 +36,7 @@ import com.plamera.tmswiftlauncher.Global;
 import com.plamera.tmswiftlauncher.LauncherService;
 import com.plamera.tmswiftlauncher.MainActivity;
 import com.plamera.tmswiftlauncher.R;
+import com.plamera.tmswiftlauncher.SwiftService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -92,6 +93,7 @@ public class HomeScreen extends FragmentActivity {
     int timeout = 300000;
     IntentFilter iFilter,networkIntentFilter;
     String urlSwift = "http://10.54.97.227:8888/";
+    SwiftService swiftService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +123,7 @@ public class HomeScreen extends FragmentActivity {
 
         DisplayUsername = username;
         device = new DeviceOperate(this);
+        swiftService = new SwiftService(this);
 
         registerReceiver();
         getSwiftApp();
@@ -132,7 +135,7 @@ public class HomeScreen extends FragmentActivity {
     protected void onResume(){
         super.onResume();
         try {
-            broadcastSend();
+            swiftService.startSwift();
             CheckNetworkRunning = false;
             Global.CreateMainMenu = false;
             Global.TTreqSummDate = "";
@@ -248,9 +251,9 @@ public class HomeScreen extends FragmentActivity {
 
     @Override
     public void onDestroy(){
+        super.onDestroy();
         device.unregisterReceiver(this);
         unregisterReceiver(MyReceiver);
-        super.onDestroy();
     }
 
     public void IntentData(){
@@ -320,24 +323,6 @@ public class HomeScreen extends FragmentActivity {
             ldapStatus.setText(loginState);
         }catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void broadcastSend(){
-        try {
-            intent.setComponent(new ComponentName("my.com.tm.swift", "my.com.tmrnd.swift.LocationUpdateService"));
-            Log.d(TAG, "Starting Check TT Receiver");
-            intent.putExtra("staffID", Global.usernameBB);
-            intent.putExtra("password", Global.passwordBB);
-            intent.putExtra("imei", Global.IMEIPhone);
-            intent.putExtra("imsi", Global.IMSIsimCardPhone);
-            intent.putExtra("firmVer", Global.frmVersion);
-            intent.putExtra("serverStatus", Global.loginServer);
-            intent.putExtra("loginType", Global.UserType);
-            intent.putExtra("token", Global.getToken);
-            startService(intent);
-        }catch (Exception ex) {
-            Log.d(TAG,"BroadcastExeception: "+ex.toString());
         }
     }
 
@@ -522,9 +507,7 @@ public class HomeScreen extends FragmentActivity {
             alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 intent = new Intent();
-                intent.setComponent(new ComponentName("my.com.tm.swift",
-                        "my.com.tmrnd.swift.LocationUpdateService"));
-                stopService(intent);
+                swiftService.stopSwift();
                 intent = new Intent(HomeScreen.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_SINGLE_TOP);

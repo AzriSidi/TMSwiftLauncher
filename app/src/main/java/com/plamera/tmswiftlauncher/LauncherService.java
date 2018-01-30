@@ -67,8 +67,6 @@ public class LauncherService extends Service {
         timer.schedule(task, 0, TIMEOUT);
     }
 
-
-
     public class DeviceOperateAsync extends AsyncTask<Void, Void, String>{
 
         public DeviceOperateAsync() {

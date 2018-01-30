@@ -140,6 +140,7 @@ public class MainActivity extends Activity {
     PackageManager pm;
     int timeout = 300000;
     private Context context = MainActivity.this;
+    SwiftService swiftService;
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
@@ -179,7 +180,9 @@ public class MainActivity extends Activity {
         jwtEncode = new JwtEncode();
         jwtDecode = new JwtDecode();
         device = new DeviceOperate(this);
+        swiftService = new SwiftService(this);
 
+        swiftService.stopSwift();
         clearField();
         startAgent();
         getPackage();
