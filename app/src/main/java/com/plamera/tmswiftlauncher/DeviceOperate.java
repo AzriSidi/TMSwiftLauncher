@@ -34,7 +34,6 @@ public class DeviceOperate {
     GsmCellLocation cellLocation;
     TelephonyManager telephonyManager;
     LocationService locationService;
-    Location deviceLocation;
     int lac;
     int cid;
     String memory;
@@ -50,7 +49,6 @@ public class DeviceOperate {
     public DeviceOperate(Context context) {
         this.context = context;
         locationService = LocationServiceImpl.getInstance(context);
-        deviceLocation = locationService.getLastKnownLocation();
         telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);

@@ -977,12 +977,11 @@ public class MainActivity extends Activity {
             if (Global.loginResult) {
                 LoginParams();
             }else {
-                String mgs = ("Sorry, your Staff ID or Password does not exist in our record."
-                        + " Please contact TSSSB Support Team");
-                customBuilder
-                            .setMessage(mgs)
-                            .setPositiveButton("OK",
-                            new DialogInterface.OnClickListener() {
+                String mgs = ("Invalid Username or Password."
+                        + " Please re-enter your login info or report at : "
+                        + "http://10.45.3.139/tmdms/default");
+                customBuilder.setMessage(mgs)
+                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 public void onClick(
                                     DialogInterface dialog,
                                     int which) {

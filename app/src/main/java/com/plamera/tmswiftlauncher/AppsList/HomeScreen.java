@@ -358,7 +358,7 @@ public class HomeScreen extends FragmentActivity {
             if(Global.getLoginStatus.contains("LOGOUT")){
                 instance.pushLogout();
             }
-            if (Global.getTask.contains("0")){
+            if (Global.getTask.contains("0") && Global.getTask.contains("")){
                 notifyTask.setVisibility(View.INVISIBLE);
             }else{
                 notifyTask.setVisibility(View.VISIBLE);

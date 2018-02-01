@@ -16,7 +16,6 @@ import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import com.google.gson.Gson;
-import com.plamera.tmswiftlauncher.Preference;
 import com.plamera.tmswiftlauncher.R;
 
 public class LocationServiceImpl extends Service implements LocationListener, LocationService {
@@ -28,8 +27,6 @@ public class LocationServiceImpl extends Service implements LocationListener, Lo
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60;
     private static final String TAG = LocationServiceImpl.class.getSimpleName();
-
-    private LocationServiceImpl() {}
 
     private LocationServiceImpl(Context context) {
         this.context = context;

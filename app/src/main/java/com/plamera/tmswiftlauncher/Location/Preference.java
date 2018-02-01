@@ -1,4 +1,4 @@
-package com.plamera.tmswiftlauncher;
+package com.plamera.tmswiftlauncher.Location;
 
 import android.content.Context;
 import android.content.SharedPreferences;
