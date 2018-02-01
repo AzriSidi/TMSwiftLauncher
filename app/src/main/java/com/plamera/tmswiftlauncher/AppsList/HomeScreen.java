@@ -364,7 +364,7 @@ public class HomeScreen extends FragmentActivity {
                 notifyTask.setVisibility(View.VISIBLE);
                 notifyTask.setText(Global.getTask);
             }
-            if(Global.getQueue.contains("0")){
+            if(Global.getQueue.contains("0") && Global.getQueue.contains("")){
                 notifyQueue.setVisibility(View.INVISIBLE);
             }else {
                 notifyQueue.setVisibility(View.VISIBLE);
