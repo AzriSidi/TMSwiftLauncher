@@ -1042,7 +1042,7 @@ public class HomeScreen extends FragmentActivity {
                     myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                 }
-                if(Global.myStatus.contains("None")){
+                if(Global.myStatus.contains("None") || Global.myStatus.isEmpty()){
                     swiftService.stopSwift();
                 }else{
                     swiftService.startSwift();
