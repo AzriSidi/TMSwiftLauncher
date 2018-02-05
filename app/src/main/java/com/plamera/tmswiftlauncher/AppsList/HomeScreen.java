@@ -68,7 +68,6 @@ public class HomeScreen extends FragmentActivity {
     Boolean clicked = false;
     Boolean click = false;
     ProgressDialog pd;
-    private String myStatus = "";
     @SuppressLint("StaticFieldLeak")
     public static TextView myScroller,notifyTask,notifyQueue,
             networkProvider,signalInfo,broadcastInfo,appDetail,
@@ -138,7 +137,6 @@ public class HomeScreen extends FragmentActivity {
     protected void onResume(){
         super.onResume();
         try {
-            swiftService.startSwift();
             CheckNetworkRunning = false;
             Global.CreateMainMenu = false;
             Global.TTreqSummDate = "";
@@ -708,13 +706,13 @@ public class HomeScreen extends FragmentActivity {
             } else if (Global.ServerStatus.contains("Unknown")) {
                 myScroller.setBackgroundColor(Color.RED);
             } else {
-                if (myStatus.contains("WIFI")) {
+                if (Global.myStatus.contains("WIFI")) {
                     myScroller.setBackgroundColor(Color.parseColor("#FF8000"));
                 } else if (Global.connected3G) {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(myStatus + " | Server: "
+            myScroller.setText(Global.myStatus + " | Server: "
                     + Global.ServerStatus);
 
             // re-enable login button here
@@ -854,7 +852,7 @@ public class HomeScreen extends FragmentActivity {
                                                     .setBackgroundColor(Color.RED);
 
                                         } else {
-                                           if (myStatus.contains("WIFI")) {
+                                           if (Global.myStatus.contains("WIFI")) {
 
                                                myScroller
                                                        .setBackgroundColor(Color
@@ -870,10 +868,10 @@ public class HomeScreen extends FragmentActivity {
                                            }
 
                                        }
-                                        myScroller.setText(myStatus
+                                        myScroller.setText(Global.myStatus
                                                 + " |  Server: "
                                                 + Global.ServerStatus);
-                                        Log.d("myStatus4: ",myStatus);
+                                        Log.d("myStatus4: ",Global.myStatus);
                                     }
 
                                 });
@@ -891,7 +889,7 @@ public class HomeScreen extends FragmentActivity {
                                         public void run() {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
-                                            myScroller.setText(myStatus
+                                            myScroller.setText(Global.myStatus
                                                     + " |  Server: "
                                                     + Global.ServerStatus);
 
@@ -930,7 +928,7 @@ public class HomeScreen extends FragmentActivity {
                                                 .setBackgroundColor(Color.RED);
 
                                     } else {
-                                        if (myStatus.contains("WIFI")) {
+                                        if (Global.myStatus.contains("WIFI")) {
                                             myScroller.setBackgroundColor(Color
 
                                                     .parseColor("#FF8000"));
@@ -943,7 +941,7 @@ public class HomeScreen extends FragmentActivity {
                                         }
 
                                     }
-                                    myScroller.setText(myStatus
+                                    myScroller.setText(Global.myStatus
                                             + " |  Server: "
                                             + Global.ServerStatus);
                                 }
@@ -1044,6 +1042,12 @@ public class HomeScreen extends FragmentActivity {
                     myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                 }
+                if(Global.myStatus.contains("None")){
+                    swiftService.stopSwift();
+                }else{
+                    swiftService.startSwift();
+                }
+                Log.d(TAG,"myStatus="+Global.myStatus);
             }
         }
     }
@@ -1055,7 +1059,7 @@ public class HomeScreen extends FragmentActivity {
         String usernameBB = Global.usernameBB;
         String netPre = "";
         try {
-            myStatus = "\u00A0\u00A0\u00A0\u00A0"+usernameBB+"  |  ";
+            Global.myStatus = "\u00A0\u00A0\u00A0\u00A0"+usernameBB+"  |  ";
             ConnectivityManager connMgr = (ConnectivityManager) this
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
@@ -1104,8 +1108,8 @@ public class HomeScreen extends FragmentActivity {
                 Global.netType = activeConnPlus;
             }
 
-            myStatus += activeConnPlus;
-            myScroller.setText(myStatus + " |  Server: "
+            Global.myStatus += activeConnPlus;
+            myScroller.setText(Global.myStatus + " |  Server: "
                     + Global.ServerStatus);
 
             if (Global.ServerStatus.contains("Not Connected")) {
@@ -1188,7 +1192,7 @@ public class HomeScreen extends FragmentActivity {
                     } else {
                         Global.CanPing = false;
                         Global.ServerStatus = "Not Connected";
-                        myStatus = "Network Status: Ping Fail ";
+                        Global.myStatus = "Network Status: Ping Fail ";
 
                         Log.d("Login PingServerStatus", " ping check Not OK "
                                 + Global.MaxisRouter);
@@ -1208,7 +1212,7 @@ public class HomeScreen extends FragmentActivity {
                                             myScroller
                                                     .setBackgroundColor(Color.RED);
                                         } else {
-                                            if (myStatus.contains("WIFI")) {
+                                            if (Global.myStatus.contains("WIFI")) {
                                                 myScroller
                                                         .setBackgroundColor(Color
                                                                 .parseColor("#FF8000"));
@@ -1220,7 +1224,7 @@ public class HomeScreen extends FragmentActivity {
 
                                         }
 
-                                        myScroller.setText(myStatus + myStatus
+                                        myScroller.setText(Global.myStatus
                                                 + " |  Server: "
                                                 + Global.ServerStatus);
 
@@ -1235,7 +1239,7 @@ public class HomeScreen extends FragmentActivity {
                         " Ping check error" + e.toString());
                 Global.CanPing = false;
                 Global.ServerStatus = "Not Connected";
-                myStatus = "Network Status: Ping Fail ";
+                Global.myStatus = "Network Status: Ping Fail ";
 
                 Log.d("Login PingServerStatus", " ping check Not OK "
                         + Global.MaxisRouter);
@@ -1254,7 +1258,7 @@ public class HomeScreen extends FragmentActivity {
                                         myScroller
                                                 .setBackgroundColor(Color.RED);
                                     } else {
-                                        if (myStatus.contains("WIFI")) {
+                                        if (Global.myStatus.contains("WIFI")) {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                         } else if (Global.connected3G) {
@@ -1268,7 +1272,7 @@ public class HomeScreen extends FragmentActivity {
                                         myScroller
                                                 .setBackgroundColor(Color.RED);
                                     }
-                                    myScroller.setText(myStatus + myStatus
+                                    myScroller.setText(Global.myStatus
                                             + " |  Server: "
                                             + Global.ServerStatus);
                                 }

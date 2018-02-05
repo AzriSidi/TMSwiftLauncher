@@ -81,4 +81,5 @@ public class Global {
     public static String getQueue = "";
     public static String responseResult = "";
     public static Boolean loginResult;
+    public static String myStatus = "";
 }
