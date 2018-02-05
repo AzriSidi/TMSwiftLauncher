@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.plamera.tmswiftlauncher.DatabaseHandler;
 import com.plamera.tmswiftlauncher.DeviceOperate;
+import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Global;
 import com.plamera.tmswiftlauncher.LauncherService;
 import com.plamera.tmswiftlauncher.MainActivity;
@@ -129,6 +130,8 @@ public class HomeScreen extends FragmentActivity {
         getSwiftApp();
         IntentData();
         deviceService();
+
+        Global.status = "Online";
     }
 
     @Override
@@ -315,6 +318,10 @@ public class HomeScreen extends FragmentActivity {
             swiftVer.setText("LAUNCHER - "+Global.launcherVer + "  |  ");
             agentVer.setText("EMM - "+Global.agentVer+ "  |  ");
             serverName.setText(Global.loginServer+ "  |  ");
+            List<UserDetail> userDetails = Global.mySQLiteAdapter.getAllContacts();
+            for (UserDetail con : userDetails) {
+                Global.ldapStatus = con.get_ldap();
+            }
             if(Global.ldapStatus.contains("true")){
                 loginState = "LDAP";
             }else if(Global.ldapStatus.contains("false")){
@@ -337,7 +344,6 @@ public class HomeScreen extends FragmentActivity {
 
     public BroadcastReceiver MyReceiver = new BroadcastReceiver() {
         String TAG = "MyReceiver";
-
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
@@ -394,7 +400,6 @@ public class HomeScreen extends FragmentActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
-        Global.loginResult = false;
         Global.getToken = "";
         Global.status = "Offline";
         db.deleteContact();
@@ -499,7 +504,6 @@ public class HomeScreen extends FragmentActivity {
 
     public void logOut(View v){
         try {
-            //alert_box
             alertDialog = new AlertDialog.Builder(HomeScreen.this);
             alertDialog.setIcon(R.drawable.ic_power_white);
             alertDialog.setTitle("Sign Out...");
@@ -512,7 +516,6 @@ public class HomeScreen extends FragmentActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
-                Global.loginResult = false;
                 Global.getToken = "";
                 Global.status = "Offline";
                 db.deleteContact();
@@ -520,7 +523,6 @@ public class HomeScreen extends FragmentActivity {
             });
             alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    //nothing
                 }
             });
             alertDialog.show();

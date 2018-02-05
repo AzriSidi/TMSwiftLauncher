@@ -10,6 +10,7 @@ public class UserDb {
     public static final String KEY_ID = "id";
     public static final String KEY_USER_NAME = "staff_no";
     public static final String KEY_TOKEN = "token";
+    public static final String KEY_LDAP = "ldap_status";
     public static final String KEY_BLACK_LIST = "blacklist_number";
     public static final String KEY_FLAG = "flag";
     public static final String KEY_WL = "WL";
@@ -19,7 +20,7 @@ public class UserDb {
 
     public static final String CREATE_TABLE_LOGIN = "CREATE TABLE " + TABLE_LOGIN + "("
             + KEY_ID + " INTEGER PRIMARY KEY," + KEY_USER_NAME + " TEXT,"
-            + KEY_TOKEN + " TEXT)";
+            + KEY_TOKEN + " TEXT, "+ KEY_LDAP + " TEXT"+")";
 
     public static final String CREATE_TABLE_BLACKLIST = "CREATE TABLE "
             + TABLE_BLACKLIST + "(" + KEY_ID + " TEXT," + KEY_BLACK_LIST

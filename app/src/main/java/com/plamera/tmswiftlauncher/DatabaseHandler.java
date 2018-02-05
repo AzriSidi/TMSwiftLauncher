@@ -20,7 +20,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHandler";
     private SQLiteDatabase db;
     ContentValues values;
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "userManager";
 
     public DatabaseHandler(Context context) {
@@ -54,6 +54,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values = new ContentValues();
         values.put(UserDb.KEY_USER_NAME, userDetail.get_staffId());
         values.put(UserDb.KEY_TOKEN, userDetail.get_token());
+        values.put(UserDb.KEY_LDAP, userDetail.get_ldap());
         db.insert(UserDb.TABLE_LOGIN, null, values);
     }
 
@@ -67,6 +68,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 UserDetail userDetail = new UserDetail();
                 userDetail.set_staffId(cursor.getString(1));
                 userDetail.set_token(cursor.getString(2));
+                userDetail.set_ldap(cursor.getString(3));
                 userDetailList.add(userDetail);
             } while (cursor.moveToNext());
         }
@@ -77,6 +79,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db = this.getWritableDatabase();
         values = new ContentValues();
         values.put(UserDb.KEY_TOKEN, userDetail.get_token());
+        values.put(UserDb.KEY_LDAP, userDetail.get_ldap());
         db.update(UserDb.TABLE_LOGIN, values, UserDb.KEY_USER_NAME + " = ?",
                 new String[] { String.valueOf(userDetail.get_staffId())});
     }
@@ -114,8 +117,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return allBlackList;
     }
-
-
 
     public void insertBlackList(BlackList blackList) {
         db = this.getWritableDatabase();

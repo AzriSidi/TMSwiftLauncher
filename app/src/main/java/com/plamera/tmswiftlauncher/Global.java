@@ -27,7 +27,6 @@ public class Global {
     public static String usernameBB = "";
     public static String loginServer;
     public static String loginServerLevel;
-    public static boolean LogIn;
     public static DatabaseHandler mySQLiteAdapter;
     public static long manualID;
     public static String URLAuthenticate;
@@ -62,7 +61,6 @@ public class Global {
     public static boolean waitingForDownload;
     public static boolean upgradeInProgress;
     public static String passwordBB;
-    public static Boolean loginResult = false;
     public static String EmmStatus = "";
     public static String getToken = "";
     public static String netType = "";
@@ -73,7 +71,7 @@ public class Global {
     public static int getCid = 0;
     public static String batState = "";
     public static String getLoginStatus = "";
-    public static String status = "";
+    public static String status = "Offline";
     public static int batLvl = 0;
     public static String launcherVer = "";
     public static String agentVer = "";
@@ -82,4 +80,5 @@ public class Global {
     public static String getTask = "";
     public static String getQueue = "";
     public static String responseResult = "";
+    public static Boolean loginResult;
 }

@@ -141,6 +141,7 @@ public class MainActivity extends Activity {
     int timeout = 300000;
     private Context context = MainActivity.this;
     SwiftService swiftService;
+    long currentTime = System.currentTimeMillis();
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
@@ -167,23 +168,24 @@ public class MainActivity extends Activity {
         DisplayUsername = userField.getText().toString();
         cb_showPwd = findViewById(R.id.checkBox_ShowPassword);
         cb_showPwd.setOnCheckedChangeListener(new CheckBoxListener());
-        Global.mySQLiteAdapter = new DatabaseHandler(this);
         tel = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         dateView = findViewById(R.id.textView10);
         CheckNetworkRunning = false;
         Global.loginContext = this;
-        Global.LogIn = false;
+
         checkCurrentVersion();
         loadNdimSavedExchange();
         printNdimExchangeList();
+        clearField();
 
         jwtEncode = new JwtEncode();
         jwtDecode = new JwtDecode();
+        Global.mySQLiteAdapter = new DatabaseHandler(this);
         device = new DeviceOperate(this);
         swiftService = new SwiftService(this);
-
         swiftService.stopSwift();
-        clearField();
+
+        LoginToken();
         startAgent();
         getPackage();
         getWhiteList();
@@ -195,8 +197,8 @@ public class MainActivity extends Activity {
         super.onResume();
         customBuilder = new AlertDialog.Builder(this);
         try {
-            Log.d(TAG, "loginResult: " + Global.loginResult);
-            if (Global.loginResult.equals(true)) {
+            Log.d(TAG, "loginStatus: " + Global.status);
+            if (Global.status.equals("Online")) {
                 intentLogin();
             } else {
                 printNdimExchangeList();
@@ -295,7 +297,6 @@ public class MainActivity extends Activity {
                 DeviceDetail();
                 clearField();
                 AppVerText();
-                //LoginToken();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -624,7 +625,7 @@ public class MainActivity extends Activity {
                 Log.i("checkWhiteList", "StrData Null");
             } else {
                 int cApp = 0;
-                String blApp = "";
+                StringBuilder blApp = new StringBuilder();
                 String wlApp = "";
                 PackageManager packageManager = getPackageManager();
                 List<ApplicationInfo> applist = packageManager
@@ -652,14 +653,13 @@ public class MainActivity extends Activity {
                         if (wlApp.isEmpty()) {
                             cApp += 1;
                             if (cApp == 1) {
-                                blApp = cApp + ". " + label;
+                                blApp = new StringBuilder(cApp + ". " + label);
                             } else {
                                 if (cApp <= 21) {
                                     if (cApp == 21) {
-                                        blApp += "\n\n(More than 20 applications detected)";
+                                        blApp.append("\n\n(More than 20 applications detected)");
                                     } else {
-                                        blApp = blApp + "\n" + cApp + ". "
-                                                + label;
+                                        blApp.append("\n").append(cApp).append(". ").append(label);
                                     }
                                 }
                             }
@@ -848,7 +848,6 @@ public class MainActivity extends Activity {
                     clearField();
                 }else {
                     jwtDecode.decoded();
-                    long currentTime = System.currentTimeMillis();
                     long convExp = Long.parseLong(jwtDecode.getExp());
                     if(currentTime >= convExp){
                         customBuilder
@@ -1037,10 +1036,10 @@ public class MainActivity extends Activity {
         }
         Log.d(TAG,"MyToken="+Global.getToken);
         if (Global.mySQLiteAdapter.isLoginExists(Global.usernameBB)) {
-            Global.mySQLiteAdapter.updateContact(new UserDetail(Global.usernameBB,Global.getToken));
+            Global.mySQLiteAdapter.updateContact(new UserDetail(Global.usernameBB,Global.getToken,Global.ldapStatus));
             Log.d("QueryLogin: ", "Update");
         } else {
-            Global.mySQLiteAdapter.insertContact(new UserDetail(Global.usernameBB, Global.getToken));
+            Global.mySQLiteAdapter.insertContact(new UserDetail(Global.usernameBB,Global.getToken,Global.ldapStatus));
             Log.d("QueryLogin: ", "Insert");
         }
     }
@@ -1059,7 +1058,6 @@ public class MainActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            long currentTime = System.currentTimeMillis();
             long convExp = Long.parseLong(jwtDecode.getExp());
             if(currentTime < convExp){
                 Log.d(TAG,"Token Status=Token Valid");
@@ -1101,7 +1099,6 @@ public class MainActivity extends Activity {
         i.putExtra("loginServer",Global.loginServer);
         i.putExtra("loginType",Global.UserType);
         i.putExtra("strVersion",Global.strVersion);
-        Global.status = "Online";
         context.startActivity(i);
     }
 
