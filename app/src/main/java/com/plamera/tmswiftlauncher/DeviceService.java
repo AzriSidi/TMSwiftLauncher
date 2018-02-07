@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class SwiftService {
+public class DeviceService {
     Context context;
     Intent intent;
     String TAG = "SwiftService";
+    DatabaseHandler db;
 
-    public SwiftService(Context context) {
+    public DeviceService(Context context) {
+        db = new DatabaseHandler(context);
         this.context = context;
     }
 
@@ -37,6 +39,26 @@ public class SwiftService {
         intent.setComponent(new ComponentName("my.com.tm.swift",
                 "my.com.tmrnd.swift.LocationUpdateService"));
         context.stopService(intent);
+    }
+
+    public void startTrackLog(){
+        try {
+            intent = new Intent(context, TrackLogService.class);
+            context.startService(intent);
+        }catch (Exception ex){
+            Log.d(TAG,"broadcastExeception: "+ex.toString());
+        }
+    }
+
+    public void logOut(){
+        intent = new Intent();
+        intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+        Global.getToken = "";
+        Global.status = "Offline";
+        db.deleteContact();
     }
 }
 

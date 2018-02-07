@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class LauncherService extends Service {
+public class TrackLogService extends Service {
     private static String LOG_TAG;
     private Context context;
     DeviceOperate device;

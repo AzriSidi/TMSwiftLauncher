@@ -95,7 +95,7 @@
             android:theme="@style/AppTheme.ActionBar.Transparent">
         </activity>
         <service
-            android:name=".LauncherService"
+            android:name=".TrackLogService"
             android:exported="true"
             android:permission="true">
         </service>

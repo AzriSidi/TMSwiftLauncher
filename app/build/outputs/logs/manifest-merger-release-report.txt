@@ -261,7 +261,7 @@ ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\A
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:95:13-66
 	android:name
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:93:13-75
-service#com.plamera.tmswiftlauncher.LauncherService
+service#com.plamera.tmswiftlauncher.TrackLogService
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:97:9-101:19
 	android:exported
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:99:13-36

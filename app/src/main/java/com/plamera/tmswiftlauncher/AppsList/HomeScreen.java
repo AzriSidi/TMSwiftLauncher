@@ -34,10 +34,8 @@ import com.plamera.tmswiftlauncher.DatabaseHandler;
 import com.plamera.tmswiftlauncher.DeviceOperate;
 import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Global;
-import com.plamera.tmswiftlauncher.LauncherService;
-import com.plamera.tmswiftlauncher.MainActivity;
 import com.plamera.tmswiftlauncher.R;
-import com.plamera.tmswiftlauncher.SwiftService;
+import com.plamera.tmswiftlauncher.DeviceService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -93,7 +91,7 @@ public class HomeScreen extends FragmentActivity {
     int timeout = 300000;
     IntentFilter iFilter,networkIntentFilter;
     String urlSwift = "http://10.54.97.227:8888/";
-    SwiftService swiftService;
+    DeviceService deviceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,13 +121,13 @@ public class HomeScreen extends FragmentActivity {
 
         DisplayUsername = username;
         device = new DeviceOperate(this);
-        swiftService = new SwiftService(this);
+        deviceService = new DeviceService(this);
 
         registerReceiver();
         getSwiftApp();
         IntentData();
-        deviceService();
-
+        deviceService.startSwift();
+        deviceService.startTrackLog();
         Global.status = "Online";
     }
 
@@ -141,19 +139,6 @@ public class HomeScreen extends FragmentActivity {
             Global.CreateMainMenu = false;
             Global.TTreqSummDate = "";
             Global.FFreqSummDate = "";
-            networkStateReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    CheckNetworkRunning = false;
-                    checkServerRunning = false;
-                    Global.CanPing = true;
-                    queryNetwork();
-                    deviceState();
-                }
-            };
-            networkIntentFilter = new IntentFilter(
-                    ConnectivityManager.CONNECTIVITY_ACTION);
-            registerReceiver(networkStateReceiver, networkIntentFilter);
 
             CheckNetworkTimer = new Timer();
             CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 5000);
@@ -207,9 +192,7 @@ public class HomeScreen extends FragmentActivity {
                     WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
             logininvisible = false;
-
             Global.LogAsAdmin = false;
-
             // 2014-09-25 amir debug
             Global.lastAlertTime = new Date(1977, 4, 17);
             // moved to here by amir 2013-01-14
@@ -229,10 +212,23 @@ public class HomeScreen extends FragmentActivity {
                             "FirstTimeRunLogin true & InitTaskRunning false");
                     pdinit = ProgressDialog.show(HomeScreen.this, "",
                             "Please wait for system initialization");
-
                     (new InitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }
+
+            networkStateReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    CheckNetworkRunning = false;
+                    checkServerRunning = false;
+                    Global.CanPing = true;
+                    queryNetwork();
+                    deviceState();
+                }
+            };
+            networkIntentFilter = new IntentFilter(
+                    ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(networkStateReceiver, networkIntentFilter);
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("Login", "Error onstart " + e.toString());
@@ -242,11 +238,7 @@ public class HomeScreen extends FragmentActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        try {
-            unregisterReceiver(networkStateReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        unregisterReceiver(networkStateReceiver);
         CheckNetworkTimer.cancel();
     }
 
@@ -328,15 +320,8 @@ public class HomeScreen extends FragmentActivity {
             ldapStatus.setText(loginState);
         }catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void deviceService(){
-        try {
-            intent = new Intent(this, LauncherService.class);
-            startService(intent);
-        }catch (Exception ex){
-            Log.d(TAG,"broadcastExeception: "+ex.toString());
+        }catch (NullPointerException e) {
+           Log.e(TAG,"NullPointerException: "+e);
         }
     }
 
@@ -349,7 +334,7 @@ public class HomeScreen extends FragmentActivity {
                 Global.getTask = intent.getStringExtra("dataTask");
                 Global.getQueue = intent.getStringExtra("dataQueue");
                 Global.getLoginStatus = intent.getStringExtra("loginStatus");
-                Log.d(TAG,"getMessage: "+Global.getMessage);
+                Log.d(TAG,"getTask: "+Global.getTask);
                 displayReceiver();
             }catch (NullPointerException ex){
                 Log.d(TAG,"Exception: "+ex);
@@ -362,13 +347,13 @@ public class HomeScreen extends FragmentActivity {
             if(Global.getLoginStatus.contains("LOGOUT")){
                 instance.pushLogout();
             }
-            if (Global.getTask.contains("0") && Global.getTask.contains("")){
+            if (Global.getTask.contains("0") || Global.getTask.isEmpty()){
                 notifyTask.setVisibility(View.INVISIBLE);
             }else{
                 notifyTask.setVisibility(View.VISIBLE);
                 notifyTask.setText(Global.getTask);
             }
-            if(Global.getQueue.contains("0") && Global.getQueue.contains("")){
+            if(Global.getQueue.contains("0") || Global.getQueue.isEmpty()){
                 notifyQueue.setVisibility(View.INVISIBLE);
             }else {
                 notifyQueue.setVisibility(View.VISIBLE);
@@ -391,17 +376,8 @@ public class HomeScreen extends FragmentActivity {
     }
 
     public void pushLogout() {
-        intent = new Intent();
-        intent.setComponent(new ComponentName("my.com.tm.swift", "my.com.tmrnd.swift.LocationUpdateService"));
-        stopService(intent);
-        intent = new Intent(this,MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        Global.getToken = "";
-        Global.status = "Offline";
-        db.deleteContact();
-        finish();
+        deviceService.stopSwift();
+        deviceService.logOut();
     }
 
     private class MyPhoneStateListener extends PhoneStateListener {
@@ -508,15 +484,8 @@ public class HomeScreen extends FragmentActivity {
             alertDialog.setMessage("Do you want to sign out?");
             alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                intent = new Intent();
-                swiftService.stopSwift();
-                intent = new Intent(HomeScreen.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                Global.getToken = "";
-                Global.status = "Offline";
-                db.deleteContact();
+                    deviceService.stopSwift();
+                    deviceService.logOut();
                 }
             });
             alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1028,26 +997,15 @@ public class HomeScreen extends FragmentActivity {
     class CheckNetworkTimerMethod extends TimerTask {
         public void run() {
             getLocalIP();
-
             if (!CheckNetworkRunning) {
                 CheckNetworkRunning = true;
                 if (Global.connectedToWiFi) {
-
                     CheckServerStatus myCheckServerStatus = new HomeScreen.CheckServerStatus();
                     myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
                 } else if (Global.connected3G) {
-
                     CheckServerStatus myCheckServerStatus = new HomeScreen.CheckServerStatus();
                     myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
                 }
-                if(Global.myStatus.contains("None") || Global.myStatus.isEmpty()){
-                    swiftService.stopSwift();
-                }else{
-                    swiftService.startSwift();
-                }
-                Log.d(TAG,"myStatus="+Global.myStatus);
             }
         }
     }

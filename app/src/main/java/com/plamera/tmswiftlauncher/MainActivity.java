@@ -140,7 +140,7 @@ public class MainActivity extends Activity {
     PackageManager pm;
     int timeout = 300000;
     private Context context = MainActivity.this;
-    SwiftService swiftService;
+    DeviceService deviceService;
     long currentTime = System.currentTimeMillis();
 
     //url
@@ -182,8 +182,6 @@ public class MainActivity extends Activity {
         jwtDecode = new JwtDecode();
         Global.mySQLiteAdapter = new DatabaseHandler(this);
         device = new DeviceOperate(this);
-        swiftService = new SwiftService(this);
-        swiftService.stopSwift();
 
         LoginToken();
         startAgent();
@@ -394,7 +392,6 @@ public class MainActivity extends Activity {
         }
         return versionName;
     }
-
 
     public String AgentVer() {
         String versionName = "";
@@ -676,19 +673,15 @@ public class MainActivity extends Activity {
                             "Unauthorized applications have been detected:\n")
                             .append("\n").append(blApp).append("\n")
                             .append("   ");
-                    AlertDialog.Builder customBuilder = new AlertDialog.Builder(
-                            this);
-                    customBuilder
-                            .setTitle("Warning!")
-                            .setMessage(build.toString())
-                            .setPositiveButton("OK",
+                    AlertDialog customBuilder = new AlertDialog.Builder(this).create();
+                    customBuilder.setTitle("Warning!");
+                    customBuilder.setMessage(build.toString());
+                    customBuilder.setButton("OK",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(
                                                 DialogInterface dialog,
                                                 int which) {
                                             dialog.dismiss();
-
-                                            // finish();
                                         }
                                     });
                     customBuilder.show();
@@ -1002,8 +995,7 @@ public class MainActivity extends Activity {
 
     public void LoginParams(){
         try {
-            objLogin = new JSONObject(Global.responseResult);
-            if(Global.responseResult.contains("LdapStatus")){
+                objLogin = new JSONObject(Global.responseResult);
                 Global.ldapStatus = objLogin.getString("LdapStatus");
                 Global.staffIcNo = objLogin.getString("IcNo");
                 Global.staffName = objLogin.getString("StaffName");
@@ -1015,18 +1007,6 @@ public class MainActivity extends Activity {
                 Global.getToken = jwtEncode.creteToken();
                 intentLogin();
                 SuccessCallBack("Successfully Login");
-            }else{
-                Global.staffIcNo = objLogin.getString("IcNo");
-                Global.staffName = objLogin.getString("StaffName");
-                Global.AppVersion = objLogin.getString("AppName");
-                Global.AppCode = objLogin.getString("AppVersion");
-                Global.AppVersionLink = objLogin.getString("AppVersionLink");
-                Global.AppSize = objLogin.getString("AppSize");
-                Global.UserType = objLogin.getString("LoginStatus");
-                Global.getToken = jwtEncode.creteToken();
-                intentLogin();
-                SuccessCallBack("Successfully Login");
-            }
         }catch (JSONException e){
             Log.e("JSONException: ",e.toString());
         }catch (NullPointerException e){
@@ -1496,15 +1476,13 @@ public class MainActivity extends Activity {
         try {
             // unregisterReceiver(mIntentReceiver);
             // cancel current download if exiting bumblebee
+            device.unregisterReceiver(this);
             if (Global.waitingForDownload) {
                 Global.waitingForDownload = false;
                 Global.updateReady = false;
                 DownloadManager myDM = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
                 myDM.remove(Global.downloadID);
             }
-            // Global.mySQLiteAdapter.close();
-            // unregisterReceiver(networkStateReceiver);
-            // unregisterReceiver(downloadReceiver);
         } catch (Exception e) {
             e.printStackTrace();
         }
