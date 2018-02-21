@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.app.DownloadManager.Request;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -107,7 +106,6 @@ public class MainActivity extends Activity {
     Handler handler;
     MyPhoneStateListener MyListener;
     private String savePath = Environment.getExternalStorageDirectory() + "/";
-    private Boolean UMDownload = false;
     public boolean logininvisible = false;
     private Boolean InitTaskRunning = false;
     private static ProgressDialog pdinit;
@@ -140,14 +138,12 @@ public class MainActivity extends Activity {
     PackageManager pm;
     int timeout = 300000;
     private Context context = MainActivity.this;
-    DeviceService deviceService;
     long currentTime = System.currentTimeMillis();
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
     String urlSwift = "http://10.54.97.227:8888/";
     String urlConfig = "http://10.54.97.227:9763/EMMWebService/device_config";
-    String UMupdateURL = "http://10.54.97.227:8888/MobileManual/umv650.pdf";
 
     @SuppressLint("PackageManagerGetSignatures")
     @Override
@@ -567,13 +563,14 @@ public class MainActivity extends Activity {
             }else {
                 signalInfo.setText("Not available");
             }
+
             //firmware
             Global.frmVersion = Build.DISPLAY;
             firmWare = findViewById(R.id.textView8);
             firmWare.setText(Global.frmVersion);
 
         } catch (Exception e) {
-            Log.d("DeviceDetail",e.toString());
+            Log.d("Exception",e.toString());
         }
     }
 
@@ -1334,48 +1331,36 @@ public class MainActivity extends Activity {
     }
 
     public void helpBtn(View v){
-        File f = new File("/sdcard/umv650.pdf");
-        Log.d("Login", "fileexist=" + f.exists());
-        if (!f.exists()) {
-            try {
-                if (UMDownload == false) {
-                    UMDownload = true;
-                    Toast.makeText(
-                            MainActivity.this,
-                            "Please wait while downloading the user manual..",
-                            Toast.LENGTH_SHORT).show();
-                    Log.d("Login", "Download manual="+ UMupdateURL);
-                    final File UMtemp = new File(savePath + "umv650.pdf");
-                    DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                    Uri uri = Uri.parse(UMupdateURL);
-                    Request request = new Request(uri);
-                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE
-                            | DownloadManager.Request.NETWORK_WIFI);
-                    request.setDestinationUri(Uri.fromFile(UMtemp));
-                    Global.manualID = downloadManager.enqueue(request);
-                    Log.d("Login", "Download manual " +Global.manualID);
-                }
-            } catch (Exception e) {
-                UMDownload = false;
-                Log.d("Login", "Download manual error " + e.toString());
-            }
-        } else {
-            try {
-                 Uri path = Uri
-                          .fromFile(new File("/sdcard/umv650.pdf"));
-                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                 intent.setDataAndType(path, "application/pdf");
-                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                 startActivity(intent);
-            } catch (Exception e) {
-                 Log.e(TAG, "Open PDF " + e.toString());
-            }
-        }
+        helpPopUp();
     }
 
     public void Dialer(View v){
         Intent launchDialer = getPackageManager().getLaunchIntentForPackage("com.android.dialer");
         startActivity(launchDialer);
+    }
+
+    public void helpPopUp(){
+        final String url = "http://10.45.3.139/tmdms/default";
+        String title = "How to use CMS:";
+        String mgs = "1. Goto "+url+"\n"
+                + "2. Click On Contact Us\n"
+                + "3. Key In Swift ID\n"
+                + "4. If Swift ID Valid, e.g TM35170, Problem " +
+                "\u00A0\u00A0\u00A0\u00A0Type will be enabled\n"
+                + "5. Select Problem Type\n"
+                + "6. Select Sub Problem Type\n"
+                + "7. Enter Detail Problem Description\n"
+                + "8. Click Submit\n";
+        customBuilder.setTitle(title);
+        customBuilder.setMessage(mgs)
+                .setPositiveButton("Go Link", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int which) {
+                        dialog.dismiss();
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(browserIntent);
+                    }
+                });
+        customBuilder.show();
     }
 
     public void clearField(){

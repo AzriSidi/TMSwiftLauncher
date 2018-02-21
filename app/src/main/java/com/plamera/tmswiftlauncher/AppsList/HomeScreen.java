@@ -390,8 +390,7 @@ public class HomeScreen extends FragmentActivity {
             asuLevel = signalStrength.getGsmSignalStrength();
             dbmLevel = (signalStrength.getGsmSignalStrength() * 2) - 113;
             signal = dbmLevel + " dBm"+ " " +asuLevel+" asu";
-            Log.d("SignalStrengthApp",signal);
-                signalInfo.setText(" | "+signal);
+            signalInfo.setText(" | "+signal);
         }
 
         @Override
