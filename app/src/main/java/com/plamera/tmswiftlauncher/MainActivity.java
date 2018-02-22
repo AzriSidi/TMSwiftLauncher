@@ -28,7 +28,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -89,10 +88,10 @@ import java.util.TimerTask;
 public class MainActivity extends Activity {
     EditText userField, passField;
     TelephonyManager tel;
-    TextView imei,imsi,firmWare,dateView,myScroller,
+    TextView output,firmWare,dateView,myScroller,
             signalInfo,launchVer,agentVer;
     Intent i;
-    String imeiValue, imsiValue;
+    String imeiValue, imsiValue ,carrierName;
     String Serveradd, ServerName;
     Boolean checkServerRunning = false;
     Boolean CheckNetworkRunning = false;
@@ -153,11 +152,11 @@ public class MainActivity extends Activity {
         image = findViewById(R.id.imageView1);
         image.setImageResource(R.drawable.tmswift_white);
         myScroller = findViewById(R.id.textView5);
+        firmWare = findViewById(R.id.textView7);
         signalInfo = findViewById(R.id.textView11);
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
-        imei = findViewById(R.id.textView1);
-        imsi = findViewById(R.id.textView2);
+        output = findViewById(R.id.textView2);
         launchVer = findViewById(R.id.textView23);
         agentVer = findViewById(R.id.textView24);
 
@@ -208,12 +207,14 @@ public class MainActivity extends Activity {
                         checkServerRunning = false;
                         Global.CanPing = true;
                         queryNetwork();
+                        DeviceDetail();
                     }
                 };
                 IntentFilter networkIntentFilter = new IntentFilter(
                         ConnectivityManager.CONNECTIVITY_ACTION);
                 registerReceiver(networkStateReceiver, networkIntentFilter);
                 queryNetwork();
+                DeviceDetail();
                 CheckNetworkTimer = new Timer();
                 CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 5000);
                 getWSWhiteList getWS = new getWSWhiteList();
@@ -288,7 +289,6 @@ public class MainActivity extends Activity {
                 String dateString = sdf.format(date);
                 dateView.setText(dateString);
 
-                DeviceDetail();
                 clearField();
                 AppVerText();
             }
@@ -502,54 +502,39 @@ public class MainActivity extends Activity {
 
     }
 
+    @SuppressLint("MissingPermission")
     private void DeviceDetail() {
         try {
             //imei
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
             imeiValue = tel.getDeviceId();
             Log.d(TAG,"ImeiCheck: "+imeiValue);
             if(imeiValue == null){
                 Global.IMEIPhone = "-";
-                imei.setText("Not Available");
             }else{
-                imei.setText(imeiValue);
                 Global.IMEIPhone = imeiValue;
             }
             //imsi
             imsiValue = tel.getSimSerialNumber();
-            Global.IMSIsimCardPhone = imsiValue;
             if (imsiValue == null){
-                AlertDialog.Builder builder = new AlertDialog.Builder(
-                        MainActivity.this);
-                builder.setMessage(
-                        "No IMSI detected. Please check your sim card")
-                        .setCancelable(false)
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int id) {
-
-                                        dialog.dismiss();
-                                        //finish();
-                                    }
-                                });
-                AlertDialog alert = builder.create();
-                alert.show();
-                imsi.setText("Not available");
+                noImsiPopUp();
                 Global.IMSIsimCardPhone = "-";
             }else{
-                imsi.setText(imsiValue);
                 Global.IMSIsimCardPhone = imsiValue;
             }
+
+            carrierName = tel.getNetworkOperatorName();
+            if(carrierName.equals("")){
+                carrierName = "Not Available";
+            }
+            //firmware
+            Global.frmVersion = Build.DISPLAY;
+            firmWare.setText("Firmware: "+Global.frmVersion+" | "+carrierName+" | "+getLocalIP()+" | ");
+            firmWare.setBackgroundColor(Color.parseColor("#595959"));
+
+            //output
+            output.setText("Imsi: "+Global.IMSIsimCardPhone+" | Imei: "+Global.IMEIPhone);
+            output.setBackgroundColor(Color.parseColor("#595959"));
+
             //Signal_Strength
             int simState = tel.getSimState();
             switch (simState) {
@@ -563,15 +548,28 @@ public class MainActivity extends Activity {
             }else {
                 signalInfo.setText("Not available");
             }
-
-            //firmware
-            Global.frmVersion = Build.DISPLAY;
-            firmWare = findViewById(R.id.textView8);
-            firmWare.setText(Global.frmVersion);
-
         } catch (Exception e) {
             Log.d("Exception",e.toString());
         }
+    }
+
+    public void noImsiPopUp(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                MainActivity.this);
+        builder.setMessage(
+                "No IMSI detected. Please check your sim card")
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+
+                                dialog.dismiss();
+                                //finish();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public static class EmmReceiver extends BroadcastReceiver {
@@ -1550,7 +1548,7 @@ public class MainActivity extends Activity {
             Log.d(TAG,"netType="+Global.netType);
 
             myStatus += activeConnPlus;
-            myScroller.setText(myStatus + " |  Server: "
+            myScroller.setText(myStatus + "  |  Server: "
                     + Global.ServerStatus);
 
             if(Global.connected3G){
@@ -1647,7 +1645,7 @@ public class MainActivity extends Activity {
         } catch (Exception ex) {
             Log.e("getLocalIP", ex.toString());
         }
-        return "";
+        return "Not available";
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1767,7 +1765,7 @@ public class MainActivity extends Activity {
                                         }
 
                                         myScroller.setText(myStatus
-                                                + " |  Server: "
+                                                + "  |  Server: "
                                                 + Global.ServerStatus);
 
                                     }
@@ -1788,7 +1786,7 @@ public class MainActivity extends Activity {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                             myScroller.setText(myStatus
-                                                    + " |  Server: "
+                                                    + "  |  Server: "
                                                     + Global.ServerStatus);
                                         }
 
@@ -1840,7 +1838,7 @@ public class MainActivity extends Activity {
                                     }
 
                                     myScroller.setText(myStatus
-                                            + " |  Server: "
+                                            + "  |  Server: "
                                             + Global.ServerStatus);
 
                                 }
@@ -1979,7 +1977,7 @@ public class MainActivity extends Activity {
                                         }
 
                                         myScroller.setText(myStatus
-                                                + " |  Server: "
+                                                + "  |  Server: "
                                                 + Global.ServerStatus);
 
                                     }
@@ -2027,7 +2025,7 @@ public class MainActivity extends Activity {
                                                 .setBackgroundColor(Color.RED);
                                     }
                                     myScroller.setText(myStatus
-                                            + " |  Server: "
+                                            + "  |  Server: "
                                             + Global.ServerStatus);
 
                                 }
@@ -2044,7 +2042,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Void result) {
             if (Global.CanPing) {
                 queryNetwork();
-
+                DeviceDetail();
             } else {
                 CheckNetworkRunning = false;
                 if (checkServerRunning) {
@@ -2074,7 +2072,7 @@ public class MainActivity extends Activity {
                 Global.LogAsAdmin = false;
             }
             queryNetwork();
-
+            DeviceDetail();
         }
 
         @Override
@@ -2242,7 +2240,7 @@ public class MainActivity extends Activity {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(myStatus + " | Server: "
+            myScroller.setText(myStatus + "|Server: "
                     + Global.ServerStatus);
 
             // re-enable login button here

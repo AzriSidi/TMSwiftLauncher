@@ -102,10 +102,10 @@ public class HomeScreen extends FragmentActivity {
 
         ImageView image = findViewById(R.id.imageView);
         image.setImageResource(R.drawable.tm_white);
-        userName = findViewById(R.id.textView);
+        //userName = findViewById(R.id.textView);
         myScroller = findViewById(R.id.textView1);
         networkProvider = findViewById(R.id.textView2);
-        signalInfo = findViewById(R.id.textView3);
+        //signalInfo = findViewById(R.id.textView3);
         broadcastInfo = findViewById(R.id.textView4);
         signalInfo = findViewById(R.id.textView7);
         phoneInfo = findViewById(R.id.textView8);
@@ -290,7 +290,6 @@ public class HomeScreen extends FragmentActivity {
             phoneInfo.setText(" | Not available");
         }
 
-        Log.d("getLocalIP: ",getLocalIP());
         if(carrierName.equals("")){
             networkProvider.setText("Not available"+" | "+getLocalIP());
         }else {
