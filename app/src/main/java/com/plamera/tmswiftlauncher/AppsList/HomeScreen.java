@@ -34,7 +34,7 @@ import com.plamera.tmswiftlauncher.DatabaseHandler;
 import com.plamera.tmswiftlauncher.DeviceOperate;
 import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Global;
-import com.plamera.tmswiftlauncher.Provider.PhoneState;
+import com.plamera.tmswiftlauncher.PhoneState;
 import com.plamera.tmswiftlauncher.R;
 import com.plamera.tmswiftlauncher.DeviceService;
 

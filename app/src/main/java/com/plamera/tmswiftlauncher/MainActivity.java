@@ -47,7 +47,6 @@ import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Encap.WhileList;
 import com.plamera.tmswiftlauncher.JwtUtil.JwtDecode;
 import com.plamera.tmswiftlauncher.JwtUtil.JwtEncode;
-import com.plamera.tmswiftlauncher.Provider.PhoneState;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

@@ -1,4 +1,4 @@
-package com.plamera.tmswiftlauncher.Provider;
+package com.plamera.tmswiftlauncher;
 
 import android.app.Activity;
 import android.telephony.PhoneStateListener;
@@ -8,8 +8,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.plamera.tmswiftlauncher.AppsList.HomeScreen;
-import com.plamera.tmswiftlauncher.MainActivity;
-import com.plamera.tmswiftlauncher.R;
 
 public class PhoneState extends PhoneStateListener {
     int dbmLevel;
