@@ -34,6 +34,7 @@ import com.plamera.tmswiftlauncher.DatabaseHandler;
 import com.plamera.tmswiftlauncher.DeviceOperate;
 import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Global;
+import com.plamera.tmswiftlauncher.Provider.PhoneState;
 import com.plamera.tmswiftlauncher.R;
 import com.plamera.tmswiftlauncher.DeviceService;
 
@@ -282,8 +283,7 @@ public class HomeScreen extends FragmentActivity {
                 break;
         }
         if(SimState == null){
-            MyListener = new HomeScreen.MyPhoneStateListener();
-            tel.listen(MyListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS
+            tel.listen(new PhoneState(this), PhoneStateListener.LISTEN_SIGNAL_STRENGTHS
                     | PhoneStateListener.LISTEN_SERVICE_STATE);
         }else {
             signalInfo.setText(" | Not available");
@@ -291,9 +291,9 @@ public class HomeScreen extends FragmentActivity {
         }
 
         if(carrierName.equals("")){
-            networkProvider.setText("Not available"+" | "+getLocalIP());
+            networkProvider.setText("Not available"+" | "+getLocalIP()+" | ");
         }else {
-            networkProvider.setText(carrierName+" | "+getLocalIP());
+            networkProvider.setText(carrierName+" | "+getLocalIP()+" | ");
         }
     }
 

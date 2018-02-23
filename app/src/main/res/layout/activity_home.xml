@@ -113,11 +113,10 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="450dp"
-        android:layout_height="100dp"
-        app:srcCompat="@drawable/tmswift_white"
+        android:layout_width="280dp"
+        android:layout_height="180dp"
+        app:srcCompat="@drawable/tm_vector"
         android:contentDescription="@string/app_name"
-        android:layout_marginTop="30dp"
         android:layout_below="@+id/relativeLayout6"
         android:layout_centerHorizontal="true" />
 <RelativeLayout
@@ -182,7 +181,7 @@
         android:text="@string/output"
         android:textSize="60sp"
         tools:targetApi="jelly_bean_mr1"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:layout_below="@+id/imageView1"
         android:layout_centerHorizontal="true" />
 
@@ -219,8 +218,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#ffff"
-            android:textSize="17dp"
-            android:text="output"
+            android:textSize="17sp"
+            android:text="@string/output"
             android:textStyle="bold"
             android:layout_alignParentTop="true" />
 
@@ -263,7 +262,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:layout_marginTop="130dp">
+        android:layout_marginTop="140dp">
         <TableRow
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"

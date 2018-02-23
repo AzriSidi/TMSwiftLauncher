@@ -13,14 +13,16 @@
         android:paddingBottom="@dimen/activity_vertical_margin_botton"
         android:id="@+id/relativeLayout2"
         android:layout_alignParentStart="true">
+
         <fragment
             android:id="@+id/apps_grid"
+            android:name="com.plamera.tmswiftlauncher.AppsList.AppsGridFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="com.plamera.tmswiftlauncher.AppsList.AppsGridFragment"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="13dp"
+            android:layout_marginBottom="40dp" />
 
     </RelativeLayout>
 
@@ -35,7 +37,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:layout_marginRight="@dimen/margin_left_right"
-            android:layout_marginLeft="@dimen/margin_left_right">
+            android:layout_marginLeft="@dimen/margin_left_right"
+            tools:ignore="UselessParent">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -99,7 +102,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="160dp"
+        android:layout_height="200dp"
         android:background="@layout/rectangle_widget"
         android:id="@+id/relativeLayout3"
         android:layout_alignParentBottom="true"
@@ -164,10 +167,10 @@
             android:id="@+id/textView15"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="56dp"
+            android:layout_alignStart="@+id/btnTask"
+            android:layout_below="@+id/btnTask"
             android:text="My Task"
+            android:layout_marginLeft="8dp"
             android:textColor="#ffff"
             android:textSize="13dp" />
 
@@ -205,7 +208,6 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
     </RelativeLayout>
-
     <TextView
         android:id="@+id/badge_notification_1"
         android:layout_width="wrap_content"
@@ -241,35 +243,25 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="855dp"
         android:layout_alignParentStart="true">
-        <TextView
-            android:id="@+id/textView1"
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="23dp"
-            android:text="Output"
-            android:textColor="#ffff"
-            android:textSize="16dp"
-            android:layout_marginTop="1dp"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true" />
+            android:background="#fff">
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="15dp"
+                android:text="Output"
+                android:textColor="#000"
+                android:textSize="16dp" />
+        </RelativeLayout>
     </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="23dp"
-        android:background="#fff"
-        android:layout_below="@+id/relativeLayout2"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="14dp">
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Output"
-            android:textColor="#000"
-            android:textSize="16dp"
-            android:layout_marginLeft="15dp"
-            android:visibility="invisible"
-            android:layout_alignParentEnd="true" />
-    </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="22dp"
@@ -290,7 +282,7 @@
             android:id="@+id/textView7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Output"
+            android:text="@string/output"
             android:textColor="#000"
             android:textSize="16dp"
             android:layout_alignParentTop="true"
@@ -299,10 +291,44 @@
             android:id="@+id/textView8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Output"
+            android:text="@string/output"
             android:textColor="#000"
             android:textSize="16dp"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/textView7" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="23dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/badge_notification_1"
+        android:layout_marginTop="72dp"
+        android:background="#fff">
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginLeft="15dp"
+            android:text="Output"
+            android:textColor="#000"
+            android:textSize="16dp"
+            android:visibility="invisible" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="23dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="43dp"
+            android:text="@string/output"
+            android:textColor="#ffff"
+            android:textSize="16dp" />
     </RelativeLayout>
 </RelativeLayout>

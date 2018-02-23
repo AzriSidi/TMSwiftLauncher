@@ -29,7 +29,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.telephony.PhoneStateListener;
-import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
@@ -48,6 +47,7 @@ import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Encap.WhileList;
 import com.plamera.tmswiftlauncher.JwtUtil.JwtDecode;
 import com.plamera.tmswiftlauncher.JwtUtil.JwtEncode;
+import com.plamera.tmswiftlauncher.Provider.PhoneState;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -100,10 +100,9 @@ public class MainActivity extends Activity {
     Timer CheckNetworkTimer;
     String DisplayUsername;
     BroadcastReceiver networkStateReceiver;
-    String username, password, jsonStr, signal;
+    String username, password, jsonStr;
     HttpHandler sh;
     Handler handler;
-    MyPhoneStateListener MyListener;
     private String savePath = Environment.getExternalStorageDirectory() + "/";
     public boolean logininvisible = false;
     private Boolean InitTaskRunning = false;
@@ -129,7 +128,6 @@ public class MainActivity extends Activity {
     AlertDialog.Builder customBuilder;
     String SimState;
     ImageView image;
-    DeviceOperate device;
     Intent intent;
     JwtEncode jwtEncode;
     JwtDecode jwtDecode;
@@ -138,6 +136,8 @@ public class MainActivity extends Activity {
     int timeout = 300000;
     private Context context = MainActivity.this;
     long currentTime = System.currentTimeMillis();
+    DeviceOperate deviceOperate;
+    DeviceInfo deviceInfo;
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
@@ -150,10 +150,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         image = findViewById(R.id.imageView1);
-        image.setImageResource(R.drawable.tmswift_white);
+        image.setImageResource(R.drawable.tm_vector);
         myScroller = findViewById(R.id.textView5);
         firmWare = findViewById(R.id.textView7);
-        signalInfo = findViewById(R.id.textView11);
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
         output = findViewById(R.id.textView2);
@@ -176,7 +175,7 @@ public class MainActivity extends Activity {
         jwtEncode = new JwtEncode();
         jwtDecode = new JwtDecode();
         Global.mySQLiteAdapter = new DatabaseHandler(this);
-        device = new DeviceOperate(this);
+        deviceOperate = new DeviceOperate(this);
 
         LoginToken();
         startAgent();
@@ -526,14 +525,14 @@ public class MainActivity extends Activity {
             if(carrierName.equals("")){
                 carrierName = "Not Available";
             }
+            //output
+            output.setText("Imsi: "+Global.IMSIsimCardPhone+"  |  Imei: "+Global.IMEIPhone);
+            output.setBackgroundColor(Color.parseColor("#595959"));
+
             //firmware
             Global.frmVersion = Build.DISPLAY;
             firmWare.setText("Firmware: "+Global.frmVersion+" | "+carrierName+" | "+getLocalIP()+" | ");
             firmWare.setBackgroundColor(Color.parseColor("#595959"));
-
-            //output
-            output.setText("Imsi: "+Global.IMSIsimCardPhone+" | Imei: "+Global.IMEIPhone);
-            output.setBackgroundColor(Color.parseColor("#595959"));
 
             //Signal_Strength
             int simState = tel.getSimState();
@@ -543,8 +542,7 @@ public class MainActivity extends Activity {
                     break;
             }
             if(SimState == null){
-                MyListener = new MyPhoneStateListener();
-                tel.listen(MyListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+                tel.listen(new PhoneState(this), PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
             }else {
                 signalInfo.setText("Not available");
             }
@@ -686,21 +684,6 @@ public class MainActivity extends Activity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private class MyPhoneStateListener extends PhoneStateListener {
-        int dbmLevel;
-        int asuLevel;
-
-        @Override
-        public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-            asuLevel = signalStrength.getGsmSignalStrength();
-            dbmLevel = (signalStrength.getGsmSignalStrength() * 2) - 113;
-            signal = dbmLevel + " dBm"+ " " +asuLevel+" asu";
-            signalInfo.setText(signal);
-            Log.d(TAG,"SignalStrengthCheck: "+signal);
-            super.onSignalStrengthsChanged(signalStrength);
         }
     }
 
@@ -1459,7 +1442,7 @@ public class MainActivity extends Activity {
         try {
             // unregisterReceiver(mIntentReceiver);
             // cancel current download if exiting bumblebee
-            device.unregisterReceiver(this);
+            deviceOperate.unregisterReceiver(this);
             if (Global.waitingForDownload) {
                 Global.waitingForDownload = false;
                 Global.updateReady = false;
@@ -1535,7 +1518,7 @@ public class MainActivity extends Activity {
             String activeConnPlus = activeConn;
             if (Global.connectedToWiFi) {
                 activeConnPlus = "WIFI ";
-                Global.netType = "WIFI/" + device.getWifiSsid();
+                Global.netType = "WIFI/" + deviceOperate.getWifiSsid();
             }else if (Global.connected3G) {
                 // Global.URLSwift = "http://10.41.102.70/";
                 activeConnPlus += "";
