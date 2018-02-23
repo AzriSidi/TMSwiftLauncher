@@ -6,7 +6,6 @@ import android.telephony.ServiceState;
 import android.telephony.SignalStrength;
 import android.util.Log;
 import android.widget.TextView;
-
 import com.plamera.tmswiftlauncher.AppsList.HomeScreen;
 
 public class PhoneState extends PhoneStateListener {
@@ -26,6 +25,8 @@ public class PhoneState extends PhoneStateListener {
 
     @Override
     public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+        super.onSignalStrengthsChanged(signalStrength);
+
         asuLevel = signalStrength.getGsmSignalStrength();
         dbmLevel = (signalStrength.getGsmSignalStrength() * 2) - 113;
         signal = dbmLevel + " dBm"+ " " +asuLevel+" asu";
@@ -35,12 +36,12 @@ public class PhoneState extends PhoneStateListener {
             signalHome.setText(signal);
         }
         Log.d(TAG,"SignalStrength: "+signal);
-        super.onSignalStrengthsChanged(signalStrength);
     }
 
     @Override
     public void onServiceStateChanged (ServiceState serviceState) {
         super.onServiceStateChanged(serviceState);
+        
         int state = serviceState.getState();
         Log.d("Phone State", String.valueOf(state));
         switch(state) {
