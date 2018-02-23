@@ -9,8 +9,7 @@ import android.widget.TextView;
 import com.plamera.tmswiftlauncher.AppsList.HomeScreen;
 
 public class PhoneState extends PhoneStateListener {
-    int dbmLevel;
-    int asuLevel;
+    int dbmLevel,asuLevel;
     TextView signalMain,signalHome,phoneInfo;
     String TAG = "PhoneState";
     String signal,phoneState;
@@ -41,7 +40,7 @@ public class PhoneState extends PhoneStateListener {
     @Override
     public void onServiceStateChanged (ServiceState serviceState) {
         super.onServiceStateChanged(serviceState);
-        
+
         int state = serviceState.getState();
         Log.d("Phone State", String.valueOf(state));
         switch(state) {
