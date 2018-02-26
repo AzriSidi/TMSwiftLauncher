@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -21,6 +19,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -62,8 +61,8 @@ public class HomeScreen extends FragmentActivity {
     ProgressDialog pd;
     @SuppressLint("StaticFieldLeak")
     public static TextView myScroller,notifyTask,notifyQueue,
-            networkProvider,signalInfo,broadcastInfo,appDetail,
-            swiftVer,agentVer,serverName,ldapStatus,phoneDetail;
+            networkProvider,signalInfo,broadcastInfo,swiftVer,
+            agentVer,serverName,appVer,phoneDetail;
     String Serveradd,ServerName;
     BroadcastReceiver networkStateReceiver;
     Timer CheckNetworkTimer;
@@ -101,11 +100,10 @@ public class HomeScreen extends FragmentActivity {
         broadcastInfo = findViewById(R.id.textView4);
         phoneDetail = findViewById(R.id.textView6);
         signalInfo = findViewById(R.id.textView7);
-        appDetail = findViewById(R.id.textView16);
         swiftVer = findViewById(R.id.textView17);
         agentVer = findViewById(R.id.textView18);
         serverName = findViewById(R.id.textView19);
-        ldapStatus = findViewById(R.id.textView20);
+        appVer = findViewById(R.id.textView20);
 
         notifyTask = findViewById(R.id.badge_notification);
         notifyQueue = findViewById(R.id.badge_notification_1);
@@ -269,21 +267,14 @@ public class HomeScreen extends FragmentActivity {
     public void deviceState(){
         SimState = deviceInfo.getSimState();
         carrierName = deviceInfo.getCarrier();
-        phoneDetail.setText("Imsi: "+Global.IMSIsimCardPhone+"  |  Imei: "+Global.IMEIPhone);
-        networkProvider.setText("Firmware: "+Global.frmVersion+" | "+carrierName+" | "+
+        phoneDetail.setText("IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
+        networkProvider.setText(Global.frmVersion+" | "+carrierName+" | "+
                 deviceInfo.getLocalIP()+" | "+SimState);
     }
 
     private void getSwiftApp() {
-        PackageManager packageManager = this.getPackageManager();
         try {
-            PackageInfo app = packageManager.getPackageInfo("my.com.tm.swift",0);
-            String versionName = app.versionName;
             String loginState = "";
-            appDetail.setText("SWIFT - "+versionName + "  |  " );
-            swiftVer.setText("LAUNCHER - "+Global.launcherVer + "  |  ");
-            agentVer.setText("EMM - "+Global.agentVer+ "  |  ");
-            serverName.setText(Global.loginServer+ "  |  ");
             List<UserDetail> userDetails = Global.mySQLiteAdapter.getAllContacts();
             for (UserDetail con : userDetails) {
                 Global.ldapStatus = con.get_ldap();
@@ -293,9 +284,8 @@ public class HomeScreen extends FragmentActivity {
             }else if(Global.ldapStatus.contains("false")){
                 loginState = "LOCAL";
             }
-            ldapStatus.setText(loginState);
-        }catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            appVer.setText("LAUNCHER - "+ Global.launcherVer + " | EMM - "+Global.agentVer
+                    + " | SWIFT - "+Global.swiftVer +" | "+loginState);
         }catch (NullPointerException e) {
            Log.e(TAG,"NullPointerException: "+e);
         }
@@ -618,7 +608,7 @@ public class HomeScreen extends FragmentActivity {
             }
             myScroller.setText(Global.myStatus + " | Server: "
                     + Global.ServerStatus);
-
+            myScroller.setGravity(Gravity.CENTER);
             // re-enable login button here
             // loginButton.setEnabled(true);
             if (dateMismatch) {
@@ -775,6 +765,7 @@ public class HomeScreen extends FragmentActivity {
                                         myScroller.setText(Global.myStatus
                                                 + " |  Server: "
                                                 + Global.ServerStatus);
+                                        myScroller.setGravity(Gravity.CENTER);
                                         Log.d("myStatus4: ",Global.myStatus);
                                     }
 
@@ -796,7 +787,7 @@ public class HomeScreen extends FragmentActivity {
                                             myScroller.setText(Global.myStatus
                                                     + " |  Server: "
                                                     + Global.ServerStatus);
-
+                                            myScroller.setGravity(Gravity.CENTER);
                                         }
 
                                     });
@@ -848,6 +839,7 @@ public class HomeScreen extends FragmentActivity {
                                     myScroller.setText(Global.myStatus
                                             + " |  Server: "
                                             + Global.ServerStatus);
+                                    myScroller.setGravity(Gravity.CENTER);
                                 }
 
                             });
@@ -952,7 +944,7 @@ public class HomeScreen extends FragmentActivity {
         String usernameBB = Global.usernameBB;
         String netPre = "";
         try {
-            Global.myStatus = "\u00A0\u00A0\u00A0\u00A0"+usernameBB+"  |  ";
+            Global.myStatus = usernameBB+"  |  ";
             ConnectivityManager connMgr = (ConnectivityManager) this
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
@@ -1004,7 +996,7 @@ public class HomeScreen extends FragmentActivity {
             Global.myStatus += activeConnPlus;
             myScroller.setText(Global.myStatus + " |  Server: "
                     + Global.ServerStatus);
-
+            myScroller.setGravity(Gravity.CENTER);
             if (Global.ServerStatus.contains("Not Connected")) {
                 myScroller.setBackgroundColor(Color.RED);
             } else if (Global.ServerStatus.contains("Unknown")) {
@@ -1085,7 +1077,7 @@ public class HomeScreen extends FragmentActivity {
                                         myScroller.setText(Global.myStatus
                                                 + " |  Server: "
                                                 + Global.ServerStatus);
-
+                                        myScroller.setGravity(Gravity.CENTER);
                                     }
 
                                 });
@@ -1133,6 +1125,7 @@ public class HomeScreen extends FragmentActivity {
                                     myScroller.setText(Global.myStatus
                                             + " |  Server: "
                                             + Global.ServerStatus);
+                                    myScroller.setGravity(Gravity.CENTER);
                                 }
 
                             });

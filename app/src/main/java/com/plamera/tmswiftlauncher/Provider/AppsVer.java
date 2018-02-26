@@ -4,10 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-/**
- * Created by Plamera on 26/2/2018.
- */
-
 public class AppsVer {
     Context context;
     String versionName = "";
