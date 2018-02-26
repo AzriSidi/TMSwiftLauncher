@@ -13,7 +13,6 @@
         android:paddingBottom="@dimen/activity_vertical_margin_botton"
         android:id="@+id/relativeLayout2"
         android:layout_alignParentStart="true">
-
         <fragment
             android:id="@+id/apps_grid"
             android:name="com.plamera.tmswiftlauncher.AppsList.AppsGridFragment"
@@ -22,8 +21,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_marginTop="13dp"
-            android:layout_marginBottom="40dp" />
-
+            android:layout_marginBottom="30dp" />
     </RelativeLayout>
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -102,7 +100,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="190dp"
         android:background="@layout/rectangle_widget"
         android:id="@+id/relativeLayout3"
         android:layout_alignParentBottom="true"
@@ -115,9 +113,9 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/btnTask"
             android:layout_marginLeft="160dp"
-            android:text="Update Queue"
+            android:text="@string/queue"
             android:textColor="#ffff"
-            android:textSize="13dp" />
+            android:textSize="@dimen/ver_text_size_2" />
 
         <View
             android:id="@+id/myRectangleView"
@@ -169,10 +167,10 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/btnTask"
             android:layout_below="@+id/btnTask"
-            android:text="My Task"
+            android:text="@string/task"
             android:layout_marginLeft="8dp"
             android:textColor="#ffff"
-            android:textSize="13dp" />
+            android:textSize="@dimen/ver_text_size_2" />
 
         <TextView
             android:id="@+id/textView12"
@@ -181,17 +179,17 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/btnTask"
             android:layout_marginLeft="287dp"
-            android:text="Test Network"
+            android:text="@string/network"
             android:textColor="#ffff"
-            android:textSize="13dp" />
+            android:textSize="@dimen/ver_text_size_2" />
 
         <TextView
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign Out"
+            android:text="@string/signout"
             android:layout_marginLeft="425dp"
-            android:textSize="13dp"
+            android:textSize="@dimen/ver_text_size_2"
             android:textColor="#ffff"
             android:layout_below="@+id/btnTask"
             android:layout_alignParentStart="true" />
@@ -248,17 +246,23 @@
             android:layout_width="match_parent"
             android:layout_height="23dp"
             android:layout_alignParentStart="true"
-            android:background="#fff">
+            android:background="#fff"
+            tools:ignore="UselessParent">
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginLeft="15dp"
-                android:text="Output"
+                android:layout_marginLeft="@dimen/vertical_margin_left"
+                android:text="@string/output"
                 android:textColor="#000"
-                android:textSize="16dp" />
+                android:textSize="@dimen/home_text_size" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="22dp"
+                android:background="@android:color/black" />
         </RelativeLayout>
     </RelativeLayout>
 
@@ -272,11 +276,10 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Output"
+            android:text="@string/output"
             android:textColor="#000"
-            android:textSize="16dp"
-            android:layout_marginLeft="70dp"
-            android:layout_marginStart="68dp"
+            android:textSize="@dimen/home_text_size"
+            android:layout_marginLeft="@dimen/vertical_margin_left"
             android:layout_alignParentStart="true" />
         <TextView
             android:id="@+id/textView7"
@@ -284,18 +287,9 @@
             android:layout_height="wrap_content"
             android:text="@string/output"
             android:textColor="#000"
-            android:textSize="16dp"
+            android:textSize="@dimen/home_text_size"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/textView2" />
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/output"
-            android:textColor="#000"
-            android:textSize="16dp"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/textView7" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -304,17 +298,17 @@
         android:layout_height="23dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/badge_notification_1"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="60dp"
         android:background="#fff">
         <TextView
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginLeft="15dp"
-            android:text="Output"
+            android:layout_marginLeft="@dimen/vertical_margin_left"
+            android:text="@string/output"
             android:textColor="#000"
-            android:textSize="16dp"
+            android:textSize="@dimen/home_text_size"
             android:visibility="invisible" />
     </RelativeLayout>
     <RelativeLayout
@@ -326,9 +320,9 @@
             android:layout_height="23dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="43dp"
+            android:layout_marginBottom="46dp"
             android:text="@string/output"
             android:textColor="#ffff"
-            android:textSize="16dp" />
+            android:textSize="@dimen/home_text_size" />
     </RelativeLayout>
 </RelativeLayout>

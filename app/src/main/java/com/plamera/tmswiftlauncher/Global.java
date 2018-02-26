@@ -82,4 +82,5 @@ public class Global {
     public static String responseResult = "";
     public static Boolean loginResult;
     public static String myStatus = "";
+    public static String swiftVer = "";
 }

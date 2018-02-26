@@ -19,9 +19,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.telephony.PhoneStateListener;
-import android.telephony.ServiceState;
-import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -31,17 +28,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.plamera.tmswiftlauncher.DatabaseHandler;
+import com.plamera.tmswiftlauncher.DeviceInfo;
 import com.plamera.tmswiftlauncher.DeviceOperate;
+import com.plamera.tmswiftlauncher.DeviceService;
 import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Global;
-import com.plamera.tmswiftlauncher.PhoneState;
 import com.plamera.tmswiftlauncher.R;
-import com.plamera.tmswiftlauncher.DeviceService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -50,10 +46,7 @@ import org.apache.http.params.HttpParams;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -70,12 +63,11 @@ public class HomeScreen extends FragmentActivity {
     @SuppressLint("StaticFieldLeak")
     public static TextView myScroller,notifyTask,notifyQueue,
             networkProvider,signalInfo,broadcastInfo,appDetail,
-            phoneInfo,userName,swiftVer,agentVer,serverName,ldapStatus;
+            swiftVer,agentVer,serverName,ldapStatus,phoneDetail;
     String Serveradd,ServerName;
     BroadcastReceiver networkStateReceiver;
     Timer CheckNetworkTimer;
     TelephonyManager tel;
-    MyPhoneStateListener MyListener;
     static AlertDialog.Builder alertDialog;
     Intent intent;
     String TAG = "HomeScreen";
@@ -93,6 +85,7 @@ public class HomeScreen extends FragmentActivity {
     IntentFilter iFilter,networkIntentFilter;
     String urlSwift = "http://10.54.97.227:8888/";
     DeviceService deviceService;
+    DeviceInfo deviceInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,13 +96,11 @@ public class HomeScreen extends FragmentActivity {
 
         ImageView image = findViewById(R.id.imageView);
         image.setImageResource(R.drawable.tm_white);
-        //userName = findViewById(R.id.textView);
         myScroller = findViewById(R.id.textView1);
         networkProvider = findViewById(R.id.textView2);
-        //signalInfo = findViewById(R.id.textView3);
         broadcastInfo = findViewById(R.id.textView4);
+        phoneDetail = findViewById(R.id.textView6);
         signalInfo = findViewById(R.id.textView7);
-        phoneInfo = findViewById(R.id.textView8);
         appDetail = findViewById(R.id.textView16);
         swiftVer = findViewById(R.id.textView17);
         agentVer = findViewById(R.id.textView18);
@@ -123,6 +114,7 @@ public class HomeScreen extends FragmentActivity {
         DisplayUsername = username;
         device = new DeviceOperate(this);
         deviceService = new DeviceService(this);
+        deviceInfo = new DeviceInfo(this);
 
         registerReceiver();
         getSwiftApp();
@@ -275,26 +267,11 @@ public class HomeScreen extends FragmentActivity {
     }
 
     public void deviceState(){
-        int simState = tel.getSimState();
-        carrierName = tel.getNetworkOperatorName();
-        switch (simState) {
-            case TelephonyManager.SIM_STATE_UNKNOWN:
-                SimState = "UNKNOWN";
-                break;
-        }
-        if(SimState == null){
-            tel.listen(new PhoneState(this), PhoneStateListener.LISTEN_SIGNAL_STRENGTHS
-                    | PhoneStateListener.LISTEN_SERVICE_STATE);
-        }else {
-            signalInfo.setText(" | Not available");
-            phoneInfo.setText(" | Not available");
-        }
-
-        if(carrierName.equals("")){
-            networkProvider.setText("Not available"+" | "+getLocalIP()+" | ");
-        }else {
-            networkProvider.setText(carrierName+" | "+getLocalIP()+" | ");
-        }
+        SimState = deviceInfo.getSimState();
+        carrierName = deviceInfo.getCarrier();
+        phoneDetail.setText("Imsi: "+Global.IMSIsimCardPhone+"  |  Imei: "+Global.IMEIPhone);
+        networkProvider.setText("Firmware: "+Global.frmVersion+" | "+carrierName+" | "+
+                deviceInfo.getLocalIP()+" | "+SimState);
     }
 
     private void getSwiftApp() {
@@ -379,46 +356,6 @@ public class HomeScreen extends FragmentActivity {
         deviceService.logOut();
     }
 
-    private class MyPhoneStateListener extends PhoneStateListener {
-        int dbmLevel,asuLevel;
-        String signal,phoneState;
-
-        @Override
-        public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-            super.onSignalStrengthsChanged(signalStrength);
-            asuLevel = signalStrength.getGsmSignalStrength();
-            dbmLevel = (signalStrength.getGsmSignalStrength() * 2) - 113;
-            signal = dbmLevel + " dBm"+ " " +asuLevel+" asu";
-            signalInfo.setText(" | "+signal);
-        }
-
-        @Override
-        public void onServiceStateChanged (ServiceState serviceState) {
-            super.onServiceStateChanged(serviceState);
-            int state = serviceState.getState();
-            Log.d("Phone State", String.valueOf(state));
-            switch(state) {
-                case ServiceState.STATE_EMERGENCY_ONLY:
-                    phoneState ="Emergency Only";
-                    break;
-                case ServiceState.STATE_IN_SERVICE:
-                    phoneState ="In Service";
-                    break;
-                case ServiceState.STATE_OUT_OF_SERVICE:
-                    phoneState ="Out Of Service";
-                    break;
-                case ServiceState.STATE_POWER_OFF:
-                    phoneState ="POWER_OFF";
-                    break;
-                default:
-                    phoneState = "Unknown";
-                    break;
-            }
-            Log.d("Phone State",phoneState);
-            phoneInfo.setText(" | "+phoneState);
-        }
-    }
-
     public void MyTask(View v){
        try {
             intent = new Intent(Intent.ACTION_MAIN);
@@ -443,7 +380,7 @@ public class HomeScreen extends FragmentActivity {
 
     public void testConn(View v){
         try {
-            Toast.makeText(HomeScreen.this, "IP: " + getLocalIP(),
+            Toast.makeText(HomeScreen.this, "IP: " + deviceInfo.getLocalIP(),
                     Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -994,7 +931,7 @@ public class HomeScreen extends FragmentActivity {
     // //////////////////////////////////////////////////////////////////////////////////////////////////
     class CheckNetworkTimerMethod extends TimerTask {
         public void run() {
-            getLocalIP();
+            deviceInfo.getLocalIP();
             if (!CheckNetworkRunning) {
                 CheckNetworkRunning = true;
                 if (Global.connectedToWiFi) {
@@ -1027,7 +964,7 @@ public class HomeScreen extends FragmentActivity {
             // added by amir on 2013-01-08
 
             if (Global.connected3G || Global.connectedToWiFi) {
-                Global.localIP = getLocalIP();
+                Global.localIP = deviceInfo.getLocalIP();
             }
 
             String activeConn;
@@ -1058,7 +995,7 @@ public class HomeScreen extends FragmentActivity {
                 activeConnPlus += "";
                 Global.netType = netPre+"/"+activeConnPlus;
             } else if ((!Global.connectedToWiFi) && (!Global.connected3G)) {
-                Global.localIP = getLocalIP();
+                Global.localIP = deviceInfo.getLocalIP();
                 activeConnPlus = "None";
                 Global.ServerStatus = "Not Connected";
                 Global.netType = activeConnPlus;
@@ -1085,41 +1022,6 @@ public class HomeScreen extends FragmentActivity {
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////
-    // FUNCTION NAME : getLocalIP
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    public String getLocalIP() {
-        Boolean useIPv4 = true; // only looks for IPv4 address
-        try {
-            List<NetworkInterface> interfaces = Collections
-                    .list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf
-                        .getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress().toUpperCase();
-                        boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 port
-                                // suffix
-                                return delim < 0 ? sAddr : sAddr.substring(0,
-                                        delim);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Log.e("getLocalIP", ex.toString());
-        }
-        return "None";
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
     // FUNCTION NAME : PingServerStatus
     // //////////////////////////////////////////////////////////////////////////////////////////////////
     // ping to maxis gateway
@@ -1135,7 +1037,7 @@ public class HomeScreen extends FragmentActivity {
 
             try {
                 if (Global.connected3G) {
-                    String pingCmd = "ping -c 1 -w 25 -s 1 " + getLocalIP();
+                    String pingCmd = "ping -c 1 -w 25 -s 1 " + deviceInfo.getLocalIP();
                     java.lang.Process p1 = java.lang.Runtime.getRuntime().exec(pingCmd);
 
                     int returnVal = p1.waitFor();

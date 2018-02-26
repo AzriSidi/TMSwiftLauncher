@@ -22,13 +22,11 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
@@ -47,12 +45,12 @@ import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Encap.WhileList;
 import com.plamera.tmswiftlauncher.JwtUtil.JwtDecode;
 import com.plamera.tmswiftlauncher.JwtUtil.JwtEncode;
+import com.plamera.tmswiftlauncher.Provider.AppsVer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
@@ -72,13 +70,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -87,10 +82,9 @@ import java.util.TimerTask;
 public class MainActivity extends Activity {
     EditText userField, passField;
     TelephonyManager tel;
-    TextView output,firmWare,dateView,myScroller,
-            signalInfo,launchVer,agentVer;
+    TextView output1,output2,dateView,myScroller,launchVer;
     Intent i;
-    String imeiValue, imsiValue ,carrierName;
+    String carrierName;
     String Serveradd, ServerName;
     Boolean checkServerRunning = false;
     Boolean CheckNetworkRunning = false;
@@ -137,6 +131,7 @@ public class MainActivity extends Activity {
     long currentTime = System.currentTimeMillis();
     DeviceOperate deviceOperate;
     DeviceInfo deviceInfo;
+    AppsVer appsVer;
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
@@ -151,12 +146,11 @@ public class MainActivity extends Activity {
         image = findViewById(R.id.imageView1);
         image.setImageResource(R.drawable.tm_vector);
         myScroller = findViewById(R.id.textView5);
-        firmWare = findViewById(R.id.textView7);
+        output2 = findViewById(R.id.textView7);
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
-        output = findViewById(R.id.textView2);
+        output1 = findViewById(R.id.textView2);
         launchVer = findViewById(R.id.textView23);
-        agentVer = findViewById(R.id.textView24);
 
         DisplayUsername = userField.getText().toString();
         cb_showPwd = findViewById(R.id.checkBox_ShowPassword);
@@ -175,6 +169,8 @@ public class MainActivity extends Activity {
         jwtDecode = new JwtDecode();
         Global.mySQLiteAdapter = new DatabaseHandler(this);
         deviceOperate = new DeviceOperate(this);
+        deviceInfo = new DeviceInfo(this);
+        appsVer = new AppsVer(this);
 
         LoginToken();
         startAgent();
@@ -375,39 +371,14 @@ public class MainActivity extends Activity {
         }
     }
 
-    public String LauncherVer() {
-        String versionName = "";
-        PackageManager packageManager = this.getPackageManager();
-        try {
-            PackageInfo app = packageManager.getPackageInfo(getPackageName(), 0);
-            versionName = app.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return versionName;
-    }
-
-    public String AgentVer() {
-        String versionName = "";
-        PackageManager packageManager = this.getPackageManager();
-        try {
-            PackageInfo app = packageManager.getPackageInfo("org.wso2.emm.agent", 0);
-            versionName = app.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return versionName;
-    }
-
     public void AppVerText(){
-        Global.launcherVer = LauncherVer();
-        Global.agentVer = AgentVer();
+        Global.swiftVer = appsVer.SwiftVer();
+        Global.launcherVer = appsVer.LauncherVer();
+        Global.agentVer = appsVer.AgentVer();
         String fontPath = "fonts/Prototype.ttf";
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
         launchVer.setTypeface(tf);
-        agentVer.setTypeface(tf);
-        launchVer.setText("LAUNCHER - "+Global.launcherVer + "  |  ");
-        agentVer.setText("EMM - "+ Global.agentVer);
+        launchVer.setText("SWIFT - "+Global.swiftVer+"\nLAUNCHER - "+Global.launcherVer+"\nEMM - "+ Global.agentVer);
     }
 
     // ***** To enable GPS at main *********************
@@ -504,69 +475,23 @@ public class MainActivity extends Activity {
     private void DeviceDetail() {
         try {
             //imei
-            imeiValue = tel.getDeviceId();
-            Log.d(TAG,"ImeiCheck: "+imeiValue);
-            if(imeiValue == null){
-                Global.IMEIPhone = "-";
-            }else{
-                Global.IMEIPhone = imeiValue;
-            }
+            Global.IMEIPhone = deviceInfo.getImei();
             //imsi
-            imsiValue = tel.getSimSerialNumber();
-            if (imsiValue == null){
-                noImsiPopUp();
-                Global.IMSIsimCardPhone = "-";
-            }else{
-                Global.IMSIsimCardPhone = imsiValue;
-            }
-
-            carrierName = tel.getNetworkOperatorName();
-            if(carrierName.equals("")){
-                carrierName = "Not Available";
-            }
-            //output
-            output.setText("Imsi: "+Global.IMSIsimCardPhone+"  |  Imei: "+Global.IMEIPhone);
-            output.setBackgroundColor(Color.parseColor("#595959"));
-
+            Global.IMSIsimCardPhone = deviceInfo.getImsi();
+            //carrier_name
+            carrierName = deviceInfo.getCarrier();
+            //output1
+            output1.setText("Imsi: "+Global.IMSIsimCardPhone+" | Imei: "+Global.IMEIPhone);
             //firmware
-            Global.frmVersion = Build.DISPLAY;
-            firmWare.setText("Firmware: "+Global.frmVersion+" | "+carrierName+" | "+getLocalIP()+" | ");
-            firmWare.setBackgroundColor(Color.parseColor("#595959"));
-
+            Global.frmVersion = deviceInfo.getFirmVer();
             //Signal_Strength
-            int simState = tel.getSimState();
-            switch (simState) {
-                case TelephonyManager.SIM_STATE_UNKNOWN:
-                    SimState = "UNKNOWN";
-                    break;
-            }
-            if(SimState == null){
-                tel.listen(new PhoneState(this), PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-            }else {
-                signalInfo.setText("Not available");
-            }
+            SimState = deviceInfo.getSimState();
+            //output2
+            output2.setText("Firmware: "+Global.frmVersion+" | "+carrierName+" | "+
+                    deviceInfo.getLocalIP()+" | "+SimState);
         } catch (Exception e) {
             Log.d("Exception",e.toString());
         }
-    }
-
-    public void noImsiPopUp(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(
-                MainActivity.this);
-        builder.setMessage(
-                "No IMSI detected. Please check your sim card")
-                .setCancelable(false)
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,
-                                                int id) {
-
-                                dialog.dismiss();
-                                //finish();
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
     public static class EmmReceiver extends BroadcastReceiver {
@@ -660,14 +585,12 @@ public class MainActivity extends Activity {
                 Log.i(TAG, "cApp=" + cApp);
                 Global.NumberOFUnauthorize = String.valueOf(cApp);
                 if (cApp > 0) {
-                    StringBuilder build = new StringBuilder();
-                    build.append(
-                            "Unauthorized applications have been detected:\n")
-                            .append("\n").append(blApp).append("\n")
-                            .append("   ");
+                    String build = "Unauthorized applications have been detected:\n" +
+                            "\n" + blApp + "\n" +
+                            "   ";
                     AlertDialog customBuilder = new AlertDialog.Builder(this).create();
                     customBuilder.setTitle("Warning!");
-                    customBuilder.setMessage(build.toString());
+                    customBuilder.setMessage(build);
                     customBuilder.setButton("OK",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(
@@ -1088,9 +1011,6 @@ public class MainActivity extends Activity {
 
     // Class timer check if mobile testnet error
     class TimerTaskMethod extends TimerTask {
-
-        int datamobile = 4;
-
         public void run() {
             MainActivity.this.runOnUiThread(RunnableTimerMethod);
         }
@@ -1111,12 +1031,12 @@ public class MainActivity extends Activity {
     private static String InputStreamToString(InputStream inputStream) throws IOException{
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
         String line = "";
-        String result = "";
+        StringBuilder result = new StringBuilder();
         while((line = bufferedReader.readLine()) != null)
-            result += line;
+            result.append(line);
 
         inputStream.close();
-        return result;
+        return result.toString();
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1276,7 +1196,7 @@ public class MainActivity extends Activity {
 
     public void testConnect(View v){
         try {
-            Toast.makeText(MainActivity.this, "IP: " + getLocalIP(),
+            Toast.makeText(MainActivity.this, "IP: " + deviceInfo.getLocalIP(),
                     Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1382,13 +1302,6 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
         try {
-            ConnectivityManager connMgr = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            android.net.NetworkInfo wifi = connMgr
-                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            getWindow().setSoftInputMode(
-                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
             logininvisible = false;
 
             Global.LogAsAdmin = false;
@@ -1479,7 +1392,7 @@ public class MainActivity extends Activity {
     private void queryNetwork() {
         String netPre = "";
         try {
-            myStatus = "Network: ";
+            myStatus = "\u00A0\u00A0\u00A0\u00A0Network: ";
             ConnectivityManager connMgr = (ConnectivityManager) this
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
@@ -1492,7 +1405,7 @@ public class MainActivity extends Activity {
             // added by amir on 2013-01-08
 
             if (Global.connected3G || Global.connectedToWiFi) {
-                Global.localIP = getLocalIP();
+                Global.localIP = deviceInfo.getLocalIP();
             }
 
             String activeConn;
@@ -1530,7 +1443,7 @@ public class MainActivity extends Activity {
             Log.d(TAG,"netType="+Global.netType);
 
             myStatus += activeConnPlus;
-            myScroller.setText(myStatus + "  |  Server: "
+            myScroller.setText(myStatus + " | Server: "
                     + Global.ServerStatus);
 
             if(Global.connected3G){
@@ -1555,7 +1468,6 @@ public class MainActivity extends Activity {
             Log.e("Login", e.toString());
 
         }
-
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1593,41 +1505,6 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    // FUNCTION NAME : getLocalIP
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    public String getLocalIP() {
-        Boolean useIPv4 = true; // only looks for IPv4 address
-        try {
-            List<NetworkInterface> interfaces = Collections
-                    .list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf
-                        .getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress().toUpperCase();
-                        boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 port
-                                // suffix
-                                return delim < 0 ? sAddr : sAddr.substring(0,
-                                        delim);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Log.e("getLocalIP", ex.toString());
-        }
-        return "Not available";
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1915,7 +1792,7 @@ public class MainActivity extends Activity {
 
             try {
                 if (Global.connected3G) {
-                    String pingCmd = "ping -c 1 -w 25 -s 1 " + getLocalIP();
+                    String pingCmd = "ping -c 1 -w 25 -s 1 " + deviceInfo.getLocalIP();
                     java.lang.Process p1 = java.lang.Runtime.getRuntime().exec(pingCmd);
                     int returnVal = p1.waitFor();
                     Log.d("Login PingServerStatus ", String.valueOf(returnVal));
