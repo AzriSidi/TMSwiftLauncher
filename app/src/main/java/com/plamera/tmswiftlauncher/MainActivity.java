@@ -382,7 +382,7 @@ public class MainActivity extends Activity {
             //carrier_name
             carrierName = deviceInfo.getCarrier();
             //output1
-            output1.setText("IMSI: "+Global.IMSIsimCardPhone+" | IMEI: "+Global.IMEIPhone);
+            output1.setText("IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
             //firmware
             Global.frmVersion = deviceInfo.getFirmVer();
             //Signal_Strength

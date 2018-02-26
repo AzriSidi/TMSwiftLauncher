@@ -944,7 +944,7 @@ public class HomeScreen extends FragmentActivity {
         String usernameBB = Global.usernameBB;
         String netPre = "";
         try {
-            Global.myStatus = usernameBB+"  |  ";
+            Global.myStatus = usernameBB+" | ";
             ConnectivityManager connMgr = (ConnectivityManager) this
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
