@@ -253,14 +253,14 @@ category#android.intent.category.MONKEY
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:89:17-75
 	android:name
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:89:27-72
-activity#com.plamera.tmswiftlauncher.AppsList.HomeScreen
+activity#com.plamera.tmswiftlauncher.HomeScreen
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:92:9-96:20
 	android:screenOrientation
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:94:13-49
 	android:theme
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:95:13-66
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:93:13-75
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:93:13-66
 service#com.plamera.tmswiftlauncher.TrackLogService
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:97:9-101:19
 	android:exported

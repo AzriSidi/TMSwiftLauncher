@@ -30,7 +30,6 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -40,7 +39,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.plamera.tmswiftlauncher.AppsList.HomeScreen;
 import com.plamera.tmswiftlauncher.Encap.BlackList;
 import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Encap.WhileList;
@@ -83,7 +81,7 @@ import java.util.TimerTask;
 public class MainActivity extends Activity {
     EditText userField, passField;
     TelephonyManager tel;
-    TextView output1,output2,dateView,myScroller,launchVer;
+    TextView output1,output2,dateView,myScroller,textVer,appVer;
     Intent i;
     String carrierName;
     String Serveradd, ServerName;
@@ -151,7 +149,8 @@ public class MainActivity extends Activity {
         passField = findViewById(R.id.password);
         output1 = findViewById(R.id.textView2);
         output2 = findViewById(R.id.textView7);
-        launchVer = findViewById(R.id.textView23);
+        textVer = findViewById(R.id.textView23);
+        appVer = findViewById(R.id.textView24);
 
         DisplayUsername = userField.getText().toString();
         cb_showPwd = findViewById(R.id.checkBox_ShowPassword);
@@ -383,13 +382,10 @@ public class MainActivity extends Activity {
             carrierName = deviceInfo.getCarrier();
             //output1
             output1.setText("IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
-            //firmware
-            Global.frmVersion = deviceInfo.getFirmVer();
             //Signal_Strength
             SimState = deviceInfo.getSimState();
             //output2
-            output2.setText(Global.frmVersion+" | "+carrierName+" | "+
-                    deviceInfo.getLocalIP()+" | "+SimState);
+            output2.setText(carrierName+" | "+deviceInfo.getLocalIP()+" | "+SimState);
         } catch (Exception e) {
             Log.d("Exception",e.toString());
         }
@@ -399,11 +395,13 @@ public class MainActivity extends Activity {
         Global.swiftVer = appsVer.SwiftVer();
         Global.launcherVer = appsVer.LauncherVer();
         Global.agentVer = appsVer.AgentVer();
+        Global.frmVersion = deviceInfo.getFirmVer();
         String fontPath = "fonts/Prototype.ttf";
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
-        launchVer.setTypeface(tf);
-        launchVer.setText("LAUNCHER - "+Global.launcherVer+"\nEMM - "+ Global.agentVer
-                +"\nSWIFT - "+Global.swiftVer);
+        textVer.setTypeface(tf);
+        textVer.setText("FIRMWARE\nLAUNCHER\nEMM");
+        appVer.setTypeface(tf);
+        appVer.setText("- "+Global.frmVersion+"\n- "+Global.launcherVer+"\n- "+Global.agentVer);
     }
 
     // ***** To enable GPS at main *********************
@@ -1396,7 +1394,7 @@ public class MainActivity extends Activity {
     private void queryNetwork() {
         String netPre = "";
         try {
-            myStatus = "Network: ";
+            myStatus = "NETWORK: ";
             ConnectivityManager connMgr = (ConnectivityManager) this
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
@@ -1447,9 +1445,8 @@ public class MainActivity extends Activity {
             Log.d(TAG,"netType="+Global.netType);
 
             myStatus += activeConnPlus;
-            myScroller.setText(myStatus + " | Server: "
+            myScroller.setText(myStatus + " | SERVER: "
                     + Global.ServerStatus);
-            myScroller.setGravity(Gravity.CENTER);
 
             if(Global.connected3G){
                 if(Global.EmmStatus.equals("Not Active")){
@@ -1629,11 +1626,9 @@ public class MainActivity extends Activity {
                                         }
 
                                         myScroller.setText(myStatus
-                                                + "  |  Server: "
+                                                + "  |  SERVER: "
                                                 + Global.ServerStatus);
-                                        myScroller.setGravity(Gravity.CENTER);
                                     }
-
                                 });
                     }
                 } else {
@@ -1650,9 +1645,8 @@ public class MainActivity extends Activity {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                             myScroller.setText(myStatus
-                                                    + "  |  Server: "
+                                                    + "  |  SERVER: "
                                                     + Global.ServerStatus);
-                                            myScroller.setGravity(Gravity.CENTER);
                                         }
 
                                     });
@@ -1703,9 +1697,8 @@ public class MainActivity extends Activity {
                                     }
 
                                     myScroller.setText(myStatus
-                                            + "  |  Server: "
+                                            + "  |  SERVER: "
                                             + Global.ServerStatus);
-                                    myScroller.setGravity(Gravity.CENTER);
 
                                 }
 
@@ -1843,9 +1836,8 @@ public class MainActivity extends Activity {
                                         }
 
                                         myScroller.setText(myStatus
-                                                + "  |  Server: "
+                                                + "  |  SERVER: "
                                                 + Global.ServerStatus);
-                                        myScroller.setGravity(Gravity.CENTER);
                                     }
 
                                 });
@@ -1891,9 +1883,8 @@ public class MainActivity extends Activity {
                                                 .setBackgroundColor(Color.RED);
                                     }
                                     myScroller.setText(myStatus
-                                            + "  |  Server: "
+                                            + "  |  SERVER: "
                                             + Global.ServerStatus);
-                                    myScroller.setGravity(Gravity.CENTER);
                                 }
 
                             });
@@ -2106,9 +2097,8 @@ public class MainActivity extends Activity {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(myStatus + "|Server: "
+            myScroller.setText(myStatus + "|SERVER: "
                     + Global.ServerStatus);
-            myScroller.setGravity(Gravity.CENTER);
             // re-enable login button here
             // loginButton.setEnabled(true);
             if (dateMismatch) {

@@ -5,8 +5,6 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.widget.TextView;
 
-import com.plamera.tmswiftlauncher.AppsList.HomeScreen;
-
 public class PhoneState extends PhoneStateListener {
     int dbmLevel,asuLevel;
     TextView signalHome,signalMain;

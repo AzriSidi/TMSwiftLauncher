@@ -102,7 +102,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.plamera.tmswiftlauncher.AppsList.HomeScreen"
+            android:name="com.plamera.tmswiftlauncher.HomeScreen"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ActionBar.Transparent" >
         </activity>

@@ -13,56 +13,48 @@
         android:layout_gravity="bottom"
         android:layout_marginRight="30dp"
         android:id="@+id/relativeLayout"
-        android:layout_marginTop="33dp"
+        android:layout_marginTop="28dp"
         android:layout_below="@+id/relativeLayout5"
         android:layout_centerHorizontal="true">
         <ImageButton
-            android:id="@+id/apps_button"
+            android:id="@+id/btnHelp"
             android:layout_width="@dimen/btn_size"
             android:layout_height="@dimen/btn_size"
-            android:src="@drawable/info"
-            android:background="#0000"
+            android:src="@drawable/ic_help_outline"
+            android:background="@drawable/ripple_effect"
             android:onClick="helpBtn"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="35dp"
-            android:layout_toEndOf="@+id/imageButton"/>
-
-        <!--android:src="@drawable/ic_lock_open"
-            android:background="#40CCF5"-->
+            android:layout_toEndOf="@+id/btnCall"/>
         <ImageButton
             android:id="@+id/btnLogin"
             android:layout_width="@dimen/btn_size"
             android:layout_height="@dimen/btn_size"
-            android:src="@drawable/login"
-            android:background="#0000"
+            android:background="@drawable/ripple_effect"
+            android:src="@drawable/ic_lock_open"
             android:onClick="showApps"
-            android:layout_alignParentTop="true" />
-        <!--android:background="#3796FA"
-                    android:src="@drawable/feed_black"-->
+            android:focusable="true"
+            android:layout_marginLeft="35dp"
+            android:layout_toEndOf="@+id/btnNet"
+            android:layout_alignParentTop="true"/>
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/btnNet"
             android:layout_width="@dimen/btn_size"
             android:layout_height="@dimen/btn_size"
             android:onClick="testConnect"
-            android:src="@drawable/testnet"
-            android:background="#0000"
-            android:layout_marginLeft="98dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-        <!--android:background="#309E09"
-        android:src="@drawable/ic_call_black"-->
+            android:background="@drawable/ripple_effect"
+            android:src="@drawable/ic_check_network"
+            android:layout_marginLeft="35dp"
+            android:layout_toEndOf="@+id/btnHelp"
+            android:layout_alignParentTop="true" />
         <ImageButton
-            android:id="@+id/imageButton6"
+            android:id="@+id/btnCall"
             android:layout_width="@dimen/btn_size"
             android:layout_height="@dimen/btn_size"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="30dp"
-            android:layout_toEndOf="@+id/apps_button"
-            android:src="@drawable/dial"
-            android:background="#0000"
-            android:onClick="Dialer"
-             />
+            android:src="@drawable/ic_local_phone"
+            android:background="@drawable/ripple_effect"
+            android:onClick="Dialer" />
 
         <TextView
             android:id="@+id/textView17"
@@ -71,22 +63,22 @@
             android:text="LOGIN"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
-            android:layout_marginLeft="11dp"
-            android:layout_alignBaseline="@+id/textView18"
-            android:layout_alignBottom="@+id/textView18"
-            android:layout_alignParentStart="true" />
+            android:layout_marginLeft="45dp"
+            android:layout_toEndOf="@+id/textView18"
+            android:layout_alignTop="@+id/textView20"/>
 
         <TextView
             android:id="@+id/textView18"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="&#160;&#160;&#160;&#160;TEST\nNETWORK"
+            android:text="TEST\nNETWORK"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="45dp"
+            android:layout_marginLeft="46dp"
+            android:gravity="center"
             android:layout_alignParentBottom="true"
-            android:layout_toEndOf="@+id/textView17" />
+            android:layout_toEndOf="@+id/textView19"/>
 
         <TextView
             android:id="@+id/textView19"
@@ -95,8 +87,8 @@
             android:text="HELP"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
-            android:layout_marginLeft="47dp"
-            android:layout_toEndOf="@+id/textView18"
+            android:layout_marginLeft="65dp"
+            android:layout_toEndOf="@+id/textView20"
             android:layout_alignTop="@+id/textView20" />
 
         <TextView
@@ -106,28 +98,24 @@
             android:text="CALL"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
-            android:layout_marginLeft="58dp"
-            android:layout_alignTop="@+id/textView18"
-            android:layout_toEndOf="@+id/textView19" />
+            android:layout_marginLeft="14dp"
+            android:layout_alignTop="@+id/textView18" />
     </RelativeLayout>
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="280dp"
         android:layout_height="180dp"
-        android:layout_alignEnd="@+id/textClock2"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="58dp"
         android:contentDescription="@string/app_name"
         app:srcCompat="@drawable/tm_vector" />
 <RelativeLayout
-    android:layout_width="300dp"
-    android:layout_height="280dp"
+    android:layout_width="350dp"
+    android:layout_height="220dp"
     android:background="@drawable/tmwall"
     android:id="@+id/relativeLayout5"
-    android:layout_below="@+id/textView10"
     android:layout_centerHorizontal="true"
-    android:layout_marginTop="33dp">
+    android:layout_marginTop="220dp">
     <EditText
         android:id="@+id/password"
         android:layout_width="wrap_content"
@@ -160,50 +148,59 @@
         android:textAllCaps="true"
         android:layout_marginTop="28dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginLeft="35dp"/>
 
     <CheckBox
         android:id="@+id/checkBox_ShowPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:theme="@style/AppBaseTheme"
-        android:text="Show Password"
-        android:paddingLeft="5dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="33dp"
-        android:layout_below="@+id/password"
-        android:layout_alignParentStart="true" />
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="128dp"
+        android:text="Show"
+        android:layout_toEndOf="@+id/password"
+        android:theme="@style/AppBaseTheme" />
 </RelativeLayout>
 
     <TextClock
         android:id="@+id/textClock2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView10"
+        android:layout_alignBottom="@+id/textView10"
+        android:layout_toEndOf="@+id/textView10"
         android:text="@string/output"
-        android:textSize="60sp"
+        android:layout_marginLeft="8dp"
+        android:textSize="@dimen/home_text_size"
         tools:targetApi="jelly_bean_mr1"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/imageView1"
-        android:layout_centerHorizontal="true" />
+        tools:ignore="RelativeOverlap" />
 
     <TextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="20dp"
         android:text="@string/output"
-        android:textSize="30sp"
         android:textColor="#ffff"
-        android:layout_below="@+id/textClock2"
-        android:layout_centerHorizontal="true" />
+        android:textSize="@dimen/home_text_size" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/relativeLayout6"
-        android:layout_alignParentEnd="true">
-
+        android:background="#595959"
+        android:layout_marginBottom="42dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/output"
+            android:textColor="#ffff"
+            android:textSize="@dimen/home_text_size"
+            android:gravity="center" />
     </RelativeLayout>
-
 
     <RelativeLayout
         android:id="@+id/relativeLayout2"
@@ -213,21 +210,6 @@
         android:layout_marginBottom="20dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#595959">
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/output"
-                android:textColor="#ffff"
-                android:textSize="@dimen/home_text_size"
-                android:gravity="center_horizontal" />
-        </RelativeLayout>
-
         <TextView
             android:id="@+id/textView5"
             android:layout_width="match_parent"
@@ -235,17 +217,16 @@
             android:layout_alignParentStart="true"
             android:text="@string/output"
             android:textColor="#ffff"
-            android:layout_marginTop="22dp"
+            android:gravity="center"
             android:textSize="@dimen/home_text_size"/>
-
     </RelativeLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:id="@+id/tableLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="330dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginLeft="290dp"
+        android:layout_marginTop="125dp"
         tools:ignore="RelativeOverlap">
         <TextView
             android:id="@+id/textView23"
@@ -253,6 +234,13 @@
             android:layout_height="wrap_content"
             android:text="@string/output"
             android:textSize="@dimen/ver_text_size" />
+        <TextView
+            android:id="@+id/textView24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/output"
+            android:textSize="@dimen/ver_text_size"
+            android:layout_toEndOf="@+id/textView23"/>
     </RelativeLayout>
 
     <LinearLayout

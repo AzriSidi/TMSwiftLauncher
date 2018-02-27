@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.plamera.tmswiftlauncher.AppsList.HomeScreen">
+    tools:context="com.plamera.tmswiftlauncher.HomeScreen">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="820dp"
@@ -15,13 +15,13 @@
         android:layout_alignParentStart="true">
         <fragment
             android:id="@+id/apps_grid"
-            android:name="com.plamera.tmswiftlauncher.AppsList.AppsGridFragment"
+            android:name="com.plamera.tmswiftlauncher.AppList.AppsGridFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_marginTop="13dp"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginBottom="10dp" />
     </RelativeLayout>
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -60,7 +60,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="190dp"
+        android:layout_height="170dp"
         android:background="@layout/rectangle_widget"
         android:id="@+id/relativeLayout3"
         android:layout_alignParentBottom="true"
@@ -119,7 +119,7 @@
             android:layout_marginTop="8dp"
             android:background="#3796FA"
             android:onClick="testConn"
-            android:src="@drawable/feed_white" />
+            android:src="@drawable/ic_network_check_white" />
 
         <TextView
             android:id="@+id/textView15"
@@ -194,32 +194,6 @@
         android:layout_alignTop="@+id/relativeLayout3"
         android:layout_alignParentStart="true" />
 
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="20dp"
-            android:background="#fff"
-            tools:ignore="UselessParent">
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:gravity="center"
-                android:text="@string/output"
-                android:textColor="#000"
-                android:textSize="@dimen/home_text_size" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_marginTop="22dp"
-                android:background="@android:color/black" />
-        </RelativeLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -250,9 +224,9 @@
         android:id="@+id/relativeLayout4"
         android:layout_width="match_parent"
         android:layout_height="23dp"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/badge_notification_1"
-        android:layout_marginTop="60dp"
+        android:layout_marginBottom="45dp"
         android:background="#fff">
         <TextView
             android:id="@+id/textView4"
@@ -271,11 +245,12 @@
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
-            android:layout_height="23dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="46dp"
+            android:layout_marginBottom="22dp"
             android:text="@string/output"
+            android:gravity="center"
             android:textColor="#ffff"
             android:textSize="@dimen/home_text_size" />
     </RelativeLayout>
