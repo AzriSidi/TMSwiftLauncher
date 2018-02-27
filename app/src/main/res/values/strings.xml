@@ -345,6 +345,13 @@ s -->
     <!-- Appears in the CAB when a shortcut is selected in Customize mode. [CHAR_LIMIT=50] -->
     <string name="cab_shortcut_selection_text">1 shortcut selected</string>
     <string name="output">output</string>
+    <string name="login">LOGIN</string>
+    <string name="test_network">TEST \nNETWORK</string>
+    <string name="help">HELP</string>
+    <string name="call">CALL</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="show">Show</string>
 
     <skip />
 </resources>
