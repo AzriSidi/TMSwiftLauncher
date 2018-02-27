@@ -103,10 +103,10 @@
     </RelativeLayout>
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="280dp"
-        android:layout_height="180dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginLeft="58dp"
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginLeft="75dp"
         android:contentDescription="@string/app_name"
         app:srcCompat="@drawable/tm_vector" />
 <RelativeLayout
@@ -222,12 +222,11 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/tableLayout"
-        android:layout_width="wrap_content"
+        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="290dp"
-        android:layout_marginTop="125dp"
-        tools:ignore="RelativeOverlap">
+        android:layout_marginLeft="295dp"
+        android:layout_marginTop="128dp">
         <TextView
             android:id="@+id/textView23"
             android:layout_width="wrap_content"
