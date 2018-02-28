@@ -51,14 +51,11 @@ public class DeviceService {
     }
 
     public void logOut(){
-        intent = new Intent();
         intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
-        Global.getToken = "";
         Global.status = "Offline";
-        db.deleteContact();
     }
 }
 

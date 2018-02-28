@@ -28,7 +28,6 @@ public class Global {
     public static String loginServer;
     public static String loginServerLevel;
     public static DatabaseHandler mySQLiteAdapter;
-    public static long manualID;
     public static String URLAuthenticate;
     public static Date lastAlertTime;
     public static boolean detailsStillEmpty;

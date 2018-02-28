@@ -27,7 +27,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -80,7 +79,6 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
     EditText userField, passField;
-    TelephonyManager tel;
     TextView output1,output2,dateView,myScroller,textVer,appVer;
     Intent i;
     String carrierName;
@@ -143,7 +141,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         image = findViewById(R.id.imageView1);
-        image.setImageResource(R.drawable.tm_vector);
+        image.setImageResource(R.drawable.tm_white);
         myScroller = findViewById(R.id.textView5);
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
@@ -155,7 +153,6 @@ public class MainActivity extends Activity {
         DisplayUsername = userField.getText().toString();
         cb_showPwd = findViewById(R.id.checkBox_ShowPassword);
         cb_showPwd.setOnCheckedChangeListener(new CheckBoxListener());
-        tel = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         dateView = findViewById(R.id.textView10);
         CheckNetworkRunning = false;
         Global.loginContext = this;
@@ -399,9 +396,9 @@ public class MainActivity extends Activity {
         String fontPath = "fonts/Prototype.ttf";
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
         textVer.setTypeface(tf);
-        textVer.setText("FIRMWARE\nLAUNCHER\nEMM");
+        textVer.setText("FIRMWARE\nEMM\nLAUNCHER");
         appVer.setTypeface(tf);
-        appVer.setText("- "+Global.frmVersion+"\n- "+Global.launcherVer+"\n- "+Global.agentVer);
+        appVer.setText("- "+Global.frmVersion+"\n- "+Global.agentVer+"\n- "+Global.launcherVer);
     }
 
     // ***** To enable GPS at main *********************
@@ -921,6 +918,7 @@ public class MainActivity extends Activity {
             Global.mySQLiteAdapter.updateContact(new UserDetail(Global.usernameBB,Global.getToken,Global.ldapStatus));
             Log.d("QueryLogin: ", "Update");
         } else {
+            Global.mySQLiteAdapter.deleteContact();
             Global.mySQLiteAdapter.insertContact(new UserDetail(Global.usernameBB,Global.getToken,Global.ldapStatus));
             Log.d("QueryLogin: ", "Insert");
         }
@@ -962,7 +960,6 @@ public class MainActivity extends Activity {
             Global.IMEIPhone = jwtDecode.getImei();
             Global.IMSIsimCardPhone = jwtDecode.getImsi();
             Global.frmVersion = jwtDecode.getFirmVer();
-            intentLogin();
         } catch (Exception e) {
             e.printStackTrace();
         }

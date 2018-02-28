@@ -101,14 +101,6 @@
             android:layout_marginLeft="14dp"
             android:layout_alignTop="@+id/textView18" />
     </RelativeLayout>
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="250dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginLeft="75dp"
-        android:contentDescription="@string/app_name"
-        app:srcCompat="@drawable/tm_vector" />
 <RelativeLayout
     android:layout_width="350dp"
     android:layout_height="220dp"
@@ -201,7 +193,6 @@
             android:textSize="@dimen/home_text_size"
             android:gravity="center" />
     </RelativeLayout>
-
     <RelativeLayout
         android:id="@+id/relativeLayout2"
         android:layout_width="match_parent"
@@ -220,28 +211,37 @@
             android:gravity="center"
             android:textSize="@dimen/home_text_size"/>
     </RelativeLayout>
-
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="295dp"
-        android:layout_marginTop="128dp">
+        android:gravity="center"
+        android:layout_marginTop="100dp">
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="100dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="2dp"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/tm_white" />
         <TextView
             android:id="@+id/textView23"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/output"
-            android:textSize="@dimen/ver_text_size" />
+            android:textColor="#ffff"
+            android:layout_marginLeft="15dp"
+            android:textSize="@dimen/ver_text_size"
+            android:layout_toEndOf="@+id/imageView1"/>
         <TextView
             android:id="@+id/textView24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/output"
+            android:textColor="#ffff"
             android:textSize="@dimen/ver_text_size"
             android:layout_toEndOf="@+id/textView23"/>
     </RelativeLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="20dp"
@@ -266,5 +266,4 @@
             android:layout_weight="1"
             android:textSize="@dimen/home_text_size"/>
     </LinearLayout>
-
 </RelativeLayout>
