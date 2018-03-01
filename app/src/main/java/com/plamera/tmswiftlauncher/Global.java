@@ -70,7 +70,7 @@ public class Global {
     public static int getCid = 0;
     public static String batState = "";
     public static String getLoginStatus = "";
-    public static String status = "Offline";
+    public static String status = "";
     public static int batLvl = 0;
     public static String launcherVer = "";
     public static String agentVer = "";

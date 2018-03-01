@@ -111,7 +111,6 @@ public class HomeScreen extends FragmentActivity {
         IntentData();
         deviceService.startSwift();
         deviceService.startTrackLog();
-        Global.status = "Online";
     }
 
     @Override

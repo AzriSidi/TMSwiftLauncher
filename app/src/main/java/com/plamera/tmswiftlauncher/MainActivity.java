@@ -210,15 +210,13 @@ public class MainActivity extends Activity {
                 CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 5000);
                 getWSWhiteList getWS = new getWSWhiteList();
                 getWS.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                SimpleDateFormat sdfDate = new SimpleDateFormat(
-                        "dd/MM/yyyy HH:mm:ss");
+                SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 String format = sdfDate.format(new Date());
                 Log.d(TAG, "Current Timestamp: " + format);
                 if (readytogotomainmenu) {
                     readytogotomainmenu = false;
                     Global.MustPassLockScreen = false;
                     Global.LoginMonitor = false;
-                    //CheckGPSProvider();
                 }
                 Global.PhoneValid = true;
 
@@ -619,23 +617,6 @@ public class MainActivity extends Activity {
                     "Please wait while the application is being initialized...",
                     Toast.LENGTH_LONG).show();
 
-        } else {
-            //no_username
-            if (username.length() == 0) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(
-                        this);
-                builder.setMessage("Please Key In Your Username")
-                        .setCancelable(false)
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(
-                                            DialogInterface dialog,
-                                            int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                builder.show();
-            }
         }
 
         if (username.regionMatches(0, "*", 0, 1)) {
@@ -978,6 +959,7 @@ public class MainActivity extends Activity {
         i.putExtra("loginServer",Global.loginServer);
         i.putExtra("loginType",Global.UserType);
         i.putExtra("strVersion",Global.strVersion);
+        Global.status = "Online";
         context.startActivity(i);
     }
 
