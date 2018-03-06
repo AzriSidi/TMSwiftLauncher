@@ -489,8 +489,6 @@ public class MainActivity extends Activity {
 
     }
 
-
-
     public static class EmmReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -850,7 +848,7 @@ public class MainActivity extends Activity {
                 LoginParams();
             }else {
                 String mgs = ("Invalid Username or Password."
-                        + " Please re-enter your login info or report at : "
+                        + " Please reenter your login info or report at : "
                         + "http://10.45.3.139/tmdms/default");
                 customBuilder.setMessage(mgs)
                              .setPositiveButton("OK", new DialogInterface.OnClickListener() {
