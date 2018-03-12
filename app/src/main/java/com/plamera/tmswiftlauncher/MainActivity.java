@@ -376,6 +376,7 @@ public class MainActivity extends Activity {
             //carrier_name
             carrierName = deviceInfo.getCarrier();
             //output1
+            Log.d(TAG,"IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
             output1.setText("IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
             //Signal_Strength
             SimState = deviceInfo.getSimState();
@@ -1219,20 +1220,20 @@ public class MainActivity extends Activity {
     }
 
     public void helpPopUp(){
-        final String url = "http://10.45.3.139/tmdms/default";
-        String title = "How to use CMS:";
-        String mgs = "1. Goto "+url+"\n"
-                + "2. Click On Contact Us\n"
-                + "3. Key In Swift ID\n"
-                + "4. If Swift ID Valid, e.g TM35170, Problem " +
-                "\u00A0\u00A0\u00A0\u00A0Type will be enabled\n"
-                + "5. Select Problem Type\n"
-                + "6. Select Sub Problem Type\n"
-                + "7. Enter Detail Problem Description\n"
-                + "8. Click Submit\n";
+        final String url = "http://tmp.tm.com.my/dms/";
+        String title = "Cara menggunakan DMS:";
+        String mgs = "1. Pergi ke "+url+"\n"
+                + "2. Klik pada menu Contact Us\n"
+                + "3. Masukkan Swift ID\n"
+                + "4. Jika Swift ID disahkan, cth TM35170,\n" +
+                "\u00A0\u00A0\u00A0\u00A0Problem Type akan diaktifkan\n"
+                + "5. Pilih Problem Type\n"
+                + "6. Pilih Sub Problem Type\n"
+                + "7. Masukkan masalah secara terperinci\n"
+                + "8. Klik Submit\n";
         customBuilder.setTitle(title);
         customBuilder.setMessage(mgs)
-                .setPositiveButton("Go Link", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Go to Link", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int which) {
                         dialog.dismiss();
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
