@@ -885,7 +885,7 @@ public class MainActivity extends Activity {
                 Global.UserType = objLogin.getString("LoginStatus");
                 Global.getToken = jwtEncode.creteToken();
                 intentLogin();
-                SuccessCallBack("Successfully Login");
+                SuccessCallBack();
         }catch (JSONException e){
             Log.e("JSONException: ",e.toString());
         }catch (NullPointerException e){
@@ -1903,7 +1903,7 @@ public class MainActivity extends Activity {
             // disable login button here
             Log.d("InitTask", "Start");
             InitTaskRunning = true;
-            if (Global.LogAsAdmin == true) {
+            if (Global.LogAsAdmin) {
                 Global.LogAsAdmin = false;
             }
             queryNetwork();
@@ -2121,12 +2121,12 @@ public class MainActivity extends Activity {
                 .getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = app_preferences.edit();
         editor.putString("usernamePref", PreferUsername);
-        editor.commit();
+        editor.apply();
     }
 
     // Process after successes login to SWIFT
-    public void SuccessCallBack(String TextResult) {
-        Log.d(TAG, "SuccessCallBack: " + TextResult);
+    public void SuccessCallBack() {
+        Log.d(TAG, "SuccessCallBack: " + "Successfully Login");
         if (logininvisible) {
             readytogotomainmenu = true;
         }else {
