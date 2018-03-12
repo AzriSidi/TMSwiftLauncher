@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,7 +20,6 @@
             android:layout_width="@dimen/btn_size"
             android:layout_height="@dimen/btn_size"
             android:src="@drawable/ic_help_outline"
-            android:background="@drawable/ripple_effect"
             android:onClick="helpBtn"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="35dp"
@@ -30,7 +28,6 @@
             android:id="@+id/btnLogin"
             android:layout_width="@dimen/btn_size"
             android:layout_height="@dimen/btn_size"
-            android:background="@drawable/ripple_effect"
             android:src="@drawable/ic_lock_open"
             android:onClick="showApps"
             android:focusable="true"
@@ -42,7 +39,6 @@
             android:layout_width="@dimen/btn_size"
             android:layout_height="@dimen/btn_size"
             android:onClick="testConnect"
-            android:background="@drawable/ripple_effect"
             android:src="@drawable/ic_check_network"
             android:layout_marginLeft="35dp"
             android:layout_toEndOf="@+id/btnHelp"
@@ -53,7 +49,6 @@
             android:layout_height="@dimen/btn_size"
             android:layout_alignParentTop="true"
             android:src="@drawable/ic_local_phone"
-            android:background="@drawable/ripple_effect"
             android:onClick="Dialer" />
 
         <TextView
@@ -223,7 +218,7 @@
             android:layout_height="54dp"
             android:layout_marginTop="2dp"
             android:contentDescription="@string/app_name"
-            app:srcCompat="@drawable/tm_white" />
+            android:background="@drawable/tm_white" />
         <TextView
             android:id="@+id/textView23"
             android:layout_width="wrap_content"

@@ -34,7 +34,6 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -117,7 +116,6 @@ public class MainActivity extends Activity {
     public String DataMobile = "";
     AlertDialog.Builder customBuilder;
     String SimState;
-    ImageView image;
     Intent intent;
     JwtEncode jwtEncode;
     JwtDecode jwtDecode;
@@ -140,8 +138,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        image = findViewById(R.id.imageView1);
-        image.setImageResource(R.drawable.tm_white);
         myScroller = findViewById(R.id.textView5);
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
@@ -1225,8 +1221,8 @@ public class MainActivity extends Activity {
         String mgs = "1. Pergi ke "+url+"\n"
                 + "2. Klik pada menu Contact Us\n"
                 + "3. Masukkan Swift ID\n"
-                + "4. Jika Swift ID disahkan, cth TM35170,\n" +
-                "\u00A0\u00A0\u00A0\u00A0Problem Type akan diaktifkan\n"
+                + "4. Jika Swift ID disahkan, cth TM35170,\n"
+                + "\u00A0\u00A0\u00A0\u00A0Problem Type akan diaktifkan\n"
                 + "5. Pilih Problem Type\n"
                 + "6. Pilih Sub Problem Type\n"
                 + "7. Masukkan masalah secara terperinci\n"
