@@ -96,7 +96,6 @@ public class HomeScreen extends FragmentActivity {
         agentVer = findViewById(R.id.textView18);
         serverName = findViewById(R.id.textView19);
         appVer = findViewById(R.id.textView20);
-
         notifyTask = findViewById(R.id.badge_notification);
         notifyQueue = findViewById(R.id.badge_notification_1);
         tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -274,7 +273,7 @@ public class HomeScreen extends FragmentActivity {
                 loginState = "LOCAL";
             }
             appVer.setText("LAUNCHER - "+ Global.launcherVer + " | EMM - "+Global.agentVer
-                    + " | SWIFT - "+Global.swiftVer +" | "+loginState);
+                    + " | SWIFT - "+Global.swiftVer +" | "+Global.loginServer+" | "+loginState);
         }catch (NullPointerException e) {
            Log.e(TAG,"NullPointerException: "+e);
         }

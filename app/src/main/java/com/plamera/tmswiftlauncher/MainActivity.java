@@ -630,7 +630,7 @@ public class MainActivity extends Activity {
             Global.usernameBB = username.substring(1, username.length());
             Global.passwordBB = password;
         } else if (this.username.regionMatches(0, "$", 0, 1)) {
-            Global.loginServer = "SIT";// ahmad tambah
+            Global.loginServer = "DR";// ahmad tambah
             Global.URLSwift = "http://10.41.102.70/";
             Global.usernameBB = this.username.substring(1, username.length());
             Global.passwordBB = password;
@@ -665,15 +665,13 @@ public class MainActivity extends Activity {
                 //Global.URLAuthenticate = "http://10.41.102.81:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
                 LoginTask.execute();
             } else if (Global.loginServer.equals("SIT")) {
-                if (Global.connectedToWiFi) {
-                    Global.UrlLogin = urlLogin; //sit
-                    //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
-                    LoginTask.execute();
-                } else {
-                    Global.UrlLogin = urlLogin; //sit
-                    //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
-                    LoginTask.execute();
-                }
+                Global.UrlLogin = urlLogin; //sit
+                //Global.URLAuthenticate = "http://10.106.132.7:8088/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
+                LoginTask.execute();
+            }else if (Global.loginServer.equals("DR")) {
+                Global.UrlLogin = urlLogin; //sit
+                //Global.URLAuthenticate = "http://10.41.102.81:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
+                LoginTask.execute();
             } else if (Global.loginServer.equals("PRO")) {
                 Global.UrlLogin = urlLogin;//prod
                 //Global.URLAuthenticate = "http://10.41.102.70:8080/FLSWIFT_DEVICE_LOGIN/DeviceLoginWSService?wsdl";
@@ -702,7 +700,7 @@ public class MainActivity extends Activity {
                 Log.d(TAG,"tokenDB: "+Global.getToken);
                 if (Global.getToken == "") {
                     customBuilder
-                            .setMessage("Maaf, token anda tidak tersedia."
+                            .setMessage("Maaf, token anda tidak wujud."
                                     + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
                             .setPositiveButton("OK",
                                     new DialogInterface.OnClickListener() {
@@ -739,8 +737,8 @@ public class MainActivity extends Activity {
                             intentLogin();
                         }else {
                             customBuilder
-                                    .setMessage("Staff ID and Password does not match with token."
-                                            + " Please run test server connection.")
+                                    .setMessage("Staff ID atau kata laluan tidak sepadan dengan token."
+                                            + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
                                     .setPositiveButton("OK",
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(
@@ -844,7 +842,7 @@ public class MainActivity extends Activity {
             if (Global.loginResult) {
                 LoginParams();
             }else {
-                String mgs = ("Nama pengguna atau kata laluan tidak sah."
+                String mgs = ("Staff ID atau kata laluan tidak sah."
                         + " Sila masukkan semula maklumat log masuk anda atau laporkan di : "
                         + "http://10.45.3.139/tmdms/default");
                 customBuilder.setMessage(mgs)
