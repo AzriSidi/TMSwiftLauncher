@@ -703,7 +703,7 @@ public class MainActivity extends Activity {
                 if (Global.getToken == "") {
                     customBuilder
                             .setMessage("Maaf, token anda tidak tersedia."
-                                    + " Sila klik butang 'Test Network' sehingga rangkaian dihubungkan.")
+                                    + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
                             .setPositiveButton("OK",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(
@@ -720,7 +720,7 @@ public class MainActivity extends Activity {
                     if(currentTime >= convExp){
                         customBuilder
                                 .setMessage("Maaf, token anda sudah tamat tempoh."
-                                        + " Sila klik butang 'Test Network' sehingga rangkaian dihubungkan.")
+                                        + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
                                 .setPositiveButton("OK",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(
