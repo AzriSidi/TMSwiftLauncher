@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,18 +26,19 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tableLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="25dp"
         android:layout_marginTop="25dp"
         android:background="#210B61">
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="40dp"
-                android:layout_height="25dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="3dp"
                 android:layout_marginLeft="5dp"
-                app:srcCompat="@drawable/tm_white"/>
+                android:background="@drawable/tm_white"/>
             <TextView
                 android:id="@+id/textView20"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/output"
                 android:textSize="@dimen/ver_text_size_2"

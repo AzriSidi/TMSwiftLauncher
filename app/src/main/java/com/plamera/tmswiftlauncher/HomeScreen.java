@@ -21,7 +21,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,8 +85,6 @@ public class HomeScreen extends FragmentActivity {
         setContentView(R.layout.home_screen);
         db = new DatabaseHandler(this);
 
-        ImageView image = findViewById(R.id.imageView);
-        image.setImageResource(R.drawable.tm_white);
         myScroller = findViewById(R.id.textView1);
         networkProvider = findViewById(R.id.textView2);
         broadcastInfo = findViewById(R.id.textView4);
