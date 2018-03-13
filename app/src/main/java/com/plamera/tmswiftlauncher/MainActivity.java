@@ -810,7 +810,6 @@ public class MainActivity extends Activity {
                 objLogin.put("password",password);
                 objLogin.put("imei",Global.IMEIPhone);
                 objLogin.put("imsi",Global.IMSIsimCardPhone);
-                objLogin.put("super_flag",Global.NumberOFUnauthorize);
                 objLogin.put("app_ver",currentVersionCode);
                 objLogin.put("firm_ver",Global.frmVersion);
                 json = objLogin.toString();
