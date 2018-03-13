@@ -702,8 +702,8 @@ public class MainActivity extends Activity {
                 Log.d(TAG,"tokenDB: "+Global.getToken);
                 if (Global.getToken == "") {
                     customBuilder
-                            .setMessage("Sorry, your token are not available."
-                                    + " Please run test server connection.")
+                            .setMessage("Maaf, token anda tidak tersedia."
+                                    + " Sila klik butang 'Test Network' sehingga rangkaian dihubungkan.")
                             .setPositiveButton("OK",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(
@@ -719,8 +719,8 @@ public class MainActivity extends Activity {
                     long convExp = Long.parseLong(jwtDecode.getExp());
                     if(currentTime >= convExp){
                         customBuilder
-                                .setMessage("Your token was already expired. "
-                                        + "Please run test server connection.")
+                                .setMessage("Maaf, token anda sudah tamat tempoh."
+                                        + " Sila klik butang 'Test Network' sehingga rangkaian dihubungkan.")
                                 .setPositiveButton("OK",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(
@@ -844,8 +844,8 @@ public class MainActivity extends Activity {
             if (Global.loginResult) {
                 LoginParams();
             }else {
-                String mgs = ("Invalid Username or Password."
-                        + " Please reenter your login info or report at : "
+                String mgs = ("Nama pengguna atau kata laluan tidak sah."
+                        + " Sila masukkan semula maklumat log masuk anda atau laporkan di : "
                         + "http://10.45.3.139/tmdms/default");
                 customBuilder.setMessage(mgs)
                              .setPositiveButton("OK", new DialogInterface.OnClickListener() {
