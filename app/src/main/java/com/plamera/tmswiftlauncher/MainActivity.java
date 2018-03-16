@@ -737,7 +737,7 @@ public class MainActivity extends Activity {
                             intentLogin();
                         }else {
                             customBuilder
-                                    .setMessage("Staff ID atau kata laluan tidak sepadan dengan token."
+                                    .setMessage("User ID atau kata laluan tidak sepadan dengan token."
                                             + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
                                     .setPositiveButton("OK",
                                             new DialogInterface.OnClickListener() {
@@ -841,7 +841,7 @@ public class MainActivity extends Activity {
             if (Global.loginResult) {
                 LoginParams();
             }else {
-                String mgs = ("Staff ID atau kata laluan tidak sah."
+                String mgs = ("User ID atau kata laluan tidak sah."
                         + " Sila masukkan semula maklumat log masuk anda atau laporkan di : "
                         + "http://10.45.3.139/tmdms/default");
                 customBuilder.setMessage(mgs)
@@ -1215,22 +1215,22 @@ public class MainActivity extends Activity {
     public void helpPopUp(){
         final String url = "http://tmp.tm.com.my/dms/";
         String title = "Cara menggunakan DMS:";
-        String mgs = "1. Pergi ke "+url+"\n"
-                + "2. Klik pada menu Contact Us\n"
-                + "3. Masukkan Swift ID\n"
-                + "4. Jika Swift ID disahkan, cth TM35170,\n"
+        String mgs = "1. Gunakan PC/Laptop yang disambungkan\n"
+                + "\u00A0\u00A0\u00A0\u00A0ke internet\n"
+                + "2. Pergi ke "+url+"\n"
+                + "3. Klik pada menu Contact Us\n"
+                + "4. Masukkan User ID\n"
+                + "5. Jika Swift ID disahkan, cth TM35170,\n"
                 + "\u00A0\u00A0\u00A0\u00A0Problem Type akan diaktifkan\n"
-                + "5. Pilih Problem Type\n"
-                + "6. Pilih Sub Problem Type\n"
-                + "7. Masukkan masalah secara terperinci\n"
-                + "8. Klik Submit\n";
+                + "6. Pilih Problem Type\n"
+                + "7. Pilih Sub Problem Type\n"
+                + "8. Masukkan masalah secara terperinci\n"
+                + "9. Klik Submit\n";
         customBuilder.setTitle(title);
         customBuilder.setMessage(mgs)
-                .setPositiveButton("Go to Link", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int which) {
                         dialog.dismiss();
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        startActivity(browserIntent);
                     }
                 });
         customBuilder.show();
