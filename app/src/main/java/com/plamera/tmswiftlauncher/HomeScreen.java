@@ -83,7 +83,6 @@ public class HomeScreen extends FragmentActivity {
         super.onCreate(savedInstanceState);
         instance = this;
         setContentView(R.layout.home_screen);
-        db = new DatabaseHandler(this);
 
         myScroller = findViewById(R.id.textView1);
         networkProvider = findViewById(R.id.textView2);
@@ -98,6 +97,7 @@ public class HomeScreen extends FragmentActivity {
         tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
         DisplayUsername = username;
+        db = new DatabaseHandler(this);
         device = new DeviceOperate(this);
         deviceService = new DeviceService(this);
         deviceInfo = new DeviceInfo(this);
