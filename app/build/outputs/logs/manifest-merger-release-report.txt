@@ -95,18 +95,18 @@ ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\A
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:39:9-44
 	android:name
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:38:22-70
-uses-permission#android.permission.GET_ACCOUNTS_PRIVILEGED
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:40:5-82
+uses-permission#android.Manifest.permission.GET_ACCOUNTS_PRIVILEGED
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:40:5-91
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:40:22-79
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:40:22-88
 uses-permission#android.permission.READ_SETTINGS
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:41:5-72
 	android:name
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:41:22-69
-uses-permission#android.permission.WRITE_SETTINGS
-ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:42:5-73
+uses-permission#android.Manifest.permission.WRITE_SETTINGS
+ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:42:5-82
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:42:22-70
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:42:22-79
 uses-permission#android.permission.READ_PHONE_STATE
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:43:5-74
 	android:name

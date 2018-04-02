@@ -1,5 +1,6 @@
 package com.plamera.tmswiftlauncher;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,6 +28,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -176,6 +180,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         customBuilder = new AlertDialog.Builder(this);
+        AppPermissions();
         try {
             Log.d(TAG, "loginStatus: " + Global.status);
             if (Global.status.equals("Online")) {
@@ -194,14 +199,12 @@ public class MainActivity extends Activity {
                         checkServerRunning = false;
                         Global.CanPing = true;
                         queryNetwork();
-                        DeviceDetail();
                     }
                 };
                 IntentFilter networkIntentFilter = new IntentFilter(
                         ConnectivityManager.CONNECTIVITY_ACTION);
                 registerReceiver(networkStateReceiver, networkIntentFilter);
                 queryNetwork();
-                DeviceDetail();
                 CheckNetworkTimer = new Timer();
                 CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 5000);
                 getWSWhiteList getWS = new getWSWhiteList();
@@ -275,7 +278,6 @@ public class MainActivity extends Activity {
                 dateView.setText(dateString);
 
                 clearField();
-                AppVerText();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -362,7 +364,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    @SuppressLint("MissingPermission")
     private void DeviceDetail() {
         try {
             //imei
@@ -379,7 +380,38 @@ public class MainActivity extends Activity {
             //output2
             output2.setText(carrierName+" | "+deviceInfo.getLocalIP()+" | "+SimState);
         } catch (Exception e) {
-            Log.d("Exception",e.toString());
+            Log.e(TAG,"Exception: "+e.toString());
+        }
+    }
+
+    public void AppPermissions(){
+       /* int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_APN_SETTINGS);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_APN_SETTINGS}, 1);
+        } else {
+            AppVerText();
+        }*/
+        int readPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE);
+        if (readPermission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for(String permission: permissions){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
+                Log.e(TAG, "denied: "+permission);
+            }else{
+                if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED){
+                    DeviceDetail();
+                } else{
+                    Log.e(TAG, "set to never ask again: "+permission);
+                }
+            }
         }
     }
 
@@ -601,7 +633,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void CheckLoginServer() throws Exception {
+    private void CheckLoginServer() {
         customBuilder = new AlertDialog.Builder(this);
         username = userField.getText().toString();
         password = passField.getText().toString();
@@ -1163,7 +1195,7 @@ public class MainActivity extends Activity {
 
     };
 
-    public void showApps(View v) throws Exception {
+    public void showApps(View v){
         CheckLoginServer();
     }
 
@@ -1870,7 +1902,6 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Void result) {
             if (Global.CanPing) {
                 queryNetwork();
-                DeviceDetail();
             } else {
                 CheckNetworkRunning = false;
                 if (checkServerRunning) {
@@ -1900,7 +1931,6 @@ public class MainActivity extends Activity {
                 Global.LogAsAdmin = false;
             }
             queryNetwork();
-            DeviceDetail();
         }
 
         @Override
