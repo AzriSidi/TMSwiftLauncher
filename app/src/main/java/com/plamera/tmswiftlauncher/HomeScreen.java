@@ -124,7 +124,7 @@ public class HomeScreen extends FragmentActivity {
             Global.FFreqSummDate = "";
 
             CheckNetworkTimer = new Timer();
-            CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 5000);
+            CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 15000);
 
             registerReceiver();
             displayReceiver();
