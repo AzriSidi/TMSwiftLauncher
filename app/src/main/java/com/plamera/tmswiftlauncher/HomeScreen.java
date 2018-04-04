@@ -77,6 +77,7 @@ public class HomeScreen extends FragmentActivity {
     String urlSwift = "http://10.54.97.227:8888/";
     DeviceService deviceService;
     DeviceInfo deviceInfo;
+    Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -362,7 +363,7 @@ public class HomeScreen extends FragmentActivity {
             pd = ProgressDialog.show(this, "",
                     "Please Wait... Testing Server Connection",
                     true, false);
-            Timer timer = new Timer();
+            timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -849,6 +850,7 @@ public class HomeScreen extends FragmentActivity {
                 if (pd != null) {
                     if (pd.isShowing()) {
                         pd.dismiss();
+                        timer.cancel();
                     }
                 }
                 if (checkServerRunning) {

@@ -128,6 +128,7 @@ public class MainActivity extends Activity {
     DeviceInfo deviceInfo;
     DeviceService deviceService;
     AppsVer appsVer;
+    Timer timer;
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
@@ -1161,7 +1162,7 @@ public class MainActivity extends Activity {
             pd = ProgressDialog.show(MainActivity.this, "",
                             "Please Wait... Testing Server Connection",
                             true, false);
-            Timer timer = new Timer();
+            timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -1666,6 +1667,7 @@ public class MainActivity extends Activity {
             if (Global.ServerStatus.contains("Connected to")){
                 if (pd != null) {
                     if (pd.isShowing()) {
+                        timer.cancel();
                         pd.dismiss();
                     }
                 }
