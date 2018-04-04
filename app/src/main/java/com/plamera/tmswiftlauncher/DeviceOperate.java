@@ -1,14 +1,11 @@
 package com.plamera.tmswiftlauncher;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,8 +15,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
@@ -49,12 +44,10 @@ public class DeviceOperate {
     LocationManager locationManager;
     String TAG = "DeviceOperate";
     Context context;
-    Activity activity;
 
     @SuppressLint("MissingPermission")
     public DeviceOperate(Context context) {
         this.context = context;
-        this.activity = (Activity) context;
         locationService = LocationServiceImpl.getInstance(context);
         telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -63,15 +56,9 @@ public class DeviceOperate {
         iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         context.registerReceiver(batLvlReceiver, iFilter);
         context.registerReceiver(batStatusReceiver, iFilter);
+        cellLocation = (GsmCellLocation) telephonyManager.getCellLocation();
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         findLocation();
-        if (ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }else {
-            cellLocation = (GsmCellLocation) telephonyManager.getCellLocation();
-        }
     }
 
     public BroadcastReceiver batLvlReceiver = new BroadcastReceiver() {

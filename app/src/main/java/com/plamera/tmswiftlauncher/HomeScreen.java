@@ -105,8 +105,12 @@ public class HomeScreen extends FragmentActivity {
         registerReceiver();
         getSwiftApp();
         IntentData();
-        deviceService.startSwift();
         deviceService.startTrackLog();
+        if(deviceService.isMyServiceRunning()){
+            Log.e(TAG, "SwiftState: Already running");
+        }else {
+            deviceService.startSwift();
+        }
     }
 
     @Override
@@ -200,7 +204,7 @@ public class HomeScreen extends FragmentActivity {
                     CheckNetworkRunning = false;
                     checkServerRunning = false;
                     Global.CanPing = true;
-                    queryNetwork();
+                    deviceInfo.queryNetwork();
                     deviceState();
                 }
             };
@@ -424,7 +428,7 @@ public class HomeScreen extends FragmentActivity {
             if (Global.LogAsAdmin) {
                 Global.LogAsAdmin = false;
             }
-            queryNetwork();
+            deviceInfo.queryNetwork();
         }
 
         @Override
@@ -918,81 +922,6 @@ public class HomeScreen extends FragmentActivity {
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////
-    // FUNCTION NAME : queryNetwork
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    private void queryNetwork() {
-        String usernameBB = Global.usernameBB;
-        String netPre = "";
-        try {
-            Global.myStatus = usernameBB+" | ";
-            ConnectivityManager connMgr = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            final android.net.NetworkInfo wifi = connMgr
-                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            final android.net.NetworkInfo mobile = connMgr
-                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            Global.connected3G = mobile.isConnected();
-            Global.connectedToWiFi = wifi.isConnected();
-            // added by amir on 2013-01-08
-
-            if (Global.connected3G || Global.connectedToWiFi) {
-                Global.localIP = deviceInfo.getLocalIP();
-            }
-
-            String activeConn;
-            if (connMgr.getActiveNetworkInfo() != null) {
-                activeConn = connMgr.getActiveNetworkInfo().getSubtypeName();
-            } else {
-                activeConn = "NONE";
-            }
-
-            switch (activeConn) {
-                case "LTE":
-                    netPre = "4G";
-                    break;
-                case "EDGE":
-                    netPre = "E";
-                    break;
-                default:
-                    netPre = "3G";
-                    break;
-            }
-
-            String activeConnPlus = activeConn;
-            if (Global.connectedToWiFi) {
-                activeConnPlus = "WIFI ";
-                Global.netType = "WIFI/" + device.getWifiSsid();
-            } else if (Global.connected3G) {
-                // Global.URLSwift = "http://10.41.102.70/";
-                activeConnPlus += "";
-                Global.netType = netPre+"/"+activeConnPlus;
-            } else if ((!Global.connectedToWiFi) && (!Global.connected3G)) {
-                Global.localIP = deviceInfo.getLocalIP();
-                activeConnPlus = "None";
-                Global.ServerStatus = "Not Connected";
-                Global.netType = activeConnPlus;
-            }
-
-            Global.myStatus += activeConnPlus;
-            myScroller.setText(Global.myStatus + " |  SERVER: "
-                    + Global.ServerStatus);
-            if (Global.ServerStatus.contains("Not Connected")) {
-                myScroller.setBackgroundColor(Color.RED);
-            } else if (Global.ServerStatus.contains("Unknown")) {
-                myScroller.setBackgroundColor(Color.RED);
-            } else {
-                if (activeConnPlus.contains("WIFI")) {
-                    myScroller.setBackgroundColor(Color.parseColor("#FF8000"));
-                } else if (Global.connected3G) {
-                    myScroller.setBackgroundColor(Color.parseColor("#210B61"));
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Exception: "+e.toString());
-        }
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
     // FUNCTION NAME : PingServerStatus
     // //////////////////////////////////////////////////////////////////////////////////////////////////
     // ping to maxis gateway
@@ -1116,7 +1045,7 @@ public class HomeScreen extends FragmentActivity {
         @Override
         protected void onPostExecute(Void result) {
             if (Global.CanPing) {
-                queryNetwork();
+                deviceInfo.queryNetwork();
             } else {
                 CheckNetworkRunning = false;
                 if (checkServerRunning) {

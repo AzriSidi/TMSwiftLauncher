@@ -5,10 +5,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.apache.http.conn.util.InetAddressUtils;
 
@@ -22,10 +25,16 @@ public class DeviceInfo {
     String imei,imsi,carrierName,firmVer,simCard,simState;
     Context context;
     Activity activity;
+    String CLASS;
+    DeviceOperate device;
+    TextView myScroller;
 
     public DeviceInfo(Context context){
         this.context = context;
         this.activity = (Activity) context;
+        CLASS = context.getClass().getSimpleName();
+        device = new DeviceOperate(context);
+        myScroller = activity.findViewById(R.id.textView1);
         tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
     }
 
@@ -110,6 +119,78 @@ public class DeviceInfo {
             Log.e("getLocalIP", ex.toString());
         }
         return "Not available";
+    }
+
+    public void queryNetwork() {
+        String usernameBB = Global.usernameBB;
+        String netPre = "";
+        try {
+            Global.myStatus = usernameBB+" | ";
+            ConnectivityManager connMgr = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            final android.net.NetworkInfo wifi = connMgr
+                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            final android.net.NetworkInfo mobile = connMgr
+                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            Global.connected3G = mobile.isConnected();
+            Global.connectedToWiFi = wifi.isConnected();
+            // added by amir on 2013-01-08
+
+            if (Global.connected3G || Global.connectedToWiFi) {
+                Global.localIP = getLocalIP();
+            }
+
+            String activeConn;
+            if (connMgr.getActiveNetworkInfo() != null) {
+                activeConn = connMgr.getActiveNetworkInfo().getSubtypeName();
+            } else {
+                activeConn = "NONE";
+            }
+
+            switch (activeConn) {
+                case "LTE":
+                    netPre = "4G";
+                    break;
+                case "EDGE":
+                    netPre = "E";
+                    break;
+                default:
+                    netPre = "3G";
+                    break;
+            }
+
+            String activeConnPlus = activeConn;
+            if (Global.connectedToWiFi) {
+                activeConnPlus = "WIFI ";
+                Global.netType = "WIFI/" + device.getWifiSsid();
+            } else if (Global.connected3G) {
+                // Global.URLSwift = "http://10.41.102.70/";
+                activeConnPlus += "";
+                Global.netType = netPre+"/"+activeConnPlus;
+            } else if ((!Global.connectedToWiFi) && (!Global.connected3G)) {
+                Global.localIP = getLocalIP();
+                activeConnPlus = "None";
+                Global.ServerStatus = "Not Connected";
+                Global.netType = activeConnPlus;
+            }
+
+            Global.myStatus += activeConnPlus;
+            myScroller.setText(Global.myStatus + " |  SERVER: "
+                    + Global.ServerStatus);
+            if (Global.ServerStatus.contains("Not Connected")) {
+                myScroller.setBackgroundColor(Color.RED);
+            } else if (Global.ServerStatus.contains("Unknown")) {
+                myScroller.setBackgroundColor(Color.RED);
+            } else {
+                if (activeConnPlus.contains("WIFI")) {
+                    myScroller.setBackgroundColor(Color.parseColor("#FF8000"));
+                } else if (Global.connected3G) {
+                    myScroller.setBackgroundColor(Color.parseColor("#210B61"));
+                }
+            }
+        } catch (Exception e) {
+            Log.e(CLASS, "Exception: "+e.toString());
+        }
     }
 
     public void noImsiPopUp(){

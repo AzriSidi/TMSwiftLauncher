@@ -1,6 +1,5 @@
 package com.plamera.tmswiftlauncher;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,9 +27,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -82,7 +78,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
     EditText userField, passField;
-    TextView output1,output2,dateView,myScroller,textVer,appVer;
+    TextView output1,output2,dateView,myScroller,appVer;
     Intent i;
     String carrierName;
     String Serveradd, ServerName;
@@ -115,11 +111,12 @@ public class MainActivity extends Activity {
     public boolean readytogotomainmenu = false;
     Timer myTimer;
     LoginTaskAsync LoginTask;
+    TestNetTask testNetTask;
     public String MessageFailDialog = "";
     public boolean readytoshowdialog = false;
     public String DataMobile = "";
     AlertDialog.Builder customBuilder;
-    String SimState;
+    String signalStrength;
     Intent intent;
     JwtEncode jwtEncode;
     JwtDecode jwtDecode;
@@ -130,6 +127,7 @@ public class MainActivity extends Activity {
     long currentTime = System.currentTimeMillis();
     DeviceOperate deviceOperate;
     DeviceInfo deviceInfo;
+    DeviceService deviceService;
     AppsVer appsVer;
 
     //url
@@ -141,13 +139,12 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.layout_3_2);
         myScroller = findViewById(R.id.textView5);
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
         output1 = findViewById(R.id.textView2);
         output2 = findViewById(R.id.textView7);
-        textVer = findViewById(R.id.textView23);
         appVer = findViewById(R.id.textView24);
 
         DisplayUsername = userField.getText().toString();
@@ -165,22 +162,22 @@ public class MainActivity extends Activity {
         jwtEncode = new JwtEncode();
         jwtDecode = new JwtDecode();
         Global.mySQLiteAdapter = new DatabaseHandler(this);
-        deviceOperate = new DeviceOperate(this);
         deviceInfo = new DeviceInfo(this);
+        deviceService = new DeviceService(this);
         appsVer = new AppsVer(this);
 
-        LoginToken();
         startAgent();
         getPackage();
         getWhiteList();
         AppVerText();
+        DeviceDetail();
+        deviceService.stopSwift();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         customBuilder = new AlertDialog.Builder(this);
-        AppPermissions();
         try {
             Log.d(TAG, "loginStatus: " + Global.status);
             if (Global.status.equals("Online")) {
@@ -206,7 +203,7 @@ public class MainActivity extends Activity {
                 registerReceiver(networkStateReceiver, networkIntentFilter);
                 queryNetwork();
                 CheckNetworkTimer = new Timer();
-                CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 5000);
+                CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(),0,5000);
                 getWSWhiteList getWS = new getWSWhiteList();
                 getWS.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -366,52 +363,15 @@ public class MainActivity extends Activity {
 
     private void DeviceDetail() {
         try {
-            //imei
             Global.IMEIPhone = deviceInfo.getImei();
-            //imsi
             Global.IMSIsimCardPhone = deviceInfo.getImsi();
-            //carrier_name
             carrierName = deviceInfo.getCarrier();
-            //output1
             Log.d(TAG,"IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
             output1.setText("IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
-            //Signal_Strength
-            SimState = deviceInfo.getSimState();
-            //output2
-            output2.setText(carrierName+" | "+deviceInfo.getLocalIP()+" | "+SimState);
+            signalStrength = deviceInfo.getSimState();
+            output2.setText(carrierName+" | "+deviceInfo.getLocalIP()+" | "+signalStrength);
         } catch (Exception e) {
             Log.e(TAG,"Exception: "+e.toString());
-        }
-    }
-
-    public void AppPermissions(){
-       /* int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_APN_SETTINGS);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_APN_SETTINGS}, 1);
-        } else {
-            AppVerText();
-        }*/
-        int readPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_PHONE_STATE);
-        if (readPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        for(String permission: permissions){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
-                Log.e(TAG, "denied: "+permission);
-            }else{
-                if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED){
-                    DeviceDetail();
-                } else{
-                    Log.e(TAG, "set to never ask again: "+permission);
-                }
-            }
         }
     }
 
@@ -422,10 +382,8 @@ public class MainActivity extends Activity {
         Global.frmVersion = deviceInfo.getFirmVer();
         String fontPath = "fonts/Prototype.ttf";
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
-        textVer.setTypeface(tf);
-        textVer.setText("FIRMWARE\nEMM\nLAUNCHER");
         appVer.setTypeface(tf);
-        appVer.setText("- "+Global.frmVersion+"\n- "+Global.agentVer+"\n- "+Global.launcherVer);
+        appVer.setText("EMM - "+Global.agentVer+ "  |  LAUNCHER - "+Global.launcherVer);
     }
 
     // ***** To enable GPS at main *********************
@@ -634,6 +592,8 @@ public class MainActivity extends Activity {
     }
 
     private void CheckLoginServer() {
+        String mgsNoNetwork = "Maaf, sambungan rangkaian anda telah terputus. " +
+                "Sila tekan butang 'Test Network' sehingga rangkaian disambungkan.";
         customBuilder = new AlertDialog.Builder(this);
         username = userField.getText().toString();
         password = passField.getText().toString();
@@ -732,8 +692,7 @@ public class MainActivity extends Activity {
                 Log.d(TAG,"tokenDB: "+Global.getToken);
                 if (Global.getToken == "") {
                     customBuilder
-                            .setMessage("Maaf, token anda tidak wujud."
-                                    + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
+                            .setMessage(mgsNoNetwork)
                             .setPositiveButton("OK",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(
@@ -749,8 +708,7 @@ public class MainActivity extends Activity {
                     long convExp = Long.parseLong(jwtDecode.getExp());
                     if(currentTime >= convExp){
                         customBuilder
-                                .setMessage("Maaf, token anda sudah tamat tempoh."
-                                        + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
+                                .setMessage(mgsNoNetwork)
                                 .setPositiveButton("OK",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(
@@ -769,8 +727,7 @@ public class MainActivity extends Activity {
                             intentLogin();
                         }else {
                             customBuilder
-                                    .setMessage("User ID atau kata laluan tidak sepadan dengan token."
-                                            + " Sila klik butang 'Test Network' sehingga rangkaian disambungkan.")
+                                    .setMessage(mgsNoNetwork)
                                     .setPositiveButton("OK",
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(
@@ -817,7 +774,6 @@ public class MainActivity extends Activity {
         @Override
         protected void onPreExecute() {
             myTimer = new Timer();
-            // timercount = 0;
             myTimer.schedule(new TimerTaskMethod(), timeout);
             pd = ProgressDialog.show(MainActivity.this, "",
                     "Signing In.... Please Wait...", true, false);
@@ -873,9 +829,9 @@ public class MainActivity extends Activity {
             if (Global.loginResult) {
                 LoginParams();
             }else {
-                String mgs = ("User ID atau kata laluan tidak sah."
+                String mgs = ("Staff ID atau kata laluan tidak sah."
                         + " Sila masukkan semula maklumat log masuk anda atau laporkan di : "
-                        + "http://10.45.3.139/tmdms/default");
+                        + "http://tmp.tm.com.my/tmdms/default");
                 customBuilder.setMessage(mgs)
                              .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 public void onClick(
@@ -887,7 +843,6 @@ public class MainActivity extends Activity {
                      customBuilder.show();
                 clearField();
             }
-
             if (pd != null) {
                 if (pd.isShowing()) {
                     pd.dismiss();
@@ -1200,37 +1155,53 @@ public class MainActivity extends Activity {
     }
 
     public void testConnect(View v){
-        try {
-            Toast.makeText(MainActivity.this, "IP: " + deviceInfo.getLocalIP(),
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
+        testNetTask = new TestNetTask();
+        testNetTask.execute();
+    }
+
+    public class TestNetTask extends AsyncTask<Void, Void, Void>{
+        public TestNetTask() {
+
         }
 
-        DisplayUsername = ((EditText) findViewById(R.id.username))
-                .getText().toString();
+        @Override
+        protected void onPreExecute() {
+            if (checkServerRunning) {
+                myTimer = new Timer();
+                myTimer.schedule(new TimerTaskMethod(), timeout);
+                pd = ProgressDialog.show(MainActivity.this, "",
+                        "Please Wait... Testing Server Connection",
+                        true, false);
+            }
+        }
 
-        if (checkServerRunning) {
-            pd = ProgressDialog
-                    .show(MainActivity.this, "",
-                            "Please Wait... Testing Server Connection",
-                            true, false);
-            long delayInMillis = 1000;
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    pd.dismiss();
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void a) {
+            try {
+                Toast.makeText(MainActivity.this, "IP: " + deviceInfo.getLocalIP(),
+                        Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (!checkServerRunning) {
+                checkServerRunning = true;
+                if (Global.connectedToWiFi) {
+                    MainActivity.CheckServerStatus myCheckServerStatus = new MainActivity.CheckServerStatus();
+                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else if (Global.connected3G) {
+                    MainActivity.CheckServerStatus myCheckServerStatus = new MainActivity.CheckServerStatus();
+                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
-            }, delayInMillis);
-        } else if (!checkServerRunning) {
-            checkServerRunning = true;
-            if (Global.connectedToWiFi) {
-                MainActivity.CheckServerStatus myCheckServerStatus = new MainActivity.CheckServerStatus();
-                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else if (Global.connected3G) {
-                MainActivity.CheckServerStatus myCheckServerStatus = new MainActivity.CheckServerStatus();
-                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                if (pd != null) {
+                    if (pd.isShowing()) {
+                        pd.dismiss();
+                    }
+                }
             }
         }
     }
@@ -1245,24 +1216,23 @@ public class MainActivity extends Activity {
     }
 
     public void helpPopUp(){
-        final String url = "http://tmp.tm.com.my/dms/";
+        final String url = "http://10.45.3.139/tmdms/defult";
         String title = "Cara menggunakan DMS:";
-        String mgs = "1. Gunakan PC/Laptop yang disambungkan\n"
-                + "\u00A0\u00A0\u00A0\u00A0ke internet\n"
-                + "2. Pergi ke "+url+"\n"
-                + "3. Klik pada menu Contact Us\n"
-                + "4. Masukkan User ID\n"
-                + "5. Jika Swift ID disahkan, cth TM35170,\n"
-                + "\u00A0\u00A0\u00A0\u00A0Problem Type akan diaktifkan\n"
-                + "6. Pilih Problem Type\n"
-                + "7. Pilih Sub Problem Type\n"
-                + "8. Masukkan masalah secara terperinci\n"
-                + "9. Klik Submit\n";
+        String mgs = "1. Sila layari http://tmp.tm.com.my/dms \n"
+                + "2. Masukkan User ID, cth TMxxxxx \n"
+                + "3. Jika User ID disahkan, Problem Type\n"
+                + "\u00A0\u00A0\u00A0\u00A0akan diaktifkan\n"
+                + "4. Pilih Problem Type\n"
+                + "5. Masukkan masalah secara terperinci di \n"
+                + "\u00A0\u00A0\u00A0\u00A0bahagian Description\n"
+                + "6. Klik Submit\n";
         customBuilder.setTitle(title);
         customBuilder.setMessage(mgs)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Go to Link", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int which) {
                         dialog.dismiss();
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(browserIntent);
                     }
                 });
         customBuilder.show();
@@ -1397,7 +1367,7 @@ public class MainActivity extends Activity {
     private void queryNetwork() {
         String netPre = "";
         try {
-            myStatus = "NETWORK: ";
+            myStatus = "Network: ";
             ConnectivityManager connMgr = (ConnectivityManager) this
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
@@ -1448,7 +1418,7 @@ public class MainActivity extends Activity {
             Log.d(TAG,"netType="+Global.netType);
 
             myStatus += activeConnPlus;
-            myScroller.setText(myStatus + " | SERVER: "
+            myScroller.setText(myStatus + "  |  Server: "
                     + Global.ServerStatus);
 
             if(Global.connected3G){
@@ -1576,13 +1546,14 @@ public class MainActivity extends Activity {
                     in.close();
                     String serverDateStr = str.toString().trim();
                     ServerStatusExtract(serverDateStr);
-
                     if (ServerStatus.contains("OK")) {
                         Global.ServerStatus = "Connected to " + ServerName;
                         Global.ServerDate = ServerTime;
                         Log.d(TAG,"CheckServerStatus:"+" HTTP check OK "
                                 + Serveradd);
+                        Log.e(TAG, "checkServerRunning: "+checkServerRunning);
                     } else {
+                        Log.e(TAG, "checkServerRunning: "+checkServerRunning);
                         Global.ServerStatus = "Not Connected";
                         Log.d(TAG,"CheckServerStatus:"+ " HTTP check Not OK "
                                 + Serveradd + DisplayUsername);
@@ -1600,36 +1571,24 @@ public class MainActivity extends Activity {
                                     public void run() {
                                         if (Global.ServerStatus
                                                 .contains("Not Connected")) {
-
                                             myScroller
                                                     .setBackgroundColor(Color.RED);
-
                                         } else if (Global.ServerStatus
                                                 .contains("Unknown")) {
                                             myScroller
                                                     .setBackgroundColor(Color.RED);
-
                                         } else {
                                             if (myStatus.contains("WIFI")) {
-
                                                 myScroller
                                                         .setBackgroundColor(Color
-
                                                                 .parseColor("#FF8000"));
-
                                             } else if (Global.connected3G) {
-
-                                                myScroller
-                                                        .setBackgroundColor(Color
-
-                                                                .parseColor("#210B61"));
-
+                                                myScroller.setBackgroundColor(Color
+                                                        .parseColor("#210B61"));
                                             }
-
                                         }
-
                                         myScroller.setText(myStatus
-                                                + "  |  SERVER: "
+                                                + "  |  Server: "
                                                 + Global.ServerStatus);
                                     }
                                 });
@@ -1648,7 +1607,7 @@ public class MainActivity extends Activity {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                             myScroller.setText(myStatus
-                                                    + "  |  SERVER: "
+                                                    + "  |  Server: "
                                                     + Global.ServerStatus);
                                         }
 
@@ -1700,7 +1659,7 @@ public class MainActivity extends Activity {
                                     }
 
                                     myScroller.setText(myStatus
-                                            + "  |  SERVER: "
+                                            + "  |  Server: "
                                             + Global.ServerStatus);
 
                                 }
@@ -1712,9 +1671,9 @@ public class MainActivity extends Activity {
 
             return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
-
             CheckNetworkRunning = false;
             if (checkServerRunning) {
                 checkServerRunning = false;
@@ -1839,7 +1798,7 @@ public class MainActivity extends Activity {
                                         }
 
                                         myScroller.setText(myStatus
-                                                + "  |  SERVER: "
+                                                + "  |  Server: "
                                                 + Global.ServerStatus);
                                     }
 
@@ -1886,7 +1845,7 @@ public class MainActivity extends Activity {
                                                 .setBackgroundColor(Color.RED);
                                     }
                                     myScroller.setText(myStatus
-                                            + "  |  SERVER: "
+                                            + "  |  Server: "
                                             + Global.ServerStatus);
                                 }
 
@@ -2043,7 +2002,7 @@ public class MainActivity extends Activity {
                         // check if times are within 10 minutes
                         if (diff > 600000) {
                             // Log.d("InitTask",
-                            // "Date mismatch, server: "
+                            // "Date mismatch, Server: "
                             // + sdfDate.format(serverDate)
                             // + ", device: "
                             // + sdfDate.format(currentDate));
@@ -2054,7 +2013,7 @@ public class MainActivity extends Activity {
                             dateMismatch = true;
                         } else {
                             // Log.d("InitTask",
-                            // "Date OK, server: "
+                            // "Date OK, Server: "
                             // + sdfDate.format(serverDate)
                             // + ", device: "
                             // + sdfDate.format(currentDate));
@@ -2098,7 +2057,7 @@ public class MainActivity extends Activity {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(myStatus + "|SERVER: "
+            myScroller.setText(myStatus + "|Server: "
                     + Global.ServerStatus);
             // re-enable login button here
             // loginButton.setEnabled(true);
