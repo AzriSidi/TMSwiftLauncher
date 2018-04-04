@@ -111,7 +111,6 @@ public class MainActivity extends Activity {
     public boolean readytogotomainmenu = false;
     Timer myTimer;
     LoginTaskAsync LoginTask;
-    TestNetTask testNetTask;
     public String MessageFailDialog = "";
     public boolean readytoshowdialog = false;
     public String DataMobile = "";
@@ -203,7 +202,7 @@ public class MainActivity extends Activity {
                 registerReceiver(networkStateReceiver, networkIntentFilter);
                 queryNetwork();
                 CheckNetworkTimer = new Timer();
-                CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(),0,5000);
+                CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(),0,15000);
                 getWSWhiteList getWS = new getWSWhiteList();
                 getWS.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -1155,53 +1154,43 @@ public class MainActivity extends Activity {
     }
 
     public void testConnect(View v){
-        testNetTask = new TestNetTask();
-        testNetTask.execute();
-    }
+        DisplayUsername = ((EditText) findViewById(R.id.username))
+                .getText().toString();
 
-    public class TestNetTask extends AsyncTask<Void, Void, Void>{
-        public TestNetTask() {
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-            if (checkServerRunning) {
-                myTimer = new Timer();
-                myTimer.schedule(new TimerTaskMethod(), timeout);
-                pd = ProgressDialog.show(MainActivity.this, "",
-                        "Please Wait... Testing Server Connection",
-                        true, false);
+        if (checkServerRunning) {
+            pd = ProgressDialog.show(MainActivity.this, "",
+                            "Please Wait... Testing Server Connection",
+                            true, false);
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    pd.dismiss();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Server Status: Testing fail",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }, timeout);
+            CheckServerStatus myCheckServerStatus = new CheckServerStatus();
+            myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else if (!checkServerRunning) {
+            checkServerRunning = true;
+            if (Global.connectedToWiFi) {
+                CheckServerStatus myCheckServerStatus = new CheckServerStatus();
+                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else if (Global.connected3G) {
+                CheckServerStatus myCheckServerStatus = new CheckServerStatus();
+                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void a) {
             try {
                 Toast.makeText(MainActivity.this, "IP: " + deviceInfo.getLocalIP(),
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-            if (!checkServerRunning) {
-                checkServerRunning = true;
-                if (Global.connectedToWiFi) {
-                    MainActivity.CheckServerStatus myCheckServerStatus = new MainActivity.CheckServerStatus();
-                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                } else if (Global.connected3G) {
-                    MainActivity.CheckServerStatus myCheckServerStatus = new MainActivity.CheckServerStatus();
-                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-                if (pd != null) {
-                    if (pd.isShowing()) {
-                        pd.dismiss();
-                    }
-                }
             }
         }
     }
@@ -1551,9 +1540,7 @@ public class MainActivity extends Activity {
                         Global.ServerDate = ServerTime;
                         Log.d(TAG,"CheckServerStatus:"+" HTTP check OK "
                                 + Serveradd);
-                        Log.e(TAG, "checkServerRunning: "+checkServerRunning);
                     } else {
-                        Log.e(TAG, "checkServerRunning: "+checkServerRunning);
                         Global.ServerStatus = "Not Connected";
                         Log.d(TAG,"CheckServerStatus:"+ " HTTP check Not OK "
                                 + Serveradd + DisplayUsername);
@@ -1674,17 +1661,19 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
+            Log.e(TAG, "Server Status: " + Global.ServerStatus);
             CheckNetworkRunning = false;
-            if (checkServerRunning) {
-                checkServerRunning = false;
+            if (Global.ServerStatus.contains("Connected to")){
                 if (pd != null) {
                     if (pd.isShowing()) {
                         pd.dismiss();
                     }
                 }
-                Toast.makeText(MainActivity.this,
-                        "Server Status: " + Global.ServerStatus,
-                        Toast.LENGTH_SHORT).show();
+                if (checkServerRunning) {
+                    checkServerRunning = false;
+                    Toast.makeText(MainActivity.this, "Server Status: " + Global.ServerStatus,
+                            Toast.LENGTH_SHORT).show();
+                }
             }
             super.onPostExecute(result);
         }

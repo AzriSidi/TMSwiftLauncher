@@ -358,34 +358,40 @@ public class HomeScreen extends FragmentActivity {
     }
 
     public void testConn(View v){
-        try {
-            Toast.makeText(HomeScreen.this, "IP: " + deviceInfo.getLocalIP(),
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         if (checkServerRunning) {
-            pd = ProgressDialog
-                    .show(HomeScreen.this, "",
-                            "Please Wait... Testing Server Connection",
-                            true, false);
-            long delayInMillis = 1000;
+            pd = ProgressDialog.show(this, "",
+                    "Please Wait... Testing Server Connection",
+                    true, false);
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     pd.dismiss();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(HomeScreen.this, "Server Status: Testing fail",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            }, delayInMillis);
+            }, timeout);
+            CheckServerStatus myCheckServerStatus = new CheckServerStatus();
+            myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else if (!checkServerRunning) {
             checkServerRunning = true;
             if (Global.connectedToWiFi) {
-                HomeScreen.CheckServerStatus myCheckServerStatus = new HomeScreen.CheckServerStatus();
+                CheckServerStatus myCheckServerStatus = new CheckServerStatus();
                 myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else if (Global.connected3G) {
-                HomeScreen.CheckServerStatus myCheckServerStatus = new HomeScreen.CheckServerStatus();
+                CheckServerStatus myCheckServerStatus = new CheckServerStatus();
                 myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            try {
+                Toast.makeText(this, "IP: " + deviceInfo.getLocalIP(),
+                        Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -837,17 +843,19 @@ public class HomeScreen extends FragmentActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+            Log.e(TAG, "Server Status: " + Global.ServerStatus);
             CheckNetworkRunning = false;
-            if (checkServerRunning) {
-                checkServerRunning = false;
+            if (Global.ServerStatus.contains("Connected to")){
                 if (pd != null) {
                     if (pd.isShowing()) {
                         pd.dismiss();
                     }
                 }
-                Toast.makeText(HomeScreen.this,
-                        "Server Status: " + Global.ServerStatus,
-                        Toast.LENGTH_SHORT).show();
+                if (checkServerRunning) {
+                    checkServerRunning = false;
+                    Toast.makeText(HomeScreen.this, "Server Status: " + Global.ServerStatus,
+                            Toast.LENGTH_SHORT).show();
+                }
             }
             super.onPostExecute(result);
         }
