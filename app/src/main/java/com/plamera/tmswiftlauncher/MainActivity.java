@@ -84,8 +84,7 @@ public class MainActivity extends Activity {
     String Serveradd, ServerName;
     Boolean checkServerRunning = false;
     Boolean CheckNetworkRunning = false;
-    ProgressDialog pd;
-    private String myStatus = "";
+    ProgressDialog pd,testNetPd;
     Timer CheckNetworkTimer;
     String DisplayUsername;
     BroadcastReceiver networkStateReceiver;
@@ -129,6 +128,7 @@ public class MainActivity extends Activity {
     DeviceService deviceService;
     AppsVer appsVer;
     Timer timer;
+    int layout = R.layout.layout_3_2;
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
@@ -139,8 +139,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_3_2);
-        myScroller = findViewById(R.id.textView5);
+        setContentView(layout);
+        myScroller = findViewById(R.id.textView1);
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
         output1 = findViewById(R.id.textView2);
@@ -195,13 +195,13 @@ public class MainActivity extends Activity {
                         CheckNetworkRunning = false;
                         checkServerRunning = false;
                         Global.CanPing = true;
-                        queryNetwork();
+                        deviceInfo.queryNetwork();
                     }
                 };
                 IntentFilter networkIntentFilter = new IntentFilter(
                         ConnectivityManager.CONNECTIVITY_ACTION);
                 registerReceiver(networkStateReceiver, networkIntentFilter);
-                queryNetwork();
+                deviceInfo.queryNetwork();
                 CheckNetworkTimer = new Timer();
                 CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(),0,15000);
                 getWSWhiteList getWS = new getWSWhiteList();
@@ -376,6 +376,7 @@ public class MainActivity extends Activity {
     }
 
     public void AppVerText(){
+        String appText = "";
         Global.swiftVer = appsVer.SwiftVer();
         Global.launcherVer = appsVer.LauncherVer();
         Global.agentVer = appsVer.AgentVer();
@@ -383,7 +384,12 @@ public class MainActivity extends Activity {
         String fontPath = "fonts/Prototype.ttf";
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
         appVer.setTypeface(tf);
-        appVer.setText("EMM - "+Global.agentVer+ "  |  LAUNCHER - "+Global.launcherVer);
+        if(layout == R.layout.layout_3_2){
+            appText = "EMM - "+Global.agentVer+ "  |  LAUNCHER - "+Global.launcherVer;
+        }else if(layout == R.layout.layout_3_3){
+            appText = "FIRM - "+Global.frmVersion+"\nEMM - "+Global.agentVer+ "\nLAUNCHER - "+Global.launcherVer;
+        }
+        appVer.setText(appText);
     }
 
     // ***** To enable GPS at main *********************
@@ -1159,7 +1165,7 @@ public class MainActivity extends Activity {
                 .getText().toString();
 
         if (checkServerRunning) {
-            pd = ProgressDialog.show(MainActivity.this, "",
+            testNetPd = ProgressDialog.show(MainActivity.this, "",
                             "Please Wait... Testing Server Connection",
                             true, false);
             timer = new Timer();
@@ -1352,90 +1358,6 @@ public class MainActivity extends Activity {
     }
 
     // //////////////////////////////////////////////////////////////////////////////////////////////////
-    // FUNCTION NAME : queryNetwork
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    private void queryNetwork() {
-        String netPre = "";
-        try {
-            myStatus = "Network: ";
-            ConnectivityManager connMgr = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            final android.net.NetworkInfo wifi = connMgr
-                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            final android.net.NetworkInfo mobile = connMgr
-                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-
-            Global.connected3G = mobile.isConnected();
-            Global.connectedToWiFi = wifi.isConnected();
-            // added by amir on 2013-01-08
-
-            if (Global.connected3G || Global.connectedToWiFi) {
-                Global.localIP = deviceInfo.getLocalIP();
-            }
-
-            String activeConn;
-            if (connMgr.getActiveNetworkInfo() != null) {
-                activeConn = connMgr.getActiveNetworkInfo().getSubtypeName();
-            } else {
-                activeConn = "NONE";
-            }
-
-            switch (activeConn) {
-                case "LTE":
-                    netPre = "4G";
-                    break;
-                case "EDGE":
-                    netPre = "E";
-                    break;
-                default:
-                    netPre = "3G";
-                    break;
-            }
-
-            String activeConnPlus = activeConn;
-            if (Global.connectedToWiFi) {
-                activeConnPlus = "WIFI ";
-                Global.netType = "WIFI/" + deviceOperate.getWifiSsid();
-            }else if (Global.connected3G) {
-                // Global.URLSwift = "http://10.41.102.70/";
-                activeConnPlus += "";
-                Global.netType = netPre+"/"+activeConnPlus;
-            }else if ((!Global.connectedToWiFi) && (!Global.connected3G)) {
-                activeConnPlus = "None";
-                Global.ServerStatus = "Not Connected";
-                Global.netType = activeConnPlus;
-            }
-            Log.d(TAG,"netType="+Global.netType);
-
-            myStatus += activeConnPlus;
-            myScroller.setText(myStatus + "  |  Server: "
-                    + Global.ServerStatus);
-
-            if(Global.connected3G){
-                if(Global.EmmStatus.equals("Not Active")){
-                    Log.d(TAG,"EmmStatus: "+"Intent Agent");
-                    AgentIntent();
-                }
-            }
-
-            if (Global.ServerStatus.contains("Not Connected")) {
-                myScroller.setBackgroundColor(Color.RED);
-            } else if (Global.ServerStatus.contains("Unknown")) {
-                myScroller.setBackgroundColor(Color.RED);
-            } else {
-                if (activeConnPlus.contains("WIFI")) {
-                    myScroller.setBackgroundColor(Color.parseColor("#FF8000"));
-                } else if (Global.connected3G) {
-                    myScroller.setBackgroundColor(Color.parseColor("#210B61"));
-                }
-            }
-        } catch (Exception e) {
-            Log.e("Login", e.toString());
-
-        }
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
     // FUNCTION NAME : insertLog
     // //////////////////////////////////////////////////////////////////////////////////////////////////
     public void insertLog(String infoLine) {
@@ -1566,7 +1488,7 @@ public class MainActivity extends Activity {
                                             myScroller
                                                     .setBackgroundColor(Color.RED);
                                         } else {
-                                            if (myStatus.contains("WIFI")) {
+                                            if (Global.myStatus.contains("WIFI")) {
                                                 myScroller
                                                         .setBackgroundColor(Color
                                                                 .parseColor("#FF8000"));
@@ -1575,8 +1497,8 @@ public class MainActivity extends Activity {
                                                         .parseColor("#210B61"));
                                             }
                                         }
-                                        myScroller.setText(myStatus
-                                                + "  |  Server: "
+                                        myScroller.setText(Global.myStatus
+                                                + " | Server: "
                                                 + Global.ServerStatus);
                                     }
                                 });
@@ -1594,8 +1516,8 @@ public class MainActivity extends Activity {
                                         public void run() {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
-                                            myScroller.setText(myStatus
-                                                    + "  |  Server: "
+                                            myScroller.setText(Global.myStatus
+                                                    + " | Server: "
                                                     + Global.ServerStatus);
                                         }
 
@@ -1632,7 +1554,7 @@ public class MainActivity extends Activity {
                                                 .setBackgroundColor(Color.RED);
 
                                     } else {
-                                        if (myStatus.contains("WIFI")) {
+                                        if (Global.myStatus.contains("WIFI")) {
                                             myScroller.setBackgroundColor(Color
 
                                                     .parseColor("#FF8000"));
@@ -1646,8 +1568,8 @@ public class MainActivity extends Activity {
 
                                     }
 
-                                    myScroller.setText(myStatus
-                                            + "  |  Server: "
+                                    myScroller.setText(Global.myStatus
+                                            + " | Server: "
                                             + Global.ServerStatus);
 
                                 }
@@ -1665,10 +1587,10 @@ public class MainActivity extends Activity {
             Log.e(TAG, "Server Status: " + Global.ServerStatus);
             CheckNetworkRunning = false;
             if (Global.ServerStatus.contains("Connected to")){
-                if (pd != null) {
-                    if (pd.isShowing()) {
+                if (testNetPd != null) {
+                    if (testNetPd.isShowing()) {
                         timer.cancel();
-                        pd.dismiss();
+                        testNetPd.dismiss();
                     }
                 }
                 if (checkServerRunning) {
@@ -1756,7 +1678,7 @@ public class MainActivity extends Activity {
                     } else {
                         Global.CanPing = false;
                         Global.ServerStatus = "Not Connected";
-                        myStatus = "Network: Ping Fail ";
+                        Global.myStatus = "Network: Ping Fail ";
 
                         Log.d("Login PingServerStatus", " ping check Not OK "
                                 + Global.MaxisRouter);
@@ -1776,7 +1698,7 @@ public class MainActivity extends Activity {
                                             myScroller
                                                     .setBackgroundColor(Color.RED);
                                         } else {
-                                            if (myStatus.contains("WIFI")) {
+                                            if (Global.myStatus.contains("WIFI")) {
                                                 myScroller
                                                         .setBackgroundColor(Color
                                                                 .parseColor("#FF8000"));
@@ -1788,8 +1710,8 @@ public class MainActivity extends Activity {
 
                                         }
 
-                                        myScroller.setText(myStatus
-                                                + "  |  Server: "
+                                        myScroller.setText(Global.myStatus
+                                                + " | Server: "
                                                 + Global.ServerStatus);
                                     }
 
@@ -1802,7 +1724,7 @@ public class MainActivity extends Activity {
                         " Ping check error" + e.toString());
                 Global.CanPing = false;
                 Global.ServerStatus = "Not Connected";
-                myStatus = "Network: Ping Fail ";
+                Global.myStatus = "Network: Ping Fail ";
 
                 Log.d("Login PingServerStatus", " ping check Not OK "
                         + Global.MaxisRouter);
@@ -1821,7 +1743,7 @@ public class MainActivity extends Activity {
                                         myScroller
                                                 .setBackgroundColor(Color.RED);
                                     } else {
-                                        if (myStatus.contains("WIFI")) {
+                                        if (Global.myStatus.contains("WIFI")) {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                         } else if (Global.connected3G) {
@@ -1835,8 +1757,8 @@ public class MainActivity extends Activity {
                                         myScroller
                                                 .setBackgroundColor(Color.RED);
                                     }
-                                    myScroller.setText(myStatus
-                                            + "  |  Server: "
+                                    myScroller.setText(Global.myStatus
+                                            + " | Server: "
                                             + Global.ServerStatus);
                                 }
 
@@ -1851,7 +1773,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             if (Global.CanPing) {
-                queryNetwork();
+                deviceInfo.queryNetwork();
             } else {
                 CheckNetworkRunning = false;
                 if (checkServerRunning) {
@@ -1880,7 +1802,7 @@ public class MainActivity extends Activity {
             if (Global.LogAsAdmin) {
                 Global.LogAsAdmin = false;
             }
-            queryNetwork();
+            deviceInfo.queryNetwork();
         }
 
         @Override
@@ -2042,13 +1964,13 @@ public class MainActivity extends Activity {
             } else if (Global.ServerStatus.contains("Unknown")) {
                 myScroller.setBackgroundColor(Color.RED);
             } else {
-                if (myStatus.contains("WIFI")) {
+                if (Global.myStatus.contains("WIFI")) {
                     myScroller.setBackgroundColor(Color.parseColor("#FF8000"));
                 } else if (Global.connected3G) {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(myStatus + "|Server: "
+            myScroller.setText(Global.myStatus + " |  Server: "
                     + Global.ServerStatus);
             // re-enable login button here
             // loginButton.setEnabled(true);

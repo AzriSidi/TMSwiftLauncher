@@ -50,7 +50,6 @@ public class HomeScreen extends FragmentActivity {
     Boolean CheckNetworkRunning = false;
     Boolean clicked = false;
     Boolean click = false;
-    ProgressDialog pd;
     @SuppressLint("StaticFieldLeak")
     public static TextView myScroller,notifyTask,notifyQueue,
             networkProvider,signalInfo,broadcastInfo,swiftVer,
@@ -64,7 +63,7 @@ public class HomeScreen extends FragmentActivity {
     String TAG = "HomeScreen";
     private Boolean InitTaskRunning = false;
     public boolean logininvisible = false;
-    private static ProgressDialog pdinit;
+    ProgressDialog pdinit,pd,testNetPd;
     String serverDateStr = "";
     Boolean dateMismatch = false;
     Boolean mismatchDialogDisplayed = false;
@@ -84,7 +83,6 @@ public class HomeScreen extends FragmentActivity {
         super.onCreate(savedInstanceState);
         instance = this;
         setContentView(R.layout.home_screen);
-
         myScroller = findViewById(R.id.textView1);
         networkProvider = findViewById(R.id.textView2);
         broadcastInfo = findViewById(R.id.textView4);
@@ -108,8 +106,9 @@ public class HomeScreen extends FragmentActivity {
         IntentData();
         deviceService.startTrackLog();
         if(deviceService.isMyServiceRunning()){
-            Log.e(TAG, "SwiftState: Already running");
+            Log.e(TAG, "SwiftService: Already running");
         }else {
+            Log.e(TAG, "SwiftService: Not running");
             deviceService.startSwift();
         }
     }
@@ -125,7 +124,7 @@ public class HomeScreen extends FragmentActivity {
 
             CheckNetworkTimer = new Timer();
             CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 15000);
-
+            deviceInfo.queryNetwork();
             registerReceiver();
             displayReceiver();
         } catch (Exception e) {
@@ -360,7 +359,7 @@ public class HomeScreen extends FragmentActivity {
 
     public void testConn(View v){
         if (checkServerRunning) {
-            pd = ProgressDialog.show(this, "",
+            testNetPd = ProgressDialog.show(this, "",
                     "Please Wait... Testing Server Connection",
                     true, false);
             timer = new Timer();
@@ -602,7 +601,7 @@ public class HomeScreen extends FragmentActivity {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(Global.myStatus + " | SERVER: "
+            myScroller.setText(Global.myStatus + " | Server: "
                     + Global.ServerStatus);
             // re-enable login button here
             // loginButton.setEnabled(true);
@@ -758,7 +757,7 @@ public class HomeScreen extends FragmentActivity {
 
                                        }
                                         myScroller.setText(Global.myStatus
-                                                + " |  SERVER: "
+                                                + " | Server: "
                                                 + Global.ServerStatus);
                                     }
 
@@ -778,7 +777,7 @@ public class HomeScreen extends FragmentActivity {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                             myScroller.setText(Global.myStatus
-                                                    + " |  SERVER: "
+                                                    + " | Server: "
                                                     + Global.ServerStatus);
                                         }
 
@@ -829,7 +828,7 @@ public class HomeScreen extends FragmentActivity {
 
                                     }
                                     myScroller.setText(Global.myStatus
-                                            + " |  SERVER: "
+                                            + " | Server: "
                                             + Global.ServerStatus);
                                 }
 
@@ -847,9 +846,9 @@ public class HomeScreen extends FragmentActivity {
             Log.e(TAG, "Server Status: " + Global.ServerStatus);
             CheckNetworkRunning = false;
             if (Global.ServerStatus.contains("Connected to")){
-                if (pd != null) {
-                    if (pd.isShowing()) {
-                        pd.dismiss();
+                if (testNetPd != null) {
+                    if (testNetPd.isShowing()) {
+                        testNetPd.dismiss();
                         timer.cancel();
                     }
                 }
@@ -993,7 +992,7 @@ public class HomeScreen extends FragmentActivity {
                                         }
 
                                         myScroller.setText(Global.myStatus
-                                                + " |  SERVER: "
+                                                + " | Server: "
                                                 + Global.ServerStatus);
                                     }
 
@@ -1040,7 +1039,7 @@ public class HomeScreen extends FragmentActivity {
                                                 .setBackgroundColor(Color.RED);
                                     }
                                     myScroller.setText(Global.myStatus
-                                            + " |  SERVER: "
+                                            + " | Server: "
                                             + Global.ServerStatus);
                                 }
 

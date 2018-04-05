@@ -26,8 +26,6 @@
             android:layout_marginLeft="35dp"
             android:layout_toEndOf="@+id/imageButton"/>
 
-        <!--android:src="@drawable/ic_lock_open"
-            android:background="#40CCF5"-->
         <ImageButton
             android:id="@+id/btnLogin"
             android:layout_width="@dimen/btn_size"
@@ -36,8 +34,7 @@
             android:background="#0000"
             android:onClick="showApps"
             android:layout_alignParentTop="true" />
-        <!--android:background="#3796FA"
-                    android:src="@drawable/feed_black"-->
+
         <ImageButton
             android:id="@+id/imageButton"
             android:layout_width="@dimen/btn_size"
@@ -49,8 +46,6 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
 
-        <!--android:background="#309E09"
-        android:src="@drawable/ic_call_black"-->
         <ImageButton
             android:id="@+id/imageButton6"
             android:layout_width="@dimen/btn_size"
@@ -67,7 +62,7 @@
             android:id="@+id/textView17"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LOGIN"
+            android:text="@string/login"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
             android:layout_marginLeft="11dp"
@@ -79,9 +74,10 @@
             android:id="@+id/textView18"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="&#160;&#160;&#160;&#160;TEST\nNETWORK"
+            android:text="@string/test_network"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
+            android:gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="45dp"
             android:layout_alignParentBottom="true"
@@ -91,10 +87,10 @@
             android:id="@+id/textView19"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="HELP"
+            android:text="@string/help"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
-            android:layout_marginLeft="47dp"
+            android:layout_marginLeft="46dp"
             android:layout_toEndOf="@+id/textView18"
             android:layout_alignTop="@+id/textView20" />
 
@@ -102,10 +98,10 @@
             android:id="@+id/textView20"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CALL"
+            android:text="@string/call"
             android:textColor="#f47920"
             android:textSize="@dimen/text_size"
-            android:layout_marginLeft="58dp"
+            android:layout_marginLeft="59dp"
             android:layout_alignTop="@+id/textView18"
             android:layout_toEndOf="@+id/textView19" />
     </RelativeLayout>
@@ -132,7 +128,7 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password"
         android:drawableLeft="@drawable/lock"
         android:inputType="textPassword|textCapCharacters"
         android:drawablePadding="10dp"
@@ -155,7 +151,7 @@
         android:textColor="#FFFFFF"
         android:inputType="textCapCharacters"
         android:drawableLeft="@drawable/user"
-        android:hint="Username"
+        android:hint="@string/username"
         android:textAllCaps="true"
         android:layout_marginTop="28dp"
         android:layout_alignParentTop="true"
@@ -166,8 +162,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:theme="@style/AppBaseTheme"
-        android:text="Show Password"
-        android:paddingLeft="5dp"
+        android:text="@string/show_password"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="33dp"
         android:layout_below="@+id/password"
@@ -202,7 +197,7 @@
         android:layout_alignParentEnd="true">
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/output"
@@ -228,8 +223,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ffff"
-            android:textSize="15dp"
-            android:text="output"
+            android:textSize="@dimen/ver_text_size"
+            android:text="@string/output"
             android:layout_alignParentTop="true" />
     </RelativeLayout>
     <LinearLayout
@@ -245,7 +240,7 @@
             android:layout_height="wrap_content"
             android:text="@string/output"
             android:textColor="#ffff"
-            android:textSize="15dp" />
+            android:textSize="@dimen/ver_text_size" />
 
         <TextView
             android:id="@+id/textView11"
@@ -253,7 +248,7 @@
             android:layout_height="wrap_content"
             android:text="@string/output"
             android:textColor="#ffff"
-            android:textSize="15dp" />
+            android:textSize="@dimen/ver_text_size" />
     </LinearLayout>
 
     <LinearLayout
@@ -261,7 +256,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="150dp"
         android:gravity="right"
-        android:layout_marginRight="70dp">
+        android:layout_marginRight="65dp">
             <TextView
                 android:id="@+id/textView24"
                 android:layout_width="wrap_content"

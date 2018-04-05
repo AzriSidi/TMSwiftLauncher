@@ -25,15 +25,15 @@ public class DeviceInfo {
     String imei,imsi,carrierName,firmVer,simCard,simState;
     Context context;
     Activity activity;
-    String CLASS;
     DeviceOperate device;
     TextView myScroller;
+    MainActivity mainActivity;
 
     public DeviceInfo(Context context){
         this.context = context;
         this.activity = (Activity) context;
-        CLASS = context.getClass().getSimpleName();
         device = new DeviceOperate(context);
+        mainActivity = new MainActivity();
         myScroller = activity.findViewById(R.id.textView1);
         tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
     }
@@ -123,15 +123,23 @@ public class DeviceInfo {
 
     public void queryNetwork() {
         String usernameBB = Global.usernameBB;
+        if(activity instanceof MainActivity){
+            Global.myStatus = "Network: ";
+        }else if(activity instanceof HomeScreen){
+            Global.myStatus = usernameBB+" | ";
+        }
+
+        Log.d("Class",context.getClass().getName());
+
         String netPre = "";
         try {
-            Global.myStatus = usernameBB+" | ";
             ConnectivityManager connMgr = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
                     .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             final android.net.NetworkInfo mobile = connMgr
                     .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
             Global.connected3G = mobile.isConnected();
             Global.connectedToWiFi = wifi.isConnected();
             // added by amir on 2013-01-08
@@ -163,33 +171,40 @@ public class DeviceInfo {
             if (Global.connectedToWiFi) {
                 activeConnPlus = "WIFI ";
                 Global.netType = "WIFI/" + device.getWifiSsid();
-            } else if (Global.connected3G) {
+            }else if (Global.connected3G) {
                 // Global.URLSwift = "http://10.41.102.70/";
                 activeConnPlus += "";
                 Global.netType = netPre+"/"+activeConnPlus;
-            } else if ((!Global.connectedToWiFi) && (!Global.connected3G)) {
-                Global.localIP = getLocalIP();
+            }else if ((!Global.connectedToWiFi) && (!Global.connected3G)) {
                 activeConnPlus = "None";
                 Global.ServerStatus = "Not Connected";
                 Global.netType = activeConnPlus;
             }
 
             Global.myStatus += activeConnPlus;
-            myScroller.setText(Global.myStatus + " |  SERVER: "
-                    + Global.ServerStatus);
+
+            if(Global.connected3G){
+                if(Global.EmmStatus.equals("Not Active")){
+                    mainActivity.AgentIntent();
+                }
+            }
+
             if (Global.ServerStatus.contains("Not Connected")) {
                 myScroller.setBackgroundColor(Color.RED);
             } else if (Global.ServerStatus.contains("Unknown")) {
                 myScroller.setBackgroundColor(Color.RED);
             } else {
-                if (activeConnPlus.contains("WIFI")) {
+                if (Global.myStatus.contains("WIFI")) {
                     myScroller.setBackgroundColor(Color.parseColor("#FF8000"));
                 } else if (Global.connected3G) {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
+            myScroller.setText(Global.myStatus + " | Server: "
+                    + Global.ServerStatus);
         } catch (Exception e) {
-            Log.e(CLASS, "Exception: "+e.toString());
+            Log.e("Login", e.toString());
+
         }
     }
 
