@@ -121,10 +121,21 @@ public class HomeScreen extends FragmentActivity {
             Global.CreateMainMenu = false;
             Global.TTreqSummDate = "";
             Global.FFreqSummDate = "";
-
+            networkStateReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    CheckNetworkRunning = false;
+                    checkServerRunning = false;
+                    Global.CanPing = true;
+                    deviceInfo.queryNetwork();
+                }
+            };
+            IntentFilter networkIntentFilter = new IntentFilter(
+                    ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(networkStateReceiver, networkIntentFilter);
+            deviceInfo.queryNetwork();
             CheckNetworkTimer = new Timer();
             CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 15000);
-            deviceInfo.queryNetwork();
             registerReceiver();
             displayReceiver();
         } catch (Exception e) {
@@ -213,7 +224,7 @@ public class HomeScreen extends FragmentActivity {
             registerReceiver(networkStateReceiver, networkIntentFilter);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("Login", "Error onstart " + e.toString());
+            Log.e(TAG, "Error onstart " + e.toString());
         }
     }
 
@@ -226,9 +237,13 @@ public class HomeScreen extends FragmentActivity {
 
     @Override
     public void onDestroy(){
+        try{
+            device.unregisterReceiver(this);
+            unregisterReceiver(MyReceiver);
+        }catch(Exception e) {
+            Log.e(TAG,"Exception: "+e.toString());
+        }
         super.onDestroy();
-        device.unregisterReceiver(this);
-        unregisterReceiver(MyReceiver);
     }
 
     public void IntentData(){
@@ -843,7 +858,6 @@ public class HomeScreen extends FragmentActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            Log.e(TAG, "Server Status: " + Global.ServerStatus);
             CheckNetworkRunning = false;
             if (Global.ServerStatus.contains("Connected to")){
                 if (testNetPd != null) {

@@ -3,8 +3,10 @@ package com.plamera.tmswiftlauncher;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
@@ -28,6 +30,8 @@ public class DeviceInfo {
     DeviceOperate device;
     TextView myScroller;
     MainActivity mainActivity;
+    static String TAG = "DeviceInfo";
+    Intent intent;
 
     public DeviceInfo(Context context){
         this.context = context;
@@ -36,6 +40,15 @@ public class DeviceInfo {
         mainActivity = new MainActivity();
         myScroller = activity.findViewById(R.id.textView1);
         tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+    }
+
+    public static class EmmReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Global.EmmStatus = intent.getStringExtra("EmmStatus");
+            Log.e(TAG,Global.EmmStatus!=null?Global.EmmStatus:"Not received");
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -122,17 +135,22 @@ public class DeviceInfo {
     }
 
     public void queryNetwork() {
-        String usernameBB = Global.usernameBB;
-        if(activity instanceof MainActivity){
-            Global.myStatus = "Network: ";
-        }else if(activity instanceof HomeScreen){
-            Global.myStatus = usernameBB+" | ";
-        }
-
-        Log.d("Class",context.getClass().getName());
-
         String netPre = "";
+        String myStatus = "";
+        String activeConn = "";
+
         try {
+            if(activity instanceof MainActivity){
+                Global.myStatus = "Network: ";
+                if(Global.connected3G){
+                    if(Global.EmmStatus.equals("Not Active")) {
+                        AgentIntent();
+                    }
+                }
+            }else if(activity instanceof HomeScreen){
+                Global.myStatus = Global.usernameBB+" | ";
+            }
+
             ConnectivityManager connMgr = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             final android.net.NetworkInfo wifi = connMgr
@@ -142,13 +160,11 @@ public class DeviceInfo {
 
             Global.connected3G = mobile.isConnected();
             Global.connectedToWiFi = wifi.isConnected();
-            // added by amir on 2013-01-08
 
             if (Global.connected3G || Global.connectedToWiFi) {
                 Global.localIP = getLocalIP();
             }
 
-            String activeConn;
             if (connMgr.getActiveNetworkInfo() != null) {
                 activeConn = connMgr.getActiveNetworkInfo().getSubtypeName();
             } else {
@@ -182,12 +198,8 @@ public class DeviceInfo {
             }
 
             Global.myStatus += activeConnPlus;
-
-            if(Global.connected3G){
-                if(Global.EmmStatus.equals("Not Active")){
-                    mainActivity.AgentIntent();
-                }
-            }
+            myStatus = Global.myStatus + " | Server: "
+                    + Global.ServerStatus;
 
             if (Global.ServerStatus.contains("Not Connected")) {
                 myScroller.setBackgroundColor(Color.RED);
@@ -200,11 +212,18 @@ public class DeviceInfo {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(Global.myStatus + " | Server: "
-                    + Global.ServerStatus);
+            myScroller.setText(myStatus);
+            Log.e(TAG,"myStatus: "+myStatus);
         } catch (Exception e) {
-            Log.e("Login", e.toString());
+            Log.e(TAG, "Exception: "+e.toString());
 
+        }
+    }
+
+    public void AgentIntent(){
+        intent = context.getPackageManager().getLaunchIntentForPackage("org.wso2.emm.agent");
+        if (intent != null) {
+            context.startActivity(intent);
         }
     }
 

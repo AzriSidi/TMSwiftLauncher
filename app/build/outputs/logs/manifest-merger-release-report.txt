@@ -269,12 +269,12 @@ ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\A
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:100:13-38
 	android:name
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:98:13-44
-receiver#com.plamera.tmswiftlauncher.MainActivity$EmmReceiver
+receiver#com.plamera.tmswiftlauncher.DeviceInfo$EmmReceiver
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:102:9-108:20
 	tools:ignore
 		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:104:13-44
 	android:name
-		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:103:13-80
+		ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:103:13-78
 intent-filter#com.plamera.CUSTOM_INTENT
 ADDED from C:\Users\Plamera\AndroidStudioProjects\TMSwiftLauncher\app\src\main\AndroidManifest.xml:105:13-107:29
 action#com.plamera.CUSTOM_INTENT

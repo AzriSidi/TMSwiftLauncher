@@ -61,6 +61,16 @@ public class DeviceService {
         return false;
     }
 
+    public void startAgent(){
+        try {
+            intent = new Intent();
+            intent.setComponent(new ComponentName("org.wso2.emm.agent", "org.wso2.emm.agent.BroadcastService"));
+            context.startService(intent);
+        }catch (Exception ex){
+            Log.d(TAG,"broadcastExeception: "+ex.toString());
+        }
+    }
+
     public void logOut(){
         intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK

@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -79,7 +78,7 @@ import java.util.TimerTask;
 public class MainActivity extends Activity {
     EditText userField, passField;
     TextView output1,output2,dateView,myScroller,appVer;
-    Intent i;
+    Intent intent;
     String carrierName;
     String Serveradd, ServerName;
     Boolean checkServerRunning = false;
@@ -115,7 +114,6 @@ public class MainActivity extends Activity {
     public String DataMobile = "";
     AlertDialog.Builder customBuilder;
     String signalStrength;
-    Intent intent;
     JwtEncode jwtEncode;
     JwtDecode jwtDecode;
     PackageInfo packageInfo;
@@ -135,7 +133,6 @@ public class MainActivity extends Activity {
     String urlSwift = "http://10.54.97.227:8888/";
     String urlConfig = "http://10.54.97.227:9763/EMMWebService/device_config";
 
-    @SuppressLint("PackageManagerGetSignatures")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,11 +163,11 @@ public class MainActivity extends Activity {
         deviceService = new DeviceService(this);
         appsVer = new AppsVer(this);
 
-        startAgent();
         getPackage();
         getWhiteList();
         AppVerText();
         DeviceDetail();
+        deviceService.startAgent();
         deviceService.stopSwift();
     }
 
@@ -179,7 +176,6 @@ public class MainActivity extends Activity {
         super.onResume();
         customBuilder = new AlertDialog.Builder(this);
         try {
-            Log.d(TAG, "loginStatus: " + Global.status);
             if (Global.status.equals("Online")) {
                 intentLogin();
             } else {
@@ -480,30 +476,6 @@ public class MainActivity extends Activity {
             Log.e("Login NDIM", "GlobalNDIM.exchangeList null");
         }
 
-    }
-
-    public static class EmmReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Global.EmmStatus = intent.getStringExtra("EmmStatus");
-        }
-    }
-
-    public void AgentIntent(){
-        intent = getPackageManager().getLaunchIntentForPackage("org.wso2.emm.agent");
-        if (intent != null) {
-            startActivity(intent);
-        }
-    }
-
-    public void startAgent(){
-        try {
-            intent = new Intent();
-            intent.setComponent(new ComponentName("org.wso2.emm.agent", "org.wso2.emm.agent.BroadcastService"));
-            startService(intent);
-        }catch (Exception ex){
-            Log.d(TAG,"broadcastExeception: "+ex.toString());
-        }
     }
 
     // ********************************************************************************
@@ -932,20 +904,20 @@ public class MainActivity extends Activity {
     }
 
     public void intentLogin(){
-        i = new Intent(context,HomeScreen.class);
-        i.addCategory(Intent.CATEGORY_HOME);
-        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        i.putExtra("username",username);
-        i.putExtra("dataStaff",Global.usernameBB);
-        i.putExtra("password",Global.passwordBB);
-        i.putExtra("imei",Global.IMEIPhone);
-        i.putExtra("imsi",Global.IMSIsimCardPhone);
-        i.putExtra("firm_ver",Global.frmVersion);
-        i.putExtra("loginServer",Global.loginServer);
-        i.putExtra("loginType",Global.UserType);
-        i.putExtra("strVersion",Global.strVersion);
+        intent = new Intent(context,HomeScreen.class);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("username",username);
+        intent.putExtra("dataStaff",Global.usernameBB);
+        intent.putExtra("password",Global.passwordBB);
+        intent.putExtra("imei",Global.IMEIPhone);
+        intent.putExtra("imsi",Global.IMSIsimCardPhone);
+        intent.putExtra("firm_ver",Global.frmVersion);
+        intent.putExtra("loginServer",Global.loginServer);
+        intent.putExtra("loginType",Global.UserType);
+        intent.putExtra("strVersion",Global.strVersion);
         Global.status = "Online";
-        context.startActivity(i);
+        context.startActivity(intent);
     }
 
     // Process after failed login to SWIFT
@@ -1398,8 +1370,6 @@ public class MainActivity extends Activity {
     // FUNCTION NAME : CheckServerStatus
     // //////////////////////////////////////////////////////////////////////////////////////////////////
     public class CheckServerStatus extends AsyncTask<Void, Void, Void> {
-
-        String ServerStatus;
         String ServerTime;
 
         @Override
@@ -1458,7 +1428,7 @@ public class MainActivity extends Activity {
                     in.close();
                     String serverDateStr = str.toString().trim();
                     ServerStatusExtract(serverDateStr);
-                    if (ServerStatus.contains("OK")) {
+                    if (Global.ServerStatus.contains("OK")) {
                         Global.ServerStatus = "Connected to " + ServerName;
                         Global.ServerDate = ServerTime;
                         Log.d(TAG,"CheckServerStatus:"+" HTTP check OK "
@@ -1614,7 +1584,7 @@ public class MainActivity extends Activity {
                 //Log.i("Pian","ServerName="+strData);
                 start = strData.indexOf("<serverStatus>");
                 end = strData.indexOf("</serverStatus>");
-                ServerStatus = strData.substring(start + 14, end);
+                Global.ServerStatus = strData.substring(start + 14, end);
                 // Log.i("Pian","ServerStatus="+ServerStatus);
                 start = strData.indexOf("<serverTime>");
                 end = strData.indexOf("</serverTime>");
