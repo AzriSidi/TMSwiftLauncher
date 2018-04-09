@@ -24,6 +24,9 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.plamera.tmswiftlauncher.Device.DeviceInfo;
+import com.plamera.tmswiftlauncher.Device.DeviceOperate;
+import com.plamera.tmswiftlauncher.Device.DeviceService;
 import com.plamera.tmswiftlauncher.Encap.UserDetail;
 
 import org.apache.http.HttpResponse;
@@ -45,14 +48,14 @@ import java.util.TimerTask;
 
 public class HomeScreen extends FragmentActivity {
     public static DatabaseHandler db;
-    String DisplayUsername,carrierName;
+    String DisplayUsername;
     Boolean checkServerRunning = false;
     Boolean CheckNetworkRunning = false;
     Boolean clicked = false;
     Boolean click = false;
     @SuppressLint("StaticFieldLeak")
     public static TextView myScroller,notifyTask,notifyQueue,
-            networkProvider,signalInfo,broadcastInfo,swiftVer,
+            networkProvider,broadcastInfo,swiftVer,
             agentVer,serverName,appVer;
     String Serveradd,ServerName;
     BroadcastReceiver networkStateReceiver;
@@ -67,11 +70,11 @@ public class HomeScreen extends FragmentActivity {
     String serverDateStr = "";
     Boolean dateMismatch = false;
     Boolean mismatchDialogDisplayed = false;
-    String SimState;
     String username;
     static HomeScreen instance;
-    DeviceOperate device;
+    DeviceOperate deviceOperate;
     int timeout = 300000;
+    int checkNetwork = 15000;
     IntentFilter iFilter,networkIntentFilter;
     String urlSwift = "http://10.54.97.227:8888/";
     DeviceService deviceService;
@@ -86,7 +89,6 @@ public class HomeScreen extends FragmentActivity {
         myScroller = findViewById(R.id.textView1);
         networkProvider = findViewById(R.id.textView2);
         broadcastInfo = findViewById(R.id.textView4);
-        signalInfo = findViewById(R.id.textView7);
         swiftVer = findViewById(R.id.textView17);
         agentVer = findViewById(R.id.textView18);
         serverName = findViewById(R.id.textView19);
@@ -97,19 +99,16 @@ public class HomeScreen extends FragmentActivity {
 
         DisplayUsername = username;
         db = new DatabaseHandler(this);
-        device = new DeviceOperate(this);
+        deviceOperate = new DeviceOperate(this);
         deviceService = new DeviceService(this);
         deviceInfo = new DeviceInfo(this);
-
-        registerReceiver();
         getSwiftApp();
         IntentData();
-        deviceService.startTrackLog();
-        if(deviceService.isMyServiceRunning()){
-            Log.e(TAG, "SwiftService: Already running");
-        }else {
-            Log.e(TAG, "SwiftService: Not running");
+        deviceService.intentAgent();
+        if(!deviceService.SwiftServiceRunning()){
             deviceService.startSwift();
+        }else if(!deviceService.TrackServiceRunning()){
+            deviceService.startTrackLog();
         }
     }
 
@@ -121,22 +120,10 @@ public class HomeScreen extends FragmentActivity {
             Global.CreateMainMenu = false;
             Global.TTreqSummDate = "";
             Global.FFreqSummDate = "";
-            networkStateReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    CheckNetworkRunning = false;
-                    checkServerRunning = false;
-                    Global.CanPing = true;
-                    deviceInfo.queryNetwork();
-                }
-            };
-            IntentFilter networkIntentFilter = new IntentFilter(
-                    ConnectivityManager.CONNECTIVITY_ACTION);
-            registerReceiver(networkStateReceiver, networkIntentFilter);
             deviceInfo.queryNetwork();
+            deviceState();
             CheckNetworkTimer = new Timer();
-            CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0, 15000);
-            registerReceiver();
+            CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(), 0,checkNetwork);
             displayReceiver();
         } catch (Exception e) {
             e.printStackTrace();
@@ -222,8 +209,9 @@ public class HomeScreen extends FragmentActivity {
             networkIntentFilter = new IntentFilter(
                     ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(networkStateReceiver, networkIntentFilter);
+            iFilter = new IntentFilter("com.plamera.CUSTOM_INTENT");
+            registerReceiver(MyReceiver, iFilter);
         } catch (Exception e) {
-            e.printStackTrace();
             Log.e(TAG, "Error onstart " + e.toString());
         }
     }
@@ -232,14 +220,14 @@ public class HomeScreen extends FragmentActivity {
     protected void onStop() {
         super.onStop();
         unregisterReceiver(networkStateReceiver);
+        unregisterReceiver(MyReceiver);
         CheckNetworkTimer.cancel();
     }
 
     @Override
     public void onDestroy(){
         try{
-            device.unregisterReceiver(this);
-            unregisterReceiver(MyReceiver);
+            deviceOperate.unregisterReceiver(this);
         }catch(Exception e) {
             Log.e(TAG,"Exception: "+e.toString());
         }
@@ -271,9 +259,8 @@ public class HomeScreen extends FragmentActivity {
     }
 
     public void deviceState(){
-        SimState = deviceInfo.getSimState();
-        carrierName = deviceInfo.getCarrier();
-        networkProvider.setText(carrierName+" | "+deviceInfo.getLocalIP()+" | "+SimState);
+        Global.signalStrength = deviceInfo.getSimState();
+        networkProvider.setText(Global.carrierName+" | "+Global.localIP+" | "+Global.signalStrength);
     }
 
     private void getSwiftApp() {
@@ -338,11 +325,6 @@ public class HomeScreen extends FragmentActivity {
         }catch (NullPointerException np){
             Log.e(TAG,"NullPointer"+np);
         }
-    }
-
-    public void registerReceiver(){
-        iFilter = new IntentFilter("com.plamera.CUSTOM_INTENT");
-        registerReceiver(MyReceiver, iFilter);
     }
 
     public void pushLogout() {
@@ -616,7 +598,7 @@ public class HomeScreen extends FragmentActivity {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(Global.myStatus + " | Server: "
+            myScroller.setText(Global.myStatus + " | SERVER: "
                     + Global.ServerStatus);
             // re-enable login button here
             // loginButton.setEnabled(true);
@@ -772,7 +754,7 @@ public class HomeScreen extends FragmentActivity {
 
                                        }
                                         myScroller.setText(Global.myStatus
-                                                + " | Server: "
+                                                + " | SERVER: "
                                                 + Global.ServerStatus);
                                     }
 
@@ -792,7 +774,7 @@ public class HomeScreen extends FragmentActivity {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                             myScroller.setText(Global.myStatus
-                                                    + " | Server: "
+                                                    + " | SERVER: "
                                                     + Global.ServerStatus);
                                         }
 
@@ -843,7 +825,7 @@ public class HomeScreen extends FragmentActivity {
 
                                     }
                                     myScroller.setText(Global.myStatus
-                                            + " | Server: "
+                                            + " | SERVER: "
                                             + Global.ServerStatus);
                                 }
 
@@ -973,7 +955,7 @@ public class HomeScreen extends FragmentActivity {
                     } else {
                         Global.CanPing = false;
                         Global.ServerStatus = "Not Connected";
-                        Global.myStatus = "Network Status: Ping Fail ";
+                        Global.myStatus = "NETWORK: Ping Fail ";
 
                         Log.d("Login PingServerStatus", " ping check Not OK "
                                 + Global.MaxisRouter);
@@ -1006,7 +988,7 @@ public class HomeScreen extends FragmentActivity {
                                         }
 
                                         myScroller.setText(Global.myStatus
-                                                + " | Server: "
+                                                + " | SERVER: "
                                                 + Global.ServerStatus);
                                     }
 
@@ -1019,7 +1001,7 @@ public class HomeScreen extends FragmentActivity {
                         " Ping check error" + e.toString());
                 Global.CanPing = false;
                 Global.ServerStatus = "Not Connected";
-                Global.myStatus = "Network Status: Ping Fail ";
+                Global.myStatus = "NETWORK: Ping Fail ";
 
                 Log.d("Login PingServerStatus", " ping check Not OK "
                         + Global.MaxisRouter);
@@ -1053,7 +1035,7 @@ public class HomeScreen extends FragmentActivity {
                                                 .setBackgroundColor(Color.RED);
                                     }
                                     myScroller.setText(Global.myStatus
-                                            + " | Server: "
+                                            + " | SERVER: "
                                             + Global.ServerStatus);
                                 }
 

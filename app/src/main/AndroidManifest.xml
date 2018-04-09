@@ -100,7 +100,7 @@
             android:permission="true">
         </service>
         <receiver
-            android:name="com.plamera.tmswiftlauncher.DeviceInfo$EmmReceiver"
+            android:name="com.plamera.tmswiftlauncher.Device.DeviceInfo$EmmReceiver"
             tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="com.plamera.CUSTOM_INTENT"/>

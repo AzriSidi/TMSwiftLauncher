@@ -26,7 +26,7 @@ public class BlockOutgoing extends BroadcastReceiver {
             if (blockNumber.equals(callNumber)) {
                 Log.w("GetOutgoingCallNumber", "Number---->"+callNumber);
                 setResultData(null);
-                Toast.makeText(context, "Outgoing Call Blocked", 1000).show();
+                Toast.makeText(context, "Outgoing Call Blocked", Toast.LENGTH_SHORT).show();
             }else {
                 Log.w("GetOutgoingCallNumber", "Number---->"+callNumber);
             }

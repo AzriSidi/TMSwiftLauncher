@@ -1,4 +1,4 @@
-package com.plamera.tmswiftlauncher;
+package com.plamera.tmswiftlauncher.Device;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,6 +15,12 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.plamera.tmswiftlauncher.Global;
+import com.plamera.tmswiftlauncher.HomeScreen;
+import com.plamera.tmswiftlauncher.MainActivity;
+import com.plamera.tmswiftlauncher.PhoneState;
+import com.plamera.tmswiftlauncher.R;
+
 import org.apache.http.conn.util.InetAddressUtils;
 
 import java.net.InetAddress;
@@ -24,44 +30,41 @@ import java.util.List;
 
 public class DeviceInfo {
     TelephonyManager tel;
-    String imei,imsi,carrierName,firmVer,simCard,simState;
+    String imei, imsi, carrierName, firmVer, simCard, simState;
     Context context;
     Activity activity;
     DeviceOperate device;
     TextView myScroller;
-    MainActivity mainActivity;
     static String TAG = "DeviceInfo";
     Intent intent;
 
-    public DeviceInfo(Context context){
+    public DeviceInfo(Context context) {
         this.context = context;
         this.activity = (Activity) context;
         device = new DeviceOperate(context);
-        mainActivity = new MainActivity();
         myScroller = activity.findViewById(R.id.textView1);
         tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
     }
 
     public static class EmmReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             Global.EmmStatus = intent.getStringExtra("EmmStatus");
-            Log.e(TAG,Global.EmmStatus!=null?Global.EmmStatus:"Not received");
+            Log.e(TAG, Global.EmmStatus != null ? Global.EmmStatus : "Not received");
         }
     }
 
     @SuppressLint("MissingPermission")
-    public String getImei(){
+    public String getImei() {
         imei = tel.getDeviceId();
-        if(imei == null){
+        if (imei == null) {
             imei = "Not Available";
         }
         return imei;
     }
 
     @SuppressLint("MissingPermission")
-    public String getImsi(){
+    public String getImsi() {
         imsi = tel.getSimSerialNumber();
         if (imsi == null){
             noImsiPopUp();
@@ -71,7 +74,7 @@ public class DeviceInfo {
     }
 
     public String getCarrier(){
-        carrierName = tel.getNetworkOperatorName();
+        carrierName = tel.getSimOperatorName();
         if(carrierName.equals("")){
             carrierName = "Not Available";
         }
@@ -129,9 +132,9 @@ public class DeviceInfo {
                 }
             }
         } catch (Exception ex) {
-            Log.e("getLocalIP", ex.toString());
+            Log.e(TAG, "getIP Exception: "+ex.toString());
         }
-        return "Not available";
+        return "Not Available";
     }
 
     public void queryNetwork() {
@@ -141,7 +144,7 @@ public class DeviceInfo {
 
         try {
             if(activity instanceof MainActivity){
-                Global.myStatus = "Network: ";
+                Global.myStatus = "NETWORK: ";
                 if(Global.connected3G){
                     if(Global.EmmStatus.equals("Not Active")) {
                         AgentIntent();
@@ -185,7 +188,7 @@ public class DeviceInfo {
 
             String activeConnPlus = activeConn;
             if (Global.connectedToWiFi) {
-                activeConnPlus = "WIFI ";
+                activeConnPlus = "WIFI";
                 Global.netType = "WIFI/" + device.getWifiSsid();
             }else if (Global.connected3G) {
                 // Global.URLSwift = "http://10.41.102.70/";
@@ -198,7 +201,7 @@ public class DeviceInfo {
             }
 
             Global.myStatus += activeConnPlus;
-            myStatus = Global.myStatus + " | Server: "
+            myStatus = Global.myStatus + " | SERVER: "
                     + Global.ServerStatus;
 
             if (Global.ServerStatus.contains("Not Connected")) {
@@ -215,7 +218,7 @@ public class DeviceInfo {
             myScroller.setText(myStatus);
             Log.e(TAG,"myStatus: "+myStatus);
         } catch (Exception e) {
-            Log.e(TAG, "Exception: "+e.toString());
+            Log.e(TAG, "queryNetwork Exception: "+e.toString());
 
         }
     }

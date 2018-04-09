@@ -20,7 +20,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHandler";
     private SQLiteDatabase db;
     ContentValues values;
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "userManager";
 
     public DatabaseHandler(Context context) {
@@ -168,13 +168,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(UserDb.TABLE_WHITELIST, null, values);
     }
 
-    public long insertSummaryUpdate(String dtUpdateWhiteList, String dtUpdateBlackList) {
+    public void insertDeviceConfig(String dtUpdateWhiteList, String dtUpdateBlackList) {
         db = this.getWritableDatabase();
         values = new ContentValues();
         values.put(UserDb.KEY_WL, dtUpdateWhiteList);
         values.put(UserDb.KEY_BL, dtUpdateBlackList);
-        long rowInserted = db.insert(UserDb.TABLE_DEVICE_CONFIG, null, values);
-        return rowInserted;
+        db.insert(UserDb.TABLE_DEVICE_CONFIG, null, values);
+    }
+
+    public void updateDeviceConfig(String dtUpdateWhiteList, String dtUpdateBlackList) {
+        db = this.getWritableDatabase();
+        values = new ContentValues();
+        values.put(UserDb.KEY_WL, dtUpdateWhiteList);
+        values.put(UserDb.KEY_BL, dtUpdateBlackList);
+        String whereClause = UserDb.KEY_WL + " = ? AND " + UserDb.KEY_BL + " = ? ";
+        String whereArgs[] = {dtUpdateWhiteList,dtUpdateBlackList};
+        db.update(UserDb.TABLE_DEVICE_CONFIG, values, whereClause,whereArgs);
+    }
+
+    public boolean deviceConfigExists(String dtUpdateWhiteList, String dtUpdateBlackList) {
+        boolean hasTables = false;
+        db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " +UserDb.TABLE_DEVICE_CONFIG
+                + " WHERE "+UserDb.KEY_WL+" = "+"'"+dtUpdateWhiteList+"'" +" and "+UserDb.KEY_BL+" " +
+                "= "+"'"+dtUpdateBlackList+"'", null);
+        if(cursor != null && cursor.getCount() > 0){
+            hasTables=true;
+            cursor.close();
+        }
+        return hasTables;
     }
 
     public String[][] getSummaryUpdate() {

@@ -36,6 +36,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.plamera.tmswiftlauncher.Device.DeviceInfo;
+import com.plamera.tmswiftlauncher.Device.DeviceOperate;
+import com.plamera.tmswiftlauncher.Device.DeviceService;
 import com.plamera.tmswiftlauncher.Encap.BlackList;
 import com.plamera.tmswiftlauncher.Encap.UserDetail;
 import com.plamera.tmswiftlauncher.Encap.WhileList;
@@ -79,7 +82,6 @@ public class MainActivity extends Activity {
     EditText userField, passField;
     TextView output1,output2,dateView,myScroller,appVer;
     Intent intent;
-    String carrierName;
     String Serveradd, ServerName;
     Boolean checkServerRunning = false;
     Boolean CheckNetworkRunning = false;
@@ -113,12 +115,12 @@ public class MainActivity extends Activity {
     public boolean readytoshowdialog = false;
     public String DataMobile = "";
     AlertDialog.Builder customBuilder;
-    String signalStrength;
     JwtEncode jwtEncode;
     JwtDecode jwtDecode;
     PackageInfo packageInfo;
     PackageManager pm;
     int timeout = 300000;
+    int checkNetwork = 15000;
     private Context context = MainActivity.this;
     long currentTime = System.currentTimeMillis();
     DeviceOperate deviceOperate;
@@ -126,7 +128,8 @@ public class MainActivity extends Activity {
     DeviceService deviceService;
     AppsVer appsVer;
     Timer timer;
-    int layout = R.layout.layout_3_2;
+    IntentFilter networkIntentFilter;
+    int layout = R.layout.layout_3_3;
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
@@ -159,6 +162,7 @@ public class MainActivity extends Activity {
         jwtEncode = new JwtEncode();
         jwtDecode = new JwtDecode();
         Global.mySQLiteAdapter = new DatabaseHandler(this);
+        deviceOperate = new DeviceOperate(this);
         deviceInfo = new DeviceInfo(this);
         deviceService = new DeviceService(this);
         appsVer = new AppsVer(this);
@@ -166,8 +170,7 @@ public class MainActivity extends Activity {
         getPackage();
         getWhiteList();
         AppVerText();
-        DeviceDetail();
-        deviceService.startAgent();
+        deviceService.intentAgent();
         deviceService.stopSwift();
     }
 
@@ -185,21 +188,9 @@ public class MainActivity extends Activity {
                 Global.CreateMainMenu = false;
                 Global.TTreqSummDate = "";
                 Global.FFreqSummDate = "";
-                networkStateReceiver = new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        CheckNetworkRunning = false;
-                        checkServerRunning = false;
-                        Global.CanPing = true;
-                        deviceInfo.queryNetwork();
-                    }
-                };
-                IntentFilter networkIntentFilter = new IntentFilter(
-                        ConnectivityManager.CONNECTIVITY_ACTION);
-                registerReceiver(networkStateReceiver, networkIntentFilter);
                 deviceInfo.queryNetwork();
                 CheckNetworkTimer = new Timer();
-                CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(),0,15000);
+                CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(),0,checkNetwork);
                 getWSWhiteList getWS = new getWSWhiteList();
                 getWS.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -361,11 +352,11 @@ public class MainActivity extends Activity {
         try {
             Global.IMEIPhone = deviceInfo.getImei();
             Global.IMSIsimCardPhone = deviceInfo.getImsi();
-            carrierName = deviceInfo.getCarrier();
+            Global.carrierName = deviceInfo.getCarrier();
+            Global.signalStrength = deviceInfo.getSimState();
             Log.d(TAG,"IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
             output1.setText("IMSI: "+Global.IMSIsimCardPhone+"  |  IMEI: "+Global.IMEIPhone);
-            signalStrength = deviceInfo.getSimState();
-            output2.setText(carrierName+" | "+deviceInfo.getLocalIP()+" | "+signalStrength);
+            output2.setText(Global.carrierName+" | "+Global.localIP+" | "+Global.signalStrength);
         } catch (Exception e) {
             Log.e(TAG,"Exception: "+e.toString());
         }
@@ -383,7 +374,7 @@ public class MainActivity extends Activity {
         if(layout == R.layout.layout_3_2){
             appText = "EMM - "+Global.agentVer+ "  |  LAUNCHER - "+Global.launcherVer;
         }else if(layout == R.layout.layout_3_3){
-            appText = "FIRM - "+Global.frmVersion+"\nEMM - "+Global.agentVer+ "\nLAUNCHER - "+Global.launcherVer;
+            appText = "FIRMWARE - "+Global.frmVersion+"\nEMM - "+Global.agentVer+ "\nLAUNCHER - "+Global.launcherVer;
         }
         appVer.setText(appText);
     }
@@ -862,7 +853,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void LoginToken(){
+    /*public void LoginToken(){
         List<UserDetail> userDetails = Global.mySQLiteAdapter.getAllContacts();
         for (UserDetail con : userDetails) {
             Global.getToken = con.get_token();
@@ -901,7 +892,7 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public void intentLogin(){
         intent = new Intent(context,HomeScreen.class);
@@ -1033,11 +1024,13 @@ public class MainActivity extends Activity {
                         _dtUpdateBlackList = strDate;
                     }
                 }
-                long insertResult = Global.mySQLiteAdapter.insertSummaryUpdate(_dtUpdateWhiteList, _dtUpdateBlackList);
-                if (insertResult == -1) {
-                    Log.e(TAG, "XSuccess insert");
+
+                if (Global.mySQLiteAdapter.deviceConfigExists(_dtUpdateWhiteList, _dtUpdateBlackList)) {
+                    Global.mySQLiteAdapter.updateDeviceConfig(_dtUpdateWhiteList, _dtUpdateBlackList);
+                    Log.d(TAG,"SqliteQuery: updateDeviceConfig");
                 } else {
-                    Log.i(TAG, "Success insert");
+                    Global.mySQLiteAdapter.insertDeviceConfig(_dtUpdateWhiteList, _dtUpdateBlackList);
+                    Log.d(TAG,"SqliteQuery: insertDeviceConfig");
                 }
 
                 objLogin = new JSONObject(jsonStr);
@@ -1049,16 +1042,16 @@ public class MainActivity extends Activity {
                     Log.d(TAG, "CheckValue: " + "Id: "+bilID +" Number: "+ blackListNum);
                     if (Global.mySQLiteAdapter.isBlackListExist(bilID)) {
                         Global.mySQLiteAdapter.updateBlackList(new BlackList(bilID,blackListNum));
-                        Log.d("SqliteQuery: ", "UpdateBlackList");
+                        Log.d(TAG, "SqliteQuery: UpdateBlackList");
                     } else {
                         Global.mySQLiteAdapter.insertBlackList(new BlackList(bilID,blackListNum));
-                        Log.d("SqliteQuery: ", "InsertBlackList");
+                        Log.d(TAG,"SqliteQuery: InsertBlackList");
                     }
                 }
                 List<BlackList> blackList = Global.mySQLiteAdapter.getAllBlackList();
                 for (BlackList bl : blackList) {
                     String log = "Id: " + bl.getId() + " ,BlackListNum: " + bl.getBlackListNumber();
-                    Log.d("SqliteQueryLog: ", log);
+                    Log.d(TAG,"SqliteQueryLog: "+log);
                 }
 
                 objLogin = new JSONObject(jsonStr);
@@ -1069,10 +1062,10 @@ public class MainActivity extends Activity {
                     WlPackage = c.getString("PACKAGE");
                     if (Global.mySQLiteAdapter.isWhiteListExist(WlName)) {
                         Global.mySQLiteAdapter.updateWhileList(new WhileList(WlName,WlPackage));
-                        Log.d("SqliteQuery: ", "UpdateWhiteList");
+                        Log.d(TAG,"SqliteQuery: "+"UpdateWhiteList");
                     } else {
                         Global.mySQLiteAdapter.insertWhileList(new WhileList(WlName,WlPackage));
-                        Log.d("SqliteQuery: ", "InsertWhiteList");
+                        Log.d(TAG,"SqliteQuery: "+"InsertWhiteList");
                     }
                 }
             }catch (JSONException e){
@@ -1246,9 +1239,7 @@ public class MainActivity extends Activity {
         super.onStart();
         try {
             logininvisible = false;
-
             Global.LogAsAdmin = false;
-
             // 2014-09-25 amir debug
             Global.lastAlertTime = new Date(1977, 4, 17);
             // moved to here by amir 2013-01-14
@@ -1262,6 +1253,20 @@ public class MainActivity extends Activity {
             Global.FFAssignCount = 0;
             Global.allTaskCounter = 0;
             Global.countCF = 0;
+
+            networkStateReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    CheckNetworkRunning = false;
+                    checkServerRunning = false;
+                    Global.CanPing = true;
+                    deviceInfo.queryNetwork();
+                    DeviceDetail();
+                }
+            };
+            networkIntentFilter = new IntentFilter(
+                    ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(networkStateReceiver, networkIntentFilter);
 
             if (Global.FirstTimeRunLogin) {
                 if (!InitTaskRunning) {
@@ -1284,7 +1289,6 @@ public class MainActivity extends Activity {
         super.onStop();
         try {
             unregisterReceiver(networkStateReceiver);
-            //unregisterReceiver(downloadReceiver);
             CheckNetworkTimer.cancel();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1295,8 +1299,6 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         try {
-            // unregisterReceiver(mIntentReceiver);
-            // cancel current download if exiting bumblebee
             deviceOperate.unregisterReceiver(this);
             if (Global.waitingForDownload) {
                 Global.waitingForDownload = false;
@@ -1468,7 +1470,7 @@ public class MainActivity extends Activity {
                                             }
                                         }
                                         myScroller.setText(Global.myStatus
-                                                + " | Server: "
+                                                + " | SERVER: "
                                                 + Global.ServerStatus);
                                     }
                                 });
@@ -1487,7 +1489,7 @@ public class MainActivity extends Activity {
                                             myScroller.setBackgroundColor(Color
                                                     .parseColor("#FF8000"));
                                             myScroller.setText(Global.myStatus
-                                                    + " | Server: "
+                                                    + " | SERVER: "
                                                     + Global.ServerStatus);
                                         }
 
@@ -1539,7 +1541,7 @@ public class MainActivity extends Activity {
                                     }
 
                                     myScroller.setText(Global.myStatus
-                                            + " | Server: "
+                                            + " | SERVER: "
                                             + Global.ServerStatus);
 
                                 }
@@ -1648,7 +1650,7 @@ public class MainActivity extends Activity {
                     } else {
                         Global.CanPing = false;
                         Global.ServerStatus = "Not Connected";
-                        Global.myStatus = "Network: Ping Fail ";
+                        Global.myStatus = "Ping Fail ";
 
                         Log.d("Login PingServerStatus", " ping check Not OK "
                                 + Global.MaxisRouter);
@@ -1681,7 +1683,7 @@ public class MainActivity extends Activity {
                                         }
 
                                         myScroller.setText(Global.myStatus
-                                                + " | Server: "
+                                                + " | SERVER: "
                                                 + Global.ServerStatus);
                                     }
 
@@ -1694,7 +1696,7 @@ public class MainActivity extends Activity {
                         " Ping check error" + e.toString());
                 Global.CanPing = false;
                 Global.ServerStatus = "Not Connected";
-                Global.myStatus = "Network: Ping Fail ";
+                Global.myStatus = "Ping Fail ";
 
                 Log.d("Login PingServerStatus", " ping check Not OK "
                         + Global.MaxisRouter);
@@ -1728,7 +1730,7 @@ public class MainActivity extends Activity {
                                                 .setBackgroundColor(Color.RED);
                                     }
                                     myScroller.setText(Global.myStatus
-                                            + " | Server: "
+                                            + " | SERVER: "
                                             + Global.ServerStatus);
                                 }
 
@@ -1940,7 +1942,7 @@ public class MainActivity extends Activity {
                     myScroller.setBackgroundColor(Color.parseColor("#210B61"));
                 }
             }
-            myScroller.setText(Global.myStatus + " |  Server: "
+            myScroller.setText(Global.myStatus + " |  SERVER: "
                     + Global.ServerStatus);
             // re-enable login button here
             // loginButton.setEnabled(true);

@@ -1,4 +1,4 @@
-package com.plamera.tmswiftlauncher;
+package com.plamera.tmswiftlauncher.Device;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -19,8 +19,7 @@ import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 
-import com.plamera.tmswiftlauncher.Location.LocationService;
-import com.plamera.tmswiftlauncher.Location.LocationServiceImpl;
+import com.plamera.tmswiftlauncher.Global;
 
 import java.util.List;
 
@@ -33,7 +32,6 @@ public class DeviceOperate {
     NetworkInfo networkInfo;
     GsmCellLocation cellLocation;
     TelephonyManager telephonyManager;
-    LocationService locationService;
     int lac;
     int cid;
     String memory;
@@ -48,7 +46,6 @@ public class DeviceOperate {
     @SuppressLint("MissingPermission")
     public DeviceOperate(Context context) {
         this.context = context;
-        locationService = LocationServiceImpl.getInstance(context);
         telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);

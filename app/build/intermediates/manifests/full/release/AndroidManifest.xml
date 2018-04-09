@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.plamera.tmswiftlauncher"
-    android:versionCode="35"
-    android:versionName="3.2.2" >
+    android:versionCode="45"
+    android:versionName="3.3.1" >
 
     <uses-sdk
         android:minSdkVersion="17"
@@ -113,7 +113,7 @@
             android:permission="true" >
         </service>
 
-        <receiver android:name="com.plamera.tmswiftlauncher.DeviceInfo$EmmReceiver" >
+        <receiver android:name="com.plamera.tmswiftlauncher.Device.DeviceInfo$EmmReceiver" >
             <intent-filter>
                 <action android:name="com.plamera.CUSTOM_INTENT" />
             </intent-filter>

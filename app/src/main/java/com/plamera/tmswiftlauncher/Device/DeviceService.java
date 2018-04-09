@@ -1,4 +1,4 @@
-package com.plamera.tmswiftlauncher;
+package com.plamera.tmswiftlauncher.Device;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -6,12 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.plamera.tmswiftlauncher.Global;
+import com.plamera.tmswiftlauncher.MainActivity;
+import com.plamera.tmswiftlauncher.TrackLogService;
+
 public class DeviceService {
     Context context;
     Intent intent;
     String TAG;
     String swfitPackage = "my.com.tm.swift";
     String swiftClass = "my.com.tmrnd.swift.LocationUpdateService";
+    String trackClass = "com.plamera.tmswiftlauncher.TrackLogService";
 
     public DeviceService(Context context) {
         this.context = context;
@@ -44,14 +49,14 @@ public class DeviceService {
 
     public void startTrackLog(){
         try {
-            intent = new Intent(context, TrackLogService.class);
+            intent = new Intent(context,TrackLogService.class);
             context.startService(intent);
         }catch (Exception ex){
             Log.e(TAG,"Exeception: "+ex.toString());
         }
     }
 
-    public boolean isMyServiceRunning() {
+    public boolean SwiftServiceRunning() {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (swiftClass.equals(service.service.getClassName())) {
@@ -61,7 +66,17 @@ public class DeviceService {
         return false;
     }
 
-    public void startAgent(){
+    public boolean TrackServiceRunning() {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (trackClass.equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void intentAgent(){
         try {
             intent = new Intent();
             intent.setComponent(new ComponentName("org.wso2.emm.agent", "org.wso2.emm.agent.BroadcastService"));
