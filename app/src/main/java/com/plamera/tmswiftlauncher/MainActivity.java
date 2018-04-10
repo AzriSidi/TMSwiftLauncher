@@ -1137,7 +1137,7 @@ public class MainActivity extends Activity {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    pd.dismiss();
+                    testNetPd.dismiss();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

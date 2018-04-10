@@ -363,7 +363,7 @@ public class HomeScreen extends FragmentActivity {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    pd.dismiss();
+                    testNetPd.dismiss();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

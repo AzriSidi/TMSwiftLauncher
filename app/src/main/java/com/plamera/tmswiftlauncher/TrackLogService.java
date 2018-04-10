@@ -114,13 +114,13 @@ public class TrackLogService extends Service {
                 httpPost.setEntity(se);
                 httpResponse = client.execute(httpPost);
                 Log.d(LOG_TAG, "DeviceApi: "+json);
-                    /*Checking response */
                 if(httpResponse!=null){
                     InputStream in = httpResponse.getEntity().getContent();
                     result = InputStreamToString(in);
                 }else{
                     result = "Did not work!";
                 }
+                Log.d(LOG_TAG, "DeviceResponse: "+result);
             }catch (Exception e){
                 Log.d(LOG_TAG, "InputStream: "+e.getLocalizedMessage());
             }
