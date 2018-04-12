@@ -599,8 +599,6 @@ public class DeviceAsync {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             Global.InitTaskRunning = false;
-
-            // ahmad to prevent crash
             if (DeviceInfo.pdinit != null) {
                 if (DeviceInfo.pdinit.isShowing()) {
                     DeviceInfo.pdinit.dismiss();
