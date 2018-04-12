@@ -3,17 +3,22 @@ package com.plamera.tmswiftlauncher.Device;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.plamera.tmswiftlauncher.Global;
 import com.plamera.tmswiftlauncher.HomeScreen;
@@ -27,23 +32,29 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DeviceInfo {
     TelephonyManager tel;
-    String imei, imsi, carrierName, firmVer, simCard, simState;
-    Context context;
+    String imei,imsi,carrierName,firmVer,simCard,simState,ssid;
+    static Context context;
     Activity activity;
-    DeviceOperate device;
     TextView myScroller;
     static String TAG = "DeviceInfo";
     Intent intent;
+    WifiInfo wifiInfo;
+    WifiManager wifiManager;
+    int timeout = 300000;
+    public static ProgressDialog testNetPd,pdinit;
+    public static Timer timer;
 
     public DeviceInfo(Context context) {
         this.context = context;
         this.activity = (Activity) context;
-        device = new DeviceOperate(context);
         myScroller = activity.findViewById(R.id.textView1);
         tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
     public static class EmmReceiver extends BroadcastReceiver {
@@ -189,7 +200,7 @@ public class DeviceInfo {
             String activeConnPlus = activeConn;
             if (Global.connectedToWiFi) {
                 activeConnPlus = "WIFI";
-                Global.netType = "WIFI/" + device.getWifiSsid();
+                Global.netType = "WIFI/" + getWifiSsid();
             }else if (Global.connected3G) {
                 // Global.URLSwift = "http://10.41.102.70/";
                 activeConnPlus += "";
@@ -221,6 +232,86 @@ public class DeviceInfo {
             Log.e(TAG, "queryNetwork Exception: "+e.toString());
 
         }
+    }
+
+    public void testNetwork(){
+        if (Global.checkServerRunning) {
+            testNetPd = ProgressDialog.show(context, "",
+                    "Please Wait... Testing Server Connection",
+                    true, false);
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    testNetPd.dismiss();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context, "Server Status: Testing fail",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }, timeout);
+            DeviceAsync.CheckServerStatus myCheckServerStatus = new DeviceAsync
+                    .CheckServerStatus(context);
+            myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else if (!Global.checkServerRunning) {
+            Global.checkServerRunning = true;
+            if (Global.connectedToWiFi) {
+                DeviceAsync.CheckServerStatus myCheckServerStatus = new DeviceAsync
+                        .CheckServerStatus(context);
+                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else if (Global.connected3G) {
+                DeviceAsync.CheckServerStatus myCheckServerStatus = new DeviceAsync
+                        .CheckServerStatus(context);
+                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            try {
+                Toast.makeText(context, "IP: " + getLocalIP(),
+                        Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void initTask(){
+        if (Global.FirstTimeRunLogin) {
+            if (!Global.InitTaskRunning) {
+                Log.d("Login",
+                        "FirstTimeRunLogin true & InitTaskRunning false");
+                pdinit = ProgressDialog.show(context, "",
+                        "Please wait for system initialization");
+                (new DeviceAsync.InitTask(context)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }
+    }
+
+    public static class CheckNetworkTimerMethod extends TimerTask {
+        public void run() {
+            if (!Global.CheckNetworkRunning) {
+                Global.CheckNetworkRunning = true;
+                if (Global.connectedToWiFi) {
+                    DeviceAsync.CheckServerStatus myCheckServerStatus = new DeviceAsync
+                            .CheckServerStatus(context);
+                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else if (Global.connected3G) {
+                    DeviceAsync.CheckServerStatus myCheckServerStatus = new DeviceAsync
+                            .CheckServerStatus(context);
+                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }
+        }
+    }
+
+    public String getWifiSsid() {
+        if (wifiManager != null) {
+            wifiInfo = wifiManager.getConnectionInfo();
+            ssid = wifiInfo.getSSID();
+            ssid = ssid.substring(1, ssid.length() - 1);
+        }
+        return ssid;
     }
 
     public void AgentIntent(){

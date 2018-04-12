@@ -30,7 +30,7 @@ import java.util.TimerTask;
 public class TrackLogService extends Service {
     private static String LOG_TAG;
     private Context context;
-    DeviceOperate device;
+    DeviceOperate deviceOperate;
     Timer timer;
     HttpHandler sh;
     Handler handler;
@@ -46,8 +46,19 @@ public class TrackLogService extends Service {
         LOG_TAG = this.getClass().getSimpleName();
         timer = new Timer();
         handler = new Handler();
-        device = new DeviceOperate(this);
+        deviceOperate = new DeviceOperate(this);
+        deviceOperate.findLocation();
         setTimer();
+    }
+
+    @Override
+    public void onDestroy(){
+        try{
+            deviceOperate.unregisterReceiver(this);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 
     public void setTimer(){

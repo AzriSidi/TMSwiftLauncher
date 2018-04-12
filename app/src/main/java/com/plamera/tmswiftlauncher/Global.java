@@ -35,7 +35,8 @@ public class Global {
     public static int FFAssignCount;
     public static int allTaskCounter;
     public static int countCF;
-    public static boolean FirstTimeRunLogin;
+    public static boolean FirstTimeRunLogin = true;
+    public static Boolean InitTaskRunning = false;
     public static boolean CreateMainMenu;
     public static String strVersion = "";
     public static String frmVersion = "";
@@ -84,4 +85,7 @@ public class Global {
     public static String swiftVer = "";
     public static String carrierName = "";
     public static String signalStrength = "";
+    public static Boolean CheckNetworkRunning = false;
+    public static Boolean checkServerRunning = false;
+    public static String DisplayUsername = "";
 }

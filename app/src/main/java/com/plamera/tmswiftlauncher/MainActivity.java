@@ -16,7 +16,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -48,14 +47,11 @@ import com.plamera.tmswiftlauncher.Provider.AppsVer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,23 +78,14 @@ public class MainActivity extends Activity {
     EditText userField, passField;
     TextView output1,output2,dateView,myScroller,appVer;
     Intent intent;
-    String Serveradd, ServerName;
-    Boolean checkServerRunning = false;
-    Boolean CheckNetworkRunning = false;
-    ProgressDialog pd,testNetPd;
+    ProgressDialog pd;
     Timer CheckNetworkTimer;
-    String DisplayUsername;
     BroadcastReceiver networkStateReceiver;
     String username, password, jsonStr;
     HttpHandler sh;
     Handler handler;
     private String savePath = Environment.getExternalStorageDirectory() + "/";
     public boolean logininvisible = false;
-    private Boolean InitTaskRunning = false;
-    private static ProgressDialog pdinit;
-    String serverDateStr = "";
-    Boolean dateMismatch = false;
-    Boolean mismatchDialogDisplayed = false;
     CheckBox cb_showPwd;
     String TAG = "MainActivity";
     String myKey = "30820241308201aaa00302010202044f543029300d06092a864886f70d01010505003064310b30090603550406130236303111300f0603550408130853656c616e676f72311230100603550407130943796265726a617961310b3009060355040a1302544d310e300c060355040b0c05544d5226443111300f06035504031308544d2053776966743020170d3132303330353033313635375a180f33303038313031303033313635375a3064310b30090603550406130236303111300f0603550408130853656c616e676f72311230100603550407130943796265726a617961310b3009060355040a1302544d310e300c060355040b0c05544d5226443111300f06035504031308544d20537769667430819f300d06092a864886f70d010101050003818d003081890281810089a9975ca27524ee648ba8f6e32f4af02c879e34247f37a13e78e8aad50e955879550e13b676650001baea8497d152b338ab9405010910ace4d609923a6ea1b8c229ba2dede3cc81948710ff7418fea811396057084e0df35284449a167d873f649dbfd8a4fe8edeea505d13ec24439e02f978229b6cc6033927d6beb8c664090203010001300d06092a864886f70d0101050500038181006c9c6bbcab4ea91cbddb30a2ecc4856558dffc59e92dc4a054034098f05eaa99b58c7ac16c251f57a8e5fc7f7665ceceb95be8aef8e3a73accb96f1b6448ff634140b8d420c822589090d4297c23996bdcce17d538cb2c4b712087e2d538e235588a8b49fc8d7aefdd65b5ffc891ec77ef0b25d28f51490dea895caaa367e0ff";
@@ -127,13 +114,11 @@ public class MainActivity extends Activity {
     DeviceInfo deviceInfo;
     DeviceService deviceService;
     AppsVer appsVer;
-    Timer timer;
     IntentFilter networkIntentFilter;
     int layout = R.layout.layout_3_3;
 
     //url
     String urlLogin = "http://10.54.97.227:9763/EMMWebService/loginApi";
-    String urlSwift = "http://10.54.97.227:8888/";
     String urlConfig = "http://10.54.97.227:9763/EMMWebService/device_config";
 
     @Override
@@ -147,11 +132,11 @@ public class MainActivity extends Activity {
         output2 = findViewById(R.id.textView7);
         appVer = findViewById(R.id.textView24);
 
-        DisplayUsername = userField.getText().toString();
+        Global.DisplayUsername = userField.getText().toString();
         cb_showPwd = findViewById(R.id.checkBox_ShowPassword);
         cb_showPwd.setOnCheckedChangeListener(new CheckBoxListener());
         dateView = findViewById(R.id.textView10);
-        CheckNetworkRunning = false;
+        Global.CheckNetworkRunning = false;
         Global.loginContext = this;
 
         checkCurrentVersion();
@@ -184,13 +169,13 @@ public class MainActivity extends Activity {
             } else {
                 printNdimExchangeList();
                 cb_showPwd.setChecked(false);
-                CheckNetworkRunning = false;
+                Global.CheckNetworkRunning = false;
                 Global.CreateMainMenu = false;
                 Global.TTreqSummDate = "";
                 Global.FFreqSummDate = "";
                 deviceInfo.queryNetwork();
                 CheckNetworkTimer = new Timer();
-                CheckNetworkTimer.schedule(new CheckNetworkTimerMethod(),0,checkNetwork);
+                CheckNetworkTimer.schedule(new DeviceInfo.CheckNetworkTimerMethod(),0,checkNetwork);
                 getWSWhiteList getWS = new getWSWhiteList();
                 getWS.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -567,7 +552,7 @@ public class MainActivity extends Activity {
         username = userField.getText().toString();
         password = passField.getText().toString();
         UsernamePreference(username);
-        if (InitTaskRunning) {
+        if (Global.InitTaskRunning) {
             Toast.makeText(
                     this,
                     "Please wait while the application is being initialized...",
@@ -949,10 +934,8 @@ public class MainActivity extends Activity {
         public void run() {
             myTimer.cancel();
             // timercount = 0;
-            CheckNetworkRunning = false;
-            checkServerRunning = false;
-            // Log.d("SignIn",
-            // "LoginTask cancelled due to timeout(60 Seconds) ");
+            Global.CheckNetworkRunning = false;
+            Global.checkServerRunning = false;
             LoginTask.cancel(true);
         }
     };
@@ -1126,45 +1109,7 @@ public class MainActivity extends Activity {
     }
 
     public void testConnect(View v){
-        DisplayUsername = ((EditText) findViewById(R.id.username))
-                .getText().toString();
-
-        if (checkServerRunning) {
-            testNetPd = ProgressDialog.show(MainActivity.this, "",
-                            "Please Wait... Testing Server Connection",
-                            true, false);
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    testNetPd.dismiss();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Server Status: Testing fail",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }, timeout);
-            CheckServerStatus myCheckServerStatus = new CheckServerStatus();
-            myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else if (!checkServerRunning) {
-            checkServerRunning = true;
-            if (Global.connectedToWiFi) {
-                CheckServerStatus myCheckServerStatus = new CheckServerStatus();
-                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else if (Global.connected3G) {
-                CheckServerStatus myCheckServerStatus = new CheckServerStatus();
-                myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-            try {
-                Toast.makeText(MainActivity.this, "IP: " + deviceInfo.getLocalIP(),
-                        Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        deviceInfo.testNetwork();
     }
 
     public void helpBtn(View v){
@@ -1210,25 +1155,17 @@ public class MainActivity extends Activity {
         //nothing
     }
 
-    // CHECKBOX
     class CheckBoxListener implements CompoundButton.OnCheckedChangeListener {
-
         @Override
-        public void onCheckedChanged(CompoundButton buttonView,
-                                     boolean isChecked) {
-
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             Log.i("CheckBoxListener", "isChecked = " + isChecked);
-
             if (isChecked) {
                 passField.setInputType(InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-
             } else {
                 passField.setInputType(InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
             }
-
             // move cursor to end of text
             passField.setSelection(passField.getText().length());
         }
@@ -1257,27 +1194,18 @@ public class MainActivity extends Activity {
             networkStateReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    CheckNetworkRunning = false;
-                    checkServerRunning = false;
+                    Global.CheckNetworkRunning = false;
+                    Global.checkServerRunning = false;
                     Global.CanPing = true;
                     deviceInfo.queryNetwork();
                     DeviceDetail();
                 }
             };
+            deviceInfo.initTask();
             networkIntentFilter = new IntentFilter(
                     ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(networkStateReceiver, networkIntentFilter);
 
-            if (Global.FirstTimeRunLogin) {
-                if (!InitTaskRunning) {
-                    Log.d("Login",
-                            "FirstTimeRunLogin true & InitTaskRunning false");
-                    pdinit = ProgressDialog.show(MainActivity.this, "",
-                            "Please wait for system initialization");
-
-                    (new InitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("Login", "Error onstart " + e.toString());
@@ -1308,26 +1236,6 @@ public class MainActivity extends Activity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    // FUNCTION NAME : CheckNetworkTimerMethod
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    class CheckNetworkTimerMethod extends TimerTask {
-        public void run() {
-            if (!CheckNetworkRunning) {
-                CheckNetworkRunning = true;
-                if (Global.connectedToWiFi) {
-                    CheckServerStatus myCheckServerStatus = new CheckServerStatus();
-                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-                } else if (Global.connected3G) {
-                    CheckServerStatus myCheckServerStatus = new CheckServerStatus();
-                    myCheckServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-                }
-            }
         }
     }
 
@@ -1366,620 +1274,6 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    // FUNCTION NAME : CheckServerStatus
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    public class CheckServerStatus extends AsyncTask<Void, Void, Void> {
-        String ServerTime;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            try {
-
-                if (Global.connected3G || Global.connectedToWiFi
-                        && Global.loginServer != "SIT") {
-
-                    if ( Global.loginServer == "SIT") {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                        // Global.URLSwift = "http://58.26.233.1:8080/";
-                    } else if (Global.loginServer == "DEV") {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.44.11.64:8090/";
-                    } else if ( Global.loginServer == "PRE OLD") {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.106.132.7/";
-                        // Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                    } else if (Global.loginServer == "PRE") {
-                        Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.41.102.81/";
-                    } else {
-                        Global.URLSwift = urlSwift;
-                        //Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.41.102.70/";
-                    }
-
-                    // }
-
-                    Serveradd = Global.URLSwift + "serverInfo.php";
-
-                    HttpParams httpParameters = new BasicHttpParams();
-                    HttpConnectionParams.setConnectionTimeout(httpParameters,timeout);
-                    HttpConnectionParams.setSoTimeout(httpParameters, timeout);
-                    HttpClient client = new DefaultHttpClient(httpParameters);
-                    Log.d(TAG,"Serveradd:" + Serveradd );
-                    HttpGet request = new HttpGet(Serveradd);
-
-                    HttpResponse response = client.execute(request);
-
-                    InputStream in = response.getEntity().getContent();
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(in));
-                    StringBuilder str = new StringBuilder();
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        str.append(line);
-                    }
-                    in.close();
-                    String serverDateStr = str.toString().trim();
-                    ServerStatusExtract(serverDateStr);
-                    if (Global.ServerStatus.contains("OK")) {
-                        Global.ServerStatus = "Connected to " + ServerName;
-                        Global.ServerDate = ServerTime;
-                        Log.d(TAG,"CheckServerStatus:"+" HTTP check OK "
-                                + Serveradd);
-                    } else {
-                        Global.ServerStatus = "Not Connected";
-                        Log.d(TAG,"CheckServerStatus:"+ " HTTP check Not OK "
-                                + Serveradd + DisplayUsername);
-                        if (Global.currentAPN.contains("Maxis")
-                                && Global.connected3G) {
-                            PingServerStatus myPingServerStatus = new PingServerStatus();
-                            myPingServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
-                    }
-                    if (Global.loginContext != null) {
-                        ((Activity) Global.loginContext)
-                                .runOnUiThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        if (Global.ServerStatus
-                                                .contains("Not Connected")) {
-                                            myScroller
-                                                    .setBackgroundColor(Color.RED);
-                                        } else if (Global.ServerStatus
-                                                .contains("Unknown")) {
-                                            myScroller
-                                                    .setBackgroundColor(Color.RED);
-                                        } else {
-                                            if (Global.myStatus.contains("WIFI")) {
-                                                myScroller
-                                                        .setBackgroundColor(Color
-                                                                .parseColor("#FF8000"));
-                                            } else if (Global.connected3G) {
-                                                myScroller.setBackgroundColor(Color
-                                                        .parseColor("#210B61"));
-                                            }
-                                        }
-                                        myScroller.setText(Global.myStatus
-                                                + " | SERVER: "
-                                                + Global.ServerStatus);
-                                    }
-                                });
-                    }
-                } else {
-                    // Log.e("Login","SIT");
-                    if (DisplayUsername.contains("*") && Global.connectedToWiFi) {
-                        Global.ServerStatus = "Connected to gponems";
-
-                        if (Global.loginContext != null) {
-                            ((Activity) Global.loginContext)
-                                    .runOnUiThread(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            myScroller.setBackgroundColor(Color
-                                                    .parseColor("#FF8000"));
-                                            myScroller.setText(Global.myStatus
-                                                    + " | SERVER: "
-                                                    + Global.ServerStatus);
-                                        }
-
-                                    });
-                        }
-                    }
-
-                }
-
-            } catch (Exception e) {
-                ServerTime = "";
-                Log.e("Login CheckServerStatus", "LoginException: "
-                        + e);
-
-                Global.ServerStatus = "Not Connected";
-                if (Global.currentAPN.contains("Maxis") && Global.connected3G) {
-                    PingServerStatus myPingServerStatus = new PingServerStatus();
-                    myPingServerStatus.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-                if (Global.loginContext != null) {
-                    ((Activity) Global.loginContext)
-                            .runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    if (Global.ServerStatus
-                                            .contains("Not Connected")) {
-                                        myScroller
-                                                .setBackgroundColor(Color.RED);
-
-                                    } else if (Global.ServerStatus
-                                            .contains("Unknown")) {
-                                        myScroller
-                                                .setBackgroundColor(Color.RED);
-
-                                    } else {
-                                        if (Global.myStatus.contains("WIFI")) {
-                                            myScroller.setBackgroundColor(Color
-
-                                                    .parseColor("#FF8000"));
-
-                                        } else if (Global.connected3G) {
-                                            myScroller.setBackgroundColor(Color
-
-                                                    .parseColor("#210B61"));
-
-                                        }
-
-                                    }
-
-                                    myScroller.setText(Global.myStatus
-                                            + " | SERVER: "
-                                            + Global.ServerStatus);
-
-                                }
-
-                            });
-                }
-
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            Log.e(TAG, "Server Status: " + Global.ServerStatus);
-            CheckNetworkRunning = false;
-            if (Global.ServerStatus.contains("Connected to")){
-                if (testNetPd != null) {
-                    if (testNetPd.isShowing()) {
-                        timer.cancel();
-                        testNetPd.dismiss();
-                    }
-                }
-                if (checkServerRunning) {
-                    checkServerRunning = false;
-                    Toast.makeText(MainActivity.this, "Server Status: " + Global.ServerStatus,
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-            super.onPostExecute(result);
-        }
-
-        private void ServerStatusExtract(String strData) {
-            try {
-                // Log.i("Pian","ServerData="+strData);
-                int start = 0;
-                int end = 0;
-                ServerName = "";
-                start = strData.indexOf("<serverName>");
-                end = strData.indexOf("</serverName>");
-                ServerName = strData.substring(start + 12, end - 15);
-                //Log.i("Pian","ServerName="+strData);
-                start = strData.indexOf("<serverStatus>");
-                end = strData.indexOf("</serverStatus>");
-                Global.ServerStatus = strData.substring(start + 14, end);
-                // Log.i("Pian","ServerStatus="+ServerStatus);
-                start = strData.indexOf("<serverTime>");
-                end = strData.indexOf("</serverTime>");
-                ServerTime = strData.substring(start + 12, end);
-                // Log.i("Pian","ServerTime="+ServerTime);
-                // start-07/05/2015 @Pian - tarikh dari server untuk req/update
-                // TT dan FF
-                try {
-                    Global.ServerDate = ServerTime;
-                    String splitDT[] = Global.ServerDate.split(" ");
-                    String strDt = splitDT[0];
-                    String strTm = splitDT[1];
-                    Log.i("Pian", "Date=" + strDt);
-                    Log.i("Pian", "Time=" + strTm);
-                    SimpleDateFormat inFormat = new SimpleDateFormat(
-                            "yyyy-MM-dd");
-                    SimpleDateFormat outFormat = new SimpleDateFormat(
-                            "MM/dd/yyyy");
-                    Date dt = inFormat.parse(strDt);
-                    Global.reqUsingServerDate = outFormat.format(dt).toString();
-                    Global.updateUsingServerDateTime = Global.reqUsingServerDate
-                            + " " + strTm;
-                    Log.i("Pian", "Global.reqUsingServerDt="
-                            + Global.reqUsingServerDate);
-                    Log.i("Pian", "Global.updateUsingServerDateTime="
-                            + Global.updateUsingServerDateTime);
-                } catch (Exception e) {
-                    Log.i("Pian", e.toString());
-                }
-                // end-07/05/2015 @Pian - tarikh dari server untuk req/update TT
-                // dan FF
-            } catch (Exception e) {
-                Log.i("ServerStatusException", e.toString());
-            }
-        }
-    }
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    // FUNCTION NAME : PingServerStatus
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
-    public class PingServerStatus extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-
-            try {
-                if (Global.connected3G) {
-                    String pingCmd = "ping -c 1 -w 25 -s 1 " + deviceInfo.getLocalIP();
-                    java.lang.Process p1 = java.lang.Runtime.getRuntime().exec(pingCmd);
-                    int returnVal = p1.waitFor();
-                    Log.d("Login PingServerStatus ", String.valueOf(returnVal));
-                    Log.d("Login PingServerStatus ", pingCmd);
-                    if (returnVal == 0) {
-                        Global.CanPing = true;
-                        Log.d("Login PingServerStatus", " ping check OK");
-                    } else {
-                        Global.CanPing = false;
-                        Global.ServerStatus = "Not Connected";
-                        Global.myStatus = "Ping Fail ";
-
-                        Log.d("Login PingServerStatus", " ping check Not OK "
-                                + Global.MaxisRouter);
-                    }
-                    if (Global.loginContext != null) {
-                        ((Activity) Global.loginContext)
-                                .runOnUiThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        if (Global.ServerStatus
-                                                .contains("Not Connected")) {
-                                            myScroller
-                                                    .setBackgroundColor(Color.RED);
-                                        } else if (Global.ServerStatus
-                                                .contains("Unknown")) {
-                                            myScroller
-                                                    .setBackgroundColor(Color.RED);
-                                        } else {
-                                            if (Global.myStatus.contains("WIFI")) {
-                                                myScroller
-                                                        .setBackgroundColor(Color
-                                                                .parseColor("#FF8000"));
-                                            } else if (Global.connected3G) {
-                                                myScroller
-                                                        .setBackgroundColor(Color
-                                                                .parseColor("#210B61"));
-                                            }
-
-                                        }
-
-                                        myScroller.setText(Global.myStatus
-                                                + " | SERVER: "
-                                                + Global.ServerStatus);
-                                    }
-
-                                });
-                    }
-                }
-
-            } catch (Exception e) {
-                Log.e("Login PingServerStatus",
-                        " Ping check error" + e.toString());
-                Global.CanPing = false;
-                Global.ServerStatus = "Not Connected";
-                Global.myStatus = "Ping Fail ";
-
-                Log.d("Login PingServerStatus", " ping check Not OK "
-                        + Global.MaxisRouter);
-                if (Global.loginContext != null) {
-                    ((Activity) Global.loginContext)
-                            .runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    if (Global.ServerStatus
-                                            .contains("Not Connected")) {
-                                        myScroller
-                                                .setBackgroundColor(Color.RED);
-                                    } else if (Global.ServerStatus
-                                            .contains("Unknown")) {
-                                        myScroller
-                                                .setBackgroundColor(Color.RED);
-                                    } else {
-                                        if (Global.myStatus.contains("WIFI")) {
-                                            myScroller.setBackgroundColor(Color
-                                                    .parseColor("#FF8000"));
-                                        } else if (Global.connected3G) {
-                                            myScroller.setBackgroundColor(Color
-                                                    .parseColor("#210B61"));
-                                        }
-
-                                    }
-
-                                    if (!Global.CanPing) {
-                                        myScroller
-                                                .setBackgroundColor(Color.RED);
-                                    }
-                                    myScroller.setText(Global.myStatus
-                                            + " | SERVER: "
-                                            + Global.ServerStatus);
-                                }
-
-                            });
-                }
-
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            if (Global.CanPing) {
-                deviceInfo.queryNetwork();
-            } else {
-                CheckNetworkRunning = false;
-                if (checkServerRunning) {
-                    checkServerRunning = false;
-                    if (pd != null) {
-                        if (pd.isShowing()) {
-                            pd.dismiss();
-                        }
-                    }
-                    Toast.makeText(MainActivity.this, "Network Status: Ping Fail",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-            super.onPostExecute(result);
-        }
-    }
-
-    private class InitTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // disable login button here
-            Log.d("InitTask", "Start");
-            InitTaskRunning = true;
-            if (Global.LogAsAdmin) {
-                Global.LogAsAdmin = false;
-            }
-            deviceInfo.queryNetwork();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            // Global.ServerStatus = "Connected";
-            // myScroller
-            // .setBackgroundColor(Color
-            // .parseColor("#210B61"));
-            Log.d("InitTask", "doInBackground");
-
-            if (!DisplayUsername.contains("*") && Global.connected3G) {
-                Log.d("InitTask", "FirstTimeRunLogin");
-
-                if (Global.FirstTimeRunLogin) {
-                    Global.FirstTimeRunLogin = false;
-                    Log.d("InitTask", "Checking server date/time "
-                            + Global.usernameBB + ":");
-
-                    SimpleDateFormat sdfDate = new SimpleDateFormat(
-                            "MM/dd/yyyy hh:mm:ss a");
-                    Date currentDate = new Date();
-                    Date serverDate;
-                    serverDateStr = "";
-                    dateMismatch = false;
-
-                    try {
-                        HttpParams httpParameters = new BasicHttpParams();
-                        // set timeout to one minute
-                        HttpConnectionParams.setConnectionTimeout(
-                                httpParameters, timeout);
-                        HttpConnectionParams.setSoTimeout(httpParameters, timeout);
-                        HttpClient client = new DefaultHttpClient(
-                                httpParameters);
-
-                        // if (Global.connected3G) {
-                        //
-                        // Global.URLSwift = "http://10.41.102.70/";
-                        // Serveradd = Global.URLSwift
-                        // + "Mobile/Configuration/time.php";
-                        //
-                        // } else {
-                        if (DisplayUsername.contentEquals("TM")) {
-                            Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                        } else if (DisplayUsername.contains("*")) {
-                            // Global.URLSwift = "http://58.26.233.1:8080/";
-                            Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                            // Global.URLSwift =
-                            // "http://swift.tmrnd.com.my:8080/";
-                        } else if (DisplayUsername.contains("#")) {
-                            Global.URLSwift = "http://10.44.11.64:8090/";
-                        } else if (DisplayUsername.contains("$")) {
-                            Global.URLSwift = "http://10.106.132.7/";
-                        } else if (DisplayUsername.contains("@")) {
-                            Global.URLSwift = "http://10.41.102.81/";
-                        } else if (DisplayUsername.contains("!")) {
-                            Global.URLSwift = "http://10.41.102.70/";
-                        } else {
-                            Global.URLSwift = "http://10.41.102.70/";
-                        }
-
-                        // Global.URLSwift = "http://10.41.102.70/"; // hisham
-                        // add
-                        // cause
-                        // "http://swift.tmrnd.com.my:8080/"
-                        // always
-                        // fail
-                        Serveradd = Global.URLSwift
-                                + "Mobile/Configuration/time.php";
-
-                        if (DisplayUsername.contains("@")
-                                || DisplayUsername.contains("$")) {
-                            Serveradd = Global.URLSwift
-                                    + "preprod/Mobile/Configuration/time.php";
-
-                        }
-                        // }
-
-                        Log.d("InitTask", "Checking server date/time "
-                                + Global.URLSwift);
-                        HttpGet request = new HttpGet(Serveradd); // HttpGet
-                        // request
-                        // = new
-                        // HttpGet(
-                        // "http://10.41.102.70/Mobile/Configuration/time.php");
-                        HttpResponse response = client.execute(request);
-
-                        InputStream in = response.getEntity().getContent();
-                        BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(in));
-                        StringBuilder str = new StringBuilder();
-                        String line = null;
-                        while ((line = reader.readLine()) != null) {
-                            str.append(line);
-                        }
-                        in.close();
-                        serverDateStr = str.toString().trim();
-                        serverDate = sdfDate.parse(serverDateStr);
-                        if (serverDateStr.length() == 22) {
-                            Global.ServerStatus = "Connected";
-                            // Log.d("Login", " Check Date check OK" + Serveradd
-                            // + DisplayUsername);
-                        } else {
-                            Global.ServerStatus = "Not Connected";
-                            // Log.d("Login", " Check Date Not OK" + Serveradd
-                            // + DisplayUsername);
-                        }
-
-                        long diff = Math.abs(serverDate.getTime()
-                                - currentDate.getTime());
-                        // check if times are within 10 minutes
-                        if (diff > 600000) {
-                            // Log.d("InitTask",
-                            // "Date mismatch, Server: "
-                            // + sdfDate.format(serverDate)
-                            // + ", device: "
-                            // + sdfDate.format(currentDate));
-                            // put date in a simpler format
-                            SimpleDateFormat sdfDateHuman = new SimpleDateFormat(
-                                    "EEE, d MMM yyyy, h:mm:ss a");
-                            serverDateStr = sdfDateHuman.format(serverDate);
-                            dateMismatch = true;
-                        } else {
-                            // Log.d("InitTask",
-                            // "Date OK, Server: "
-                            // + sdfDate.format(serverDate)
-                            // + ", device: "
-                            // + sdfDate.format(currentDate));
-                            dateMismatch = false;
-                        }
-
-                    } catch (Exception e) {
-                        Log.e("InitTask", e.toString());
-                        Global.ServerStatus = "Not Connected";
-                        Log.e("InitTask", "Not Connected" + Serveradd
-                                + DisplayUsername);
-
-                    }
-
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            InitTaskRunning = false;
-
-            // ahmad to prevent crash
-            if (pdinit != null) {
-                if (pdinit.isShowing()) {
-                    pdinit.dismiss();
-                }
-            }
-
-            if (Global.ServerStatus.contains("Not Connected")) {
-                myScroller.setBackgroundColor(Color.RED);
-            } else if (Global.ServerStatus.contains("Unknown")) {
-                myScroller.setBackgroundColor(Color.RED);
-            } else {
-                if (Global.myStatus.contains("WIFI")) {
-                    myScroller.setBackgroundColor(Color.parseColor("#FF8000"));
-                } else if (Global.connected3G) {
-                    myScroller.setBackgroundColor(Color.parseColor("#210B61"));
-                }
-            }
-            myScroller.setText(Global.myStatus + " |  SERVER: "
-                    + Global.ServerStatus);
-            // re-enable login button here
-            // loginButton.setEnabled(true);
-            if (dateMismatch) {
-                if (!mismatchDialogDisplayed) {
-                    mismatchDialogDisplayed = true;
-                    String MyMessage = "Please check and correct the date & time in your device\nServer date & time: "
-                            + serverDateStr;
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Incorrect device date/time")
-                            .setMessage(MyMessage)
-                            .setCancelable(false)
-                            .setNeutralButton("OK",
-                                    new DialogInterface.OnClickListener() {
-
-                                        @Override
-                                        public void onClick(
-                                                DialogInterface dialog,
-                                                int which) {
-                                            mismatchDialogDisplayed = false;
-                                            startActivity(new Intent(
-                                                    android.provider.Settings.ACTION_DATE_SETTINGS));
-                                        }
-
-                                    }).show();
-                } else {
-
-                }
-                // not disturb user again and again
-                dateMismatch = false;
-            }
-
-            Log.d("InitTask", "Exit");
-            // if (pdinit.isShowing()) {
-            // pdinit.dismiss();
-            // }
-        }
     }
 
     // To save username in preference editor

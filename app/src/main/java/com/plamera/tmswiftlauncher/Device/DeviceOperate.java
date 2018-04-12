@@ -9,10 +9,6 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -27,16 +23,11 @@ import static android.content.Context.ACTIVITY_SERVICE;
 
 public class DeviceOperate {
     IntentFilter iFilter;
-    WifiManager wifiManager;
-    WifiInfo wifiInfo;
-    NetworkInfo networkInfo;
     GsmCellLocation cellLocation;
     TelephonyManager telephonyManager;
     int lac;
     int cid;
     String memory;
-    String ssid;
-    ConnectivityManager connManager;
     ActivityManager actManager;
     static ActivityManager.MemoryInfo memInfo;
     LocationManager locationManager;
@@ -47,15 +38,16 @@ public class DeviceOperate {
     public DeviceOperate(Context context) {
         this.context = context;
         telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         context.registerReceiver(batLvlReceiver, iFilter);
         context.registerReceiver(batStatusReceiver, iFilter);
         cellLocation = (GsmCellLocation) telephonyManager.getCellLocation();
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        findLocation();
+    }
+
+    public void unregisterReceiver(Context context) {
+        context.unregisterReceiver(batLvlReceiver);
+        context.unregisterReceiver(batStatusReceiver);
     }
 
     public BroadcastReceiver batLvlReceiver = new BroadcastReceiver() {
@@ -69,7 +61,6 @@ public class DeviceOperate {
             Global.getLac = Lac();
             Global.getCid = Cid();
             Global.availMemory = getAvailableMemory();
-            Log.d(TAG, "availMemory=" + Global.availMemory + " ,LAC=" + Global.getLac + " ,CID=" + Global.getCid);
         }
     };
 
@@ -97,25 +88,24 @@ public class DeviceOperate {
         }
     };
 
-    public void unregisterReceiver(Context context) {
-        context.unregisterReceiver(batLvlReceiver);
-        context.unregisterReceiver(batStatusReceiver);
-    }
-
     @SuppressLint("MissingPermission")
     public void findLocation() {
         List<String> providers = locationManager.getProviders(true);
         for (String provider : providers) {
-            locationManager.requestLocationUpdates(provider, 1000, 0,
-                    new LocationListener() {
-                        public void onLocationChanged(Location loc) {
-                            try {
-                                Global.latitude = String.format("%.07f", loc.getLatitude());
-                                Global.longitude = String.format("%.07f", loc.getLongitude());
-                                Log.d(TAG, "onLocationChanged: " + Global.latitude + "," + Global.longitude);
-                            } catch (Exception e) {
-                                Log.e(TAG, "onLocationChanged: " + e.getMessage());
-                            }
+            locationManager.requestLocationUpdates(provider, 1000, 0, new LocationListener() {
+                        public void onLocationChanged(final Location loc) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Global.latitude = String.format("%.07f", loc.getLatitude());
+                                        Global.longitude = String.format("%.07f", loc.getLongitude());
+                                        Log.d(TAG, "onLocationChanged: " + Global.latitude + "," + Global.longitude);
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "onLocationChanged: " + e.getMessage());
+                                    }
+                                }
+                            }).start();
                         }
 
                         public void onProviderDisabled(String provider) {
@@ -138,15 +128,6 @@ public class DeviceOperate {
                 Log.d(TAG, "GetLocation= " + Global.latitude + "," + Global.longitude);
             }
         }
-    }
-
-    public String getWifiSsid() {
-        if (wifiManager != null) {
-            wifiInfo = wifiManager.getConnectionInfo();
-            ssid = wifiInfo.getSSID();
-            ssid = ssid.substring(1, ssid.length() - 1);
-        }
-        return ssid;
     }
 
     public int Lac() {
