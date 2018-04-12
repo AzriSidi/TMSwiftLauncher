@@ -74,8 +74,6 @@ public class DeviceAsync {
                         //Global.URLSwift = "http://10.41.102.81/";
                     } else {
                         Global.URLSwift = "http://10.54.97.227:8888/";
-                        //Global.URLSwift = "http://10.54.7.214/";
-                        //Global.URLSwift = "http://10.41.102.70/";
                     }
 
                     // }
@@ -478,31 +476,19 @@ public class DeviceAsync {
 
                     try {
                         HttpParams httpParameters = new BasicHttpParams();
-                        // set timeout to one minute
                         HttpConnectionParams.setConnectionTimeout(
                                 httpParameters, timeout);
                         HttpConnectionParams.setSoTimeout(httpParameters, timeout);
                         HttpClient client = new DefaultHttpClient(
                                 httpParameters);
-
-                        // if (Global.connected3G) {
-                        //
-                        // Global.URLSwift = "http://10.41.102.70/";
-                        // Serveradd = Global.URLSwift
-                        // + "Mobile/Configuration/time.php";
-                        //
-                        // } else {
                         if (Global.DisplayUsername.contentEquals("TM")) {
                             Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
                         } else if (Global.DisplayUsername.contains("*")) {
-                            // Global.URLSwift = "http://58.26.233.1:8080/";
-                            Global.URLSwift = "http://swift.tmrnd.com.my:8080/";
-                            // Global.URLSwift =
-                            // "http://swift.tmrnd.com.my:8080/";
+                            Global.URLSwift = "http://10.41.102.70/";
                         } else if (Global.DisplayUsername.contains("#")) {
-                            Global.URLSwift = "http://10.44.11.64:8090/";
+                            Global.URLSwift = "http://10.41.102.70/";
                         } else if (Global.DisplayUsername.contains("$")) {
-                            Global.URLSwift = "http://10.106.132.7/";
+                            Global.URLSwift = "http://10.41.102.70/";
                         } else if (Global.DisplayUsername.contains("@")) {
                             Global.URLSwift = "http://10.41.102.81/";
                         } else if (Global.DisplayUsername.contains("!")) {
@@ -510,13 +496,6 @@ public class DeviceAsync {
                         } else {
                             Global.URLSwift = "http://10.41.102.70/";
                         }
-
-                        // Global.URLSwift = "http://10.41.102.70/"; // hisham
-                        // add
-                        // cause
-                        // "http://swift.tmrnd.com.my:8080/"
-                        // always
-                        // fail
                         Serveradd = Global.URLSwift
                                 + "Mobile/Configuration/time.php";
 
@@ -526,15 +505,10 @@ public class DeviceAsync {
                                     + "preprod/Mobile/Configuration/time.php";
 
                         }
-                        // }
 
                         Log.d("InitTask", "Checking server date/time "
                                 + Global.URLSwift);
-                        HttpGet request = new HttpGet(Serveradd); // HttpGet
-                        // request
-                        // = new
-                        // HttpGet(
-                        // "http://10.41.102.70/Mobile/Configuration/time.php");
+                        HttpGet request = new HttpGet(Serveradd);
                         HttpResponse response = client.execute(request);
 
                         InputStream in = response.getEntity().getContent();
@@ -550,45 +524,24 @@ public class DeviceAsync {
                         serverDate = sdfDate.parse(serverDateStr);
                         if (serverDateStr.length() == 22) {
                             Global.ServerStatus = "Connected";
-                            // Log.d("Login", " Check Date check OK" + Serveradd
-                            // + DisplayUsername);
                         } else {
                             Global.ServerStatus = "Not Connected";
-                            // Log.d("Login", " Check Date Not OK" + Serveradd
-                            // + DisplayUsername);
                         }
 
                         long diff = Math.abs(serverDate.getTime()
                                 - currentDate.getTime());
-                        // check if times are within 10 minutes
                         if (diff > 600000) {
-                            // Log.d("InitTask",
-                            // "Date mismatch, Server: "
-                            // + sdfDate.format(serverDate)
-                            // + ", device: "
-                            // + sdfDate.format(currentDate));
-                            // put date in a simpler format
                             SimpleDateFormat sdfDateHuman = new SimpleDateFormat(
                                     "EEE, d MMM yyyy, h:mm:ss a");
                             serverDateStr = sdfDateHuman.format(serverDate);
                             dateMismatch = true;
                         } else {
-                            // Log.d("InitTask",
-                            // "Date OK, Server: "
-                            // + sdfDate.format(serverDate)
-                            // + ", device: "
-                            // + sdfDate.format(currentDate));
                             dateMismatch = false;
                         }
 
                     } catch (Exception e) {
                         Log.e("InitTask", e.toString());
-                        Global.ServerStatus = "Not Connected";
-                        Log.e("InitTask", "Not Connected" + Serveradd
-                                + Global.DisplayUsername);
-
                     }
-
                 }
             }
 
@@ -643,14 +596,10 @@ public class DeviceAsync {
                 } else {
 
                 }
-                // not disturb user again and again
                 dateMismatch = false;
             }
 
             Log.d("InitTask", "Exit");
-            // if (pdinit.isShowing()) {
-            // pdinit.dismiss();
-            // }
         }
     }
 }

@@ -279,11 +279,10 @@ public class DeviceInfo {
     public void initTask(){
         if (Global.FirstTimeRunLogin) {
             if (!Global.InitTaskRunning) {
-                Log.d("Login",
-                        "FirstTimeRunLogin true & InitTaskRunning false");
-                pdinit = ProgressDialog.show(context, "",
-                        "Please wait for system initialization");
-                (new DeviceAsync.InitTask(context)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                Log.d(TAG, "FirstTimeRunLogin true & InitTaskRunning false");
+                pdinit = ProgressDialog.show(context, "", "Please wait for system initialization");
+                (new DeviceAsync.InitTask(context))
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
     }
