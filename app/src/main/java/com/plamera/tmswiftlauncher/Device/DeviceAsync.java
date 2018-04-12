@@ -441,6 +441,7 @@ public class DeviceAsync {
             this.context = context;
             this.activity = (Activity) context;
             deviceInfo = new DeviceInfo(context);
+            myScroller = activity.findViewById(R.id.textView1);
         }
 
 
